@@ -30,6 +30,11 @@ interface PromoContent {
 }
 
 const LANDING_PROMO_KEY = 'tfb-landing-promo-shown';
+const CHAT_OPEN_KEY = 'tfb-chatbot-open';
+
+function isChatbotOpen() {
+  return typeof window !== 'undefined' && window.localStorage.getItem(CHAT_OPEN_KEY) === 'true';
+}
 
 function buildLandingPromo(products: Product[]): PromoContent | null {
   const charDhamProduct =
@@ -149,6 +154,9 @@ export function PromoPopup() {
 
       if (!hasSeenLandingPromo && landingPromo) {
         timer = setTimeout(() => {
+          if (isChatbotOpen()) {
+            return;
+          }
           setPromo(landingPromo);
           setOpen(true);
           sessionStorage.setItem(LANDING_PROMO_KEY, 'true');
@@ -166,6 +174,9 @@ export function PromoPopup() {
       previousPathRef.current = pathname;
 
       timer = setTimeout(() => {
+        if (isChatbotOpen()) {
+          return;
+        }
         const nextPromo = buildRandomPromo(products);
         if (nextPromo) {
           setPromo(nextPromo);
@@ -180,6 +191,21 @@ export function PromoPopup() {
       }
     };
   }, [landingPromo, pathname, products]);
+
+  useEffect(() => {
+    const handleChatVisibility = (event: Event) => {
+      const customEvent = event as CustomEvent<{ open?: boolean }>;
+      if (customEvent.detail?.open) {
+        setOpen(false);
+      }
+    };
+
+    window.addEventListener('tfb-chatbot-visibility', handleChatVisibility);
+
+    return () => {
+      window.removeEventListener('tfb-chatbot-visibility', handleChatVisibility);
+    };
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
