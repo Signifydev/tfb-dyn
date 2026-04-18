@@ -183,10 +183,10 @@ export function PromoPopup() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-3xl overflow-hidden border-0 bg-white p-0 shadow-[0_40px_120px_rgba(15,23,42,0.24)] dark:bg-slate-950 sm:rounded-[2rem]">
+      <DialogContent className="max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] max-w-3xl overflow-y-auto rounded-[1.5rem] border border-slate-200/70 bg-white p-0 text-slate-950 shadow-[0_40px_120px_rgba(15,23,42,0.24)] dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50 sm:max-h-[92vh] sm:w-full sm:rounded-[2rem] md:overflow-hidden [&>button]:right-3 [&>button]:top-3 [&>button]:rounded-full [&>button]:border [&>button]:border-white/40 [&>button]:bg-slate-950/75 [&>button]:p-1.5 [&>button]:text-white [&>button]:opacity-100 [&>button]:backdrop-blur [&>button]:hover:bg-slate-950 [&>button]:focus:ring-sky-400 dark:[&>button]:border-slate-700 dark:[&>button]:bg-slate-900/90 dark:[&>button]:text-slate-100 dark:[&>button]:hover:bg-slate-800">
         {promo && (
-          <div className="grid md:grid-cols-[1.02fr_0.98fr]">
-            <div className="relative min-h-[260px] overflow-hidden md:min-h-[100%]">
+          <div className="grid gap-0 py-4 sm:py-0 md:grid-cols-[1.02fr_0.98fr]">
+            <div className="relative mx-4 min-h-[220px] overflow-hidden rounded-[1.5rem] md:mx-0 md:min-h-[100%] md:rounded-none">
               <Image
                 src={promo.image}
                 alt={promo.title}
@@ -194,28 +194,30 @@ export function PromoPopup() {
                 className="object-cover"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
-              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.08),rgba(15,23,42,0.68))]" />
-              <div className="absolute left-5 top-5">
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(15,23,42,0.18),rgba(15,23,42,0.78))] dark:bg-[linear-gradient(180deg,rgba(2,6,23,0.28),rgba(2,6,23,0.9))]" />
+              <div className="absolute left-4 top-4 md:left-5 md:top-5">
                 <Badge className="border-0 bg-amber-400 px-3 py-1 text-slate-950 hover:bg-amber-300">
                   {promo.badge}
                 </Badge>
               </div>
-              <div className="absolute inset-x-0 bottom-0 p-5 text-white md:p-6">
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-100 backdrop-blur">
+              <div className="absolute inset-x-0 bottom-0 p-4 text-white md:p-6">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-slate-950/35 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-50 backdrop-blur dark:bg-slate-950/55">
                   <Flame className="h-3.5 w-3.5 text-amber-300" />
                   Offer Spotlight
                 </div>
-                <p className="mt-3 text-sm text-slate-100">{promo.timingLabel}</p>
+                <p className="mt-3 text-sm font-medium text-white [text-shadow:0_1px_2px_rgba(0,0,0,0.55)]">
+                  {promo.timingLabel}
+                </p>
               </div>
             </div>
 
-            <div className="bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-6 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] md:p-8">
+            <div className="bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] px-5 pb-6 pt-5 text-slate-950 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] dark:text-slate-50 md:p-8">
               <DialogHeader className="text-left">
                 <div className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
                   <Sparkles className="h-3.5 w-3.5" />
                   {promo.categoryLabel}
                 </div>
-                <DialogTitle className="mt-4 text-3xl font-semibold leading-tight text-slate-950 dark:text-slate-50">
+                <DialogTitle className="mt-4 pr-8 text-2xl font-semibold leading-tight text-slate-950 dark:text-slate-50 sm:text-3xl">
                   {promo.title}
                 </DialogTitle>
                 <DialogDescription className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
@@ -223,7 +225,7 @@ export function PromoPopup() {
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="mt-6 space-y-3 rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+              <div className="mt-6 space-y-3 rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/95">
                 <div className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
                   <Clock3 className="h-4 w-4 text-sky-700" />
                   Triggered based on time spent exploring the site

@@ -6,6 +6,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { Header } from "@/components/travel/Header";
 import { Footer } from "@/components/travel/Footer";
 import { PromoPopup } from "@/components/travel/PromoPopup";
+import { LeadChatbot } from "@/components/travel/LeadChatbot";
 
 import "./globals.css";
 
@@ -46,6 +47,7 @@ export default function RootLayout({
             <main className="flex-1">{children}</main>
             <Footer />
             <PromoPopup />
+            <LeadChatbot />
             <Toaster />
           </ThemeProvider>
         </AuthProvider>
