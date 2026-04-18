@@ -157,27 +157,27 @@ export function HeroSection() {
           </div>
 
           <div className="mt-6 rounded-[2rem] border border-white/15 bg-white/12 p-4 shadow-2xl backdrop-blur-md md:mt-10 md:p-6">
-            <div className="rounded-[1.5rem] bg-white p-5 text-slate-900 md:p-6">
+            <div className="rounded-[1.5rem] bg-white p-5 text-slate-900 dark:bg-slate-900/95 dark:text-slate-100 md:p-6">
               <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-blue-700">
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-blue-700 dark:bg-sky-500/15 dark:text-sky-200">
                   <Compass className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700">
+                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-sky-300">
                     Smart Search
                   </p>
-                  <h2 className="text-2xl font-bold text-slate-900">Find your next trip faster</h2>
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Find your next trip faster</h2>
                 </div>
               </div>
 
               <form onSubmit={handleSearch} className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-600">
+                    <label className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-300">
                       Select Category
                     </label>
                     <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                      <SelectTrigger className="h-12 rounded-xl border-slate-200">
+                      <SelectTrigger className="h-12 rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
                         <SelectValue placeholder="All categories" />
                       </SelectTrigger>
                       <SelectContent>
@@ -192,11 +192,11 @@ export function HeroSection() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-slate-600">
+                    <label className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-300">
                       Select City
                     </label>
                     <Select value={selectedCity} onValueChange={setSelectedCity}>
-                      <SelectTrigger className="h-12 rounded-xl border-slate-200">
+                      <SelectTrigger className="h-12 rounded-xl border-slate-200 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100">
                         <SelectValue placeholder="All cities" />
                       </SelectTrigger>
                       <SelectContent>
@@ -212,17 +212,17 @@ export function HeroSection() {
                 </div>
 
                 <div>
-                  <label className="mb-2 block text-sm font-medium text-slate-600">
+                  <label className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-300">
                     What are you looking for?
                   </label>
                   <div className="relative">
-                    <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+                    <Search className="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400 dark:text-slate-500" />
                     <Input
                       type="text"
                       placeholder="Try Char Dham, helicopter, Ladakh, wedding, trekking..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="h-12 rounded-xl border-slate-200 pl-11 text-base"
+                      className="h-12 rounded-xl border-slate-200 pl-11 text-base dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
                     />
                   </div>
                 </div>
@@ -239,7 +239,7 @@ export function HeroSection() {
                     key={item}
                     type="button"
                     onClick={() => setSearchQuery(item)}
-                    className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200"
+                    className="rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
                   >
                     {item}
                   </button>

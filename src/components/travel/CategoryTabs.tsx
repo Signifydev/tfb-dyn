@@ -27,13 +27,13 @@ export default async function CategoryTabs() {
   const categories = await getCategories();
 
   return (
-    <section className="bg-slate-50 py-10 md:py-12">
+    <section className="bg-slate-50 py-10 dark:bg-slate-950/40 md:py-12">
       <div className="container mx-auto px-4">
         <div className="mb-8 text-center">
-          <h2 className="mb-2 text-2xl font-bold text-slate-900 md:text-3xl">
+          <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-slate-100 md:text-3xl">
             Explore by Category
           </h2>
-          <p className="text-slate-600">
+          <p className="text-slate-600 dark:text-slate-300">
             Find your perfect trip from our diverse range of experiences
           </p>
         </div>
@@ -44,7 +44,7 @@ export default async function CategoryTabs() {
 
             return (
               <Link key={cat.id} href={getCategoryHref(cat.slug)}>
-                <div className="flex h-full flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-4 text-center text-slate-700 transition-all hover:bg-slate-100 md:px-6">
+                <div className="flex h-full flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-4 text-center text-slate-700 transition-all hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 md:px-6">
                   <Icon className="h-5 w-5 md:h-6 md:w-6" />
                   <span className="text-xs font-medium leading-snug md:text-sm">
                     {cat.name}

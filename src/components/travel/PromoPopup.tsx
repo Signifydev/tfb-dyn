@@ -183,7 +183,7 @@ export function PromoPopup() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-w-3xl overflow-hidden border-0 bg-white p-0 shadow-[0_40px_120px_rgba(15,23,42,0.24)] sm:rounded-[2rem]">
+      <DialogContent className="max-w-3xl overflow-hidden border-0 bg-white p-0 shadow-[0_40px_120px_rgba(15,23,42,0.24)] dark:bg-slate-950 sm:rounded-[2rem]">
         {promo && (
           <div className="grid md:grid-cols-[1.02fr_0.98fr]">
             <div className="relative min-h-[260px] overflow-hidden md:min-h-[100%]">
@@ -209,26 +209,26 @@ export function PromoPopup() {
               </div>
             </div>
 
-            <div className="bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-6 md:p-8">
+            <div className="bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] p-6 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] md:p-8">
               <DialogHeader className="text-left">
-                <div className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">
+                <div className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
                   <Sparkles className="h-3.5 w-3.5" />
                   {promo.categoryLabel}
                 </div>
-                <DialogTitle className="mt-4 text-3xl font-semibold leading-tight text-slate-950">
+                <DialogTitle className="mt-4 text-3xl font-semibold leading-tight text-slate-950 dark:text-slate-50">
                   {promo.title}
                 </DialogTitle>
-                <DialogDescription className="mt-3 text-sm leading-7 text-slate-600">
+                <DialogDescription className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">
                   {promo.description}
                 </DialogDescription>
               </DialogHeader>
 
-              <div className="mt-6 space-y-3 rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="flex items-center gap-3 text-sm text-slate-700">
+              <div className="mt-6 space-y-3 rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+                <div className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
                   <Clock3 className="h-4 w-4 text-sky-700" />
                   Triggered based on time spent exploring the site
                 </div>
-                <div className="flex items-center gap-3 text-sm text-slate-700">
+                <div className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
                   <MapPinned className="h-4 w-4 text-emerald-600" />
                   Designed to pull visitors back into a high-intent itinerary
                 </div>
@@ -243,7 +243,7 @@ export function PromoPopup() {
                 </Link>
                 <Button
                   variant="outline"
-                  className="h-12 rounded-xl border-slate-200 px-6"
+                  className="h-12 rounded-xl border-slate-200 px-6 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:hover:bg-slate-800"
                   onClick={() => setOpen(false)}
                 >
                   Maybe Later

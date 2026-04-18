@@ -20,11 +20,11 @@ export function DestinationGrid() {
   }, []);
 
   return (
-    <section className="bg-slate-50 py-12 md:py-16">
+    <section className="bg-slate-50 py-12 dark:bg-slate-950/40 md:py-16">
       <div className="container mx-auto px-4">
         <div className="mb-10 text-center">
-          <h2 className="mb-2 text-2xl font-bold text-slate-900 md:text-3xl">Popular Destinations</h2>
-          <p className="text-slate-600">Explore trending travel destinations</p>
+          <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-slate-100 md:text-3xl">Popular Destinations</h2>
+          <p className="text-slate-600 dark:text-slate-300">Explore trending travel destinations</p>
         </div>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-2 md:gap-6 lg:grid-cols-3">

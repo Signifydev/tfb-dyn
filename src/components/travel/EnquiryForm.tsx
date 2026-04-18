@@ -63,13 +63,13 @@ export function EnquiryForm({ productSlug }: EnquiryFormProps) {
 
   if (success) {
     return (
-      <Card className="bg-green-50 border-green-200">
+      <Card className="border-green-200 bg-green-50 dark:border-green-900/40 dark:bg-green-950/20">
         <CardContent className="pt-6 text-center">
-          <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/40">
             <CheckCircle className="h-6 w-6 text-green-600" />
           </div>
-          <h3 className="font-semibold text-green-800 mb-2">Enquiry Submitted!</h3>
-          <p className="text-sm text-green-700 mb-4">
+          <h3 className="mb-2 font-semibold text-green-800 dark:text-green-200">Enquiry Submitted!</h3>
+          <p className="mb-4 text-sm text-green-700 dark:text-green-300">
             Our team will get back to you within 24 hours.
           </p>
           <Button variant="outline" size="sm" onClick={() => setSuccess(false)}>
@@ -81,9 +81,9 @@ export function EnquiryForm({ productSlug }: EnquiryFormProps) {
   }
 
   return (
-    <Card>
+    <Card className="dark:border-slate-700 dark:bg-slate-900/90">
       <CardHeader>
-        <CardTitle className="text-lg flex items-center gap-2">
+        <CardTitle className="flex items-center gap-2 text-lg dark:text-slate-100">
           <Send className="h-4 w-4" />
           Send an Enquiry
         </CardTitle>
