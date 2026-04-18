@@ -107,7 +107,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[linear-gradient(180deg,#f6f8fb_0%,#eef4f7_32%,#f8fafc_100%)] pt-[90px] text-slate-900 md:pt-[100px]">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f6f8fb_0%,#eef4f7_32%,#f8fafc_100%)] pt-[90px] text-slate-900 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_35%,#111827_100%)] dark:text-slate-100 md:pt-[100px]">
       <section id="gallery" className="scroll-mt-[120px]">
         <ProductGallery images={allImages} title={product.title} />
       </section>
@@ -121,7 +121,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
             <div className="relative">
               <Link
                 href="/"
-                className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm text-slate-700 shadow-sm backdrop-blur transition hover:border-slate-300 hover:text-slate-950"
+                className="mb-5 inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-4 py-2 text-sm text-slate-700 shadow-sm backdrop-blur transition hover:border-slate-300 hover:text-slate-950 dark:border-slate-700/80 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to Packages
@@ -214,19 +214,19 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
           <Card
             id="overview"
-            className="scroll-mt-[120px] overflow-hidden border-0 bg-white/80 shadow-[0_18px_50px_rgba(15,23,42,0.08)]"
+            className="scroll-mt-[120px] overflow-hidden border-0 bg-white/80 shadow-[0_18px_50px_rgba(15,23,42,0.08)] dark:bg-slate-900/80"
           >
             <CardContent className="p-0">
               <div className="grid gap-0 lg:grid-cols-[1.15fr_0.85fr]">
                 <div className="p-6 md:p-8">
-                  <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+                  <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
                     <Mountain className="h-3.5 w-3.5" />
                     Premium Travel Overview
                   </div>
-                  <h2 className="text-2xl font-semibold text-slate-950 md:text-3xl">
+                  <h2 className="text-2xl font-semibold text-slate-950 dark:text-slate-50 md:text-3xl">
                     Crafted like a seamless journey, not just a booking
                   </h2>
-                  <p className="mt-4 text-sm leading-7 text-slate-600 md:text-base">
+                  <p className="mt-4 text-sm leading-7 text-slate-600 dark:text-slate-300 md:text-base">
                     {product.description}
                   </p>
 
@@ -234,10 +234,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
                     {product.highlights.map((highlight) => (
                       <div
                         key={highlight}
-                        className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3"
+                        className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/70"
                       >
                         <CircleCheckBig className="mt-0.5 h-5 w-5 shrink-0 text-emerald-500" />
-                        <span className="text-sm font-medium text-slate-700">{highlight}</span>
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-200">{highlight}</span>
                       </div>
                     ))}
                   </div>
@@ -283,7 +283,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
           <Card
             id="itinerary"
-            className="scroll-mt-[120px] overflow-hidden border-0 bg-white/85 shadow-[0_18px_50px_rgba(15,23,42,0.08)]"
+          className="scroll-mt-[120px] overflow-hidden border-0 bg-white/85 shadow-[0_18px_50px_rgba(15,23,42,0.08)] dark:bg-slate-900/85"
           >
             <CardContent className="p-0">
               <div className="border-b border-slate-200 bg-[linear-gradient(120deg,#082f49,#0f172a,#1d4ed8)] px-4 py-6 text-white md:px-6">
@@ -307,28 +307,28 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              <div className="grid gap-4 border-b border-slate-200 bg-slate-50 px-4 py-5 md:grid-cols-3 md:px-6">
-                <div className="rounded-2xl bg-white p-4 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+              <div className="grid gap-4 border-b border-slate-200 bg-slate-50 px-4 py-5 dark:border-slate-700 dark:bg-slate-800/60 md:grid-cols-3 md:px-6">
+                <div className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900/80">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                     Starting from
                   </p>
-                  <p className="mt-2 text-lg font-semibold text-slate-900">
+                  <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
                     {product.itinerary[0]?.title || product.location}
                   </p>
                 </div>
-                <div className="rounded-2xl bg-white p-4 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                <div className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900/80">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                     Ending with
                   </p>
-                  <p className="mt-2 text-lg font-semibold text-slate-900">
+                  <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
                     {product.itinerary[itineraryCount - 1]?.title || 'Departure'}
                   </p>
                 </div>
-                <div className="rounded-2xl bg-white p-4 shadow-sm">
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                <div className="rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900/80">
+                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                     Travel style
                   </p>
-                  <p className="mt-2 text-lg font-semibold text-slate-900">
+                  <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
                     Curated premium routing
                   </p>
                 </div>
@@ -344,7 +344,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   <AccordionItem
                     key={day.day}
                     value={`day-${index}`}
-                    className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_12px_35px_rgba(15,23,42,0.06)]"
+                    className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-white shadow-[0_12px_35px_rgba(15,23,42,0.06)] dark:border-slate-700 dark:bg-slate-900/90"
                   >
                     <AccordionTrigger className="px-4 py-5 text-left hover:no-underline md:px-6">
                       <div className="flex w-full flex-col gap-4 md:flex-row md:items-start md:gap-5">
@@ -353,10 +353,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
                             {day.day}
                           </div>
                           <div className="md:hidden">
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700 dark:text-sky-300">
                               Day {day.day}
                             </p>
-                            <h3 className="mt-1 text-base font-semibold text-slate-900">
+                            <h3 className="mt-1 text-base font-semibold text-slate-900 dark:text-slate-100">
                               {day.title}
                             </h3>
                           </div>
@@ -364,42 +364,42 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
                         <div className="hidden min-w-0 flex-1 md:block">
                           <div className="flex items-center gap-3">
-                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700">
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-sky-700 dark:text-sky-300">
                               Day {day.day}
                             </p>
-                            <span className="h-px flex-1 bg-slate-200" />
-                            <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500">
+                            <span className="h-px flex-1 bg-slate-200 dark:bg-slate-700" />
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-slate-500 dark:text-slate-400">
                               Detail view
                               <ChevronRight className="h-3.5 w-3.5" />
                             </span>
                           </div>
-                          <h3 className="mt-3 text-xl font-semibold text-slate-950">
+                          <h3 className="mt-3 text-xl font-semibold text-slate-950 dark:text-slate-50">
                             {day.title}
                           </h3>
-                          <p className="mt-2 line-clamp-2 max-w-2xl text-sm leading-6 text-slate-600">
+                          <p className="mt-2 line-clamp-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
                             {day.description}
                           </p>
                         </div>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="px-4 pb-5 pt-0 md:px-6 md:pb-6">
-                      <div className="grid gap-4 rounded-[1.5rem] bg-slate-50 p-4 md:grid-cols-[0.9fr_1.1fr] md:p-5">
-                        <div className="rounded-2xl bg-white p-4">
-                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                      <div className="grid gap-4 rounded-[1.5rem] bg-slate-50 p-4 dark:bg-slate-800/70 md:grid-cols-[0.9fr_1.1fr] md:p-5">
+                        <div className="rounded-2xl bg-white p-4 dark:bg-slate-900">
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                             Route checkpoint
                           </p>
-                          <p className="mt-2 text-lg font-semibold text-slate-900">
+                          <p className="mt-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
                             Day {day.day}: {day.title}
                           </p>
-                          <p className="mt-3 text-sm leading-6 text-slate-600">
+                          <p className="mt-3 text-sm leading-6 text-slate-600 dark:text-slate-300">
                             A thoughtfully sequenced stop inside your overall travel circuit.
                           </p>
                         </div>
-                        <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+                        <div className="rounded-2xl border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
+                          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
                             Experience details
                           </p>
-                          <p className="mt-3 text-sm leading-7 text-slate-700">
+                          <p className="mt-3 text-sm leading-7 text-slate-700 dark:text-slate-200">
                             {day.description}
                           </p>
                         </div>
@@ -414,15 +414,15 @@ export default async function ProductDetailPage({ params }: PageProps) {
           <div className="grid gap-6 md:grid-cols-2">
             <Card
               id="inclusions"
-              className="scroll-mt-[120px] overflow-hidden border-0 bg-white/85 shadow-[0_18px_50px_rgba(15,23,42,0.08)]"
+              className="scroll-mt-[120px] overflow-hidden border-0 bg-white/85 shadow-[0_18px_50px_rgba(15,23,42,0.08)] dark:bg-slate-900/85"
             >
               <CardContent className="p-0">
-                <div className="border-b border-emerald-100 bg-emerald-50 px-6 py-5">
-                  <h2 className="flex items-center gap-2 text-xl font-semibold text-slate-900">
+                <div className="border-b border-emerald-100 bg-emerald-50 px-6 py-5 dark:border-emerald-900/40 dark:bg-emerald-950/30">
+                  <h2 className="flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-slate-100">
                     <Check className="h-5 w-5 text-emerald-600" />
                     Inclusions
                   </h2>
-                  <p className="mt-2 text-sm text-slate-600">
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                     What is already arranged for a smoother premium journey.
                   </p>
                 </div>
@@ -430,24 +430,24 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   {product.inclusions.map((item, i) => (
                     <div
                       key={i}
-                      className="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-3"
+                      className="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 py-3 dark:border-emerald-900/40 dark:bg-emerald-950/20"
                     >
                       <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-                      <span className="text-sm text-slate-700">{item}</span>
+                      <span className="text-sm text-slate-700 dark:text-slate-200">{item}</span>
                     </div>
                   ))}
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="overflow-hidden border-0 bg-white/85 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
+            <Card className="overflow-hidden border-0 bg-white/85 shadow-[0_18px_50px_rgba(15,23,42,0.08)] dark:bg-slate-900/85">
               <CardContent className="p-0">
-                <div className="border-b border-rose-100 bg-rose-50 px-6 py-5">
-                  <h2 className="flex items-center gap-2 text-xl font-semibold text-slate-900">
+                <div className="border-b border-rose-100 bg-rose-50 px-6 py-5 dark:border-rose-900/40 dark:bg-rose-950/20">
+                  <h2 className="flex items-center gap-2 text-xl font-semibold text-slate-900 dark:text-slate-100">
                     <X className="h-5 w-5 text-rose-600" />
                     Exclusions
                   </h2>
-                  <p className="mt-2 text-sm text-slate-600">
+                  <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
                     Items travellers should plan separately before departure.
                   </p>
                 </div>
@@ -455,10 +455,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   {product.exclusions.map((item, i) => (
                     <div
                       key={i}
-                      className="flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50/60 px-4 py-3"
+                      className="flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50/60 px-4 py-3 dark:border-rose-900/40 dark:bg-rose-950/20"
                     >
                       <X className="mt-0.5 h-4 w-4 shrink-0 text-rose-600" />
-                      <span className="text-sm text-slate-700">{item}</span>
+                      <span className="text-sm text-slate-700 dark:text-slate-200">{item}</span>
                     </div>
                   ))}
                 </div>
@@ -469,7 +469,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
           {product.faq?.length > 0 && (
             <Card
               id="faq"
-              className="scroll-mt-[120px] overflow-hidden border-0 bg-white/85 shadow-[0_18px_50px_rgba(15,23,42,0.08)]"
+              className="scroll-mt-[120px] overflow-hidden border-0 bg-white/85 shadow-[0_18px_50px_rgba(15,23,42,0.08)] dark:bg-slate-900/85"
             >
               <CardContent className="p-0">
                 <div className="border-b border-slate-200 bg-slate-950 px-6 py-5 text-white">
@@ -487,12 +487,12 @@ export default async function ProductDetailPage({ params }: PageProps) {
                       <AccordionItem
                         key={i}
                         value={`faq-${i}`}
-                        className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 px-4"
+                        className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 px-4 dark:border-slate-700 dark:bg-slate-800/70"
                       >
-                        <AccordionTrigger className="text-left text-sm font-semibold text-slate-900 hover:no-underline">
+                        <AccordionTrigger className="text-left text-sm font-semibold text-slate-900 hover:no-underline dark:text-slate-100">
                           {item.question}
                         </AccordionTrigger>
-                        <AccordionContent className="text-sm leading-7 text-slate-600">
+                        <AccordionContent className="text-sm leading-7 text-slate-600 dark:text-slate-300">
                           {item.answer}
                         </AccordionContent>
                       </AccordionItem>
@@ -505,7 +505,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
           <Card
             id="expert-help"
-            className="scroll-mt-[120px] overflow-hidden border-0 bg-white/85 shadow-[0_18px_50px_rgba(15,23,42,0.08)]"
+            className="scroll-mt-[120px] overflow-hidden border-0 bg-white/85 shadow-[0_18px_50px_rgba(15,23,42,0.08)] dark:bg-slate-900/85"
           >
             <CardContent className="p-0">
               <div className="border-b border-slate-200 bg-[linear-gradient(135deg,#0f172a,#1e3a8a)] px-6 py-5 text-white">
@@ -526,7 +526,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
         </div>
 
         <aside className="self-start lg:sticky lg:top-[120px]">
-          <Card className="overflow-hidden rounded-[2rem] border-0 bg-white/90 shadow-[0_28px_80px_rgba(15,23,42,0.14)] backdrop-blur">
+          <Card className="overflow-hidden rounded-[2rem] border-0 bg-white/90 shadow-[0_28px_80px_rgba(15,23,42,0.14)] backdrop-blur dark:bg-slate-900/90">
             <CardContent className="flex flex-col p-0">
               <div className="bg-[linear-gradient(135deg,#0f172a,#1d4ed8)] px-5 py-5 text-white">
                 <div className="rounded-[1.25rem] border border-white/15 bg-white/10 p-3">
@@ -553,16 +553,16 @@ export default async function ProductDetailPage({ params }: PageProps) {
               <div className="space-y-4 p-5">
                 <BookingForm product={product} />
 
-                <div className="space-y-2 rounded-[1.25rem] border border-slate-200 bg-slate-50 p-4">
-                  <div className="flex items-center gap-3 text-sm text-slate-700">
+                <div className="space-y-2 rounded-[1.25rem] border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-800/70">
+                  <div className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
                     <Calendar className="h-4 w-4 text-sky-700" />
                     Free cancellation support available
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-slate-700">
+                  <div className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
                     <ShieldCheck className="h-4 w-4 text-emerald-600" />
                     Trip coordination designed for low-friction planning
                   </div>
-                  <div className="flex items-center gap-3 text-sm text-slate-700">
+                  <div className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
                     <Wallet className="h-4 w-4 text-amber-600" />
                     Transparent pricing with visible savings
                   </div>
@@ -578,14 +578,14 @@ export default async function ProductDetailPage({ params }: PageProps) {
           <div className="container mx-auto px-4">
             <div className="mb-6 flex items-end justify-between gap-4">
               <div>
-                <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-700">
+                <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-amber-700 dark:bg-amber-500/15 dark:text-amber-200">
                   <Sparkles className="h-3.5 w-3.5" />
                   Explore More
                 </div>
-                <h2 className="text-2xl font-bold text-slate-900">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                   Check These As Well
                 </h2>
-                <p className="mt-2 text-slate-600">
+                <p className="mt-2 text-slate-600 dark:text-slate-300">
                   More journeys with a similar premium feel across tours, adventure, pilgrimage, and beyond.
                 </p>
               </div>
@@ -605,7 +605,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
                     className="basis-1/2 md:basis-1/2 xl:basis-1/3"
                   >
                     <Link href={`/products/${item.slug}`} className="block h-full">
-                      <Card className="group h-full overflow-hidden border-slate-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                      <Card className="group h-full overflow-hidden border-slate-200 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900/90">
                         <div className="relative aspect-[4/3] overflow-hidden">
                           <Image
                             src={item.heroImage}
@@ -614,20 +614,20 @@ export default async function ProductDetailPage({ params }: PageProps) {
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                           <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/80 to-transparent p-4">
-                            <Badge className="bg-white/90 text-slate-900 hover:bg-white">
+                            <Badge className="bg-white/90 text-slate-900 hover:bg-white dark:bg-slate-100 dark:text-slate-950">
                               {item.category.replace(/-/g, ' ')}
                             </Badge>
                           </div>
                         </div>
                         <CardContent className="p-3 md:p-5">
-                          <div className="mb-2 flex items-center gap-2 text-xs text-slate-500 md:text-sm">
+                          <div className="mb-2 flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 md:text-sm">
                             <MapPin className="h-4 w-4" />
                             <span>{item.location}</span>
                           </div>
-                          <h3 className="line-clamp-2 text-sm font-semibold text-slate-900 transition-colors group-hover:text-blue-600 md:text-lg">
+                          <h3 className="line-clamp-2 text-sm font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-sky-300 md:text-lg">
                             {item.title}
                           </h3>
-                          <div className="mt-3 flex items-center gap-3 text-xs text-slate-500 md:text-sm">
+                          <div className="mt-3 flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400 md:text-sm">
                             <span className="inline-flex items-center gap-1">
                               <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
                               {item.rating}
@@ -639,11 +639,11 @@ export default async function ProductDetailPage({ params }: PageProps) {
                               <p className="text-sm font-bold text-blue-600 md:text-xl">
                                 Rs.{item.price.toLocaleString()}
                               </p>
-                              <p className="text-[11px] text-slate-400 line-through md:text-sm">
+                              <p className="text-[11px] text-slate-400 line-through dark:text-slate-500 md:text-sm">
                                 Rs.{item.originalPrice.toLocaleString()}
                               </p>
                             </div>
-                            <span className="hidden text-sm font-medium text-slate-600 md:inline">
+                            <span className="hidden text-sm font-medium text-slate-600 dark:text-slate-300 md:inline">
                               {item.groupSize}
                             </span>
                           </div>
@@ -653,8 +653,8 @@ export default async function ProductDetailPage({ params }: PageProps) {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="left-0 border-slate-300 bg-white" />
-              <CarouselNext className="right-0 border-slate-300 bg-white" />
+              <CarouselPrevious className="left-0 border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100" />
+              <CarouselNext className="right-0 border-slate-300 bg-white dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100" />
             </Carousel>
           </div>
         </section>

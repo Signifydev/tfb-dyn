@@ -236,23 +236,23 @@ export function BookingForm({ product }: BookingFormProps) {
             </div>
           </div>
 
-          <div className="space-y-2 rounded-xl bg-slate-50 p-4">
+          <div className="space-y-2 rounded-xl bg-slate-50 p-4 dark:bg-slate-800/70">
             <div className="flex justify-between text-sm">
-              <span className="text-slate-600">Price per person</span>
+              <span className="text-slate-600 dark:text-slate-300">Price per person</span>
               <span className="font-medium">{formattedPrice}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-600">Travellers</span>
+              <span className="text-slate-600 dark:text-slate-300">Travellers</span>
               <span className="font-medium">x {travellers}</span>
             </div>
-            <div className="flex justify-between border-t border-slate-200 pt-2 font-semibold">
+            <div className="flex justify-between border-t border-slate-200 pt-2 font-semibold dark:border-slate-700">
               <span>Total Price</span>
               <span className="text-blue-600">{formattedTotalPrice}</span>
             </div>
           </div>
         </div>
 
-        <div className="mt-4 grid grid-cols-1 gap-2 border-t border-slate-200 pt-4 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-2 border-t border-slate-200 pt-4 dark:border-slate-700 sm:grid-cols-2">
           <Button onClick={handleBookNowClick} className="w-full" size="lg">
             Book Now
           </Button>
@@ -267,18 +267,18 @@ export function BookingForm({ product }: BookingFormProps) {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={resetFlow}>
-        <DialogContent className="max-h-[92vh] max-w-5xl overflow-hidden border-0 bg-white p-0 shadow-[0_40px_120px_rgba(15,23,42,0.22)] sm:rounded-[2rem]">
-          <div className="grid lg:grid-cols-[1.25fr_0.75fr]">
-            <div className="p-5 md:p-8">
+        <DialogContent className="max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] max-w-5xl overflow-y-auto rounded-[1.5rem] border-0 bg-white p-0 shadow-[0_40px_120px_rgba(15,23,42,0.22)] dark:bg-slate-950 dark:text-slate-100 sm:max-h-[92vh] sm:w-full sm:rounded-[2rem] lg:overflow-hidden">
+          <div className="grid gap-0 py-4 sm:py-0 lg:grid-cols-[1.25fr_0.75fr]">
+            <div className="px-5 pb-6 pt-4 md:p-8">
               <DialogHeader className="text-left">
-                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">
+                <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   Step {step} of 2
                 </div>
-                <DialogTitle className="text-2xl text-slate-950 md:text-3xl">
+                <DialogTitle className="text-2xl text-slate-950 dark:text-slate-50 md:text-3xl">
                   {step === 1 ? 'Tell us who is booking' : 'Confirm your package details'}
                 </DialogTitle>
-                <DialogDescription className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
+                <DialogDescription className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
                   {step === 1
                     ? 'We will save these details for quick follow-up and use them to pre-fill your booking journey.'
                     : 'Review the itinerary selection below. Once confirmed, we will save your lead and move you to the booking login or checkout flow.'}
@@ -329,7 +329,7 @@ export function BookingForm({ product }: BookingFormProps) {
                       <Label htmlFor="booking-travel-date">Selected Travel Date</Label>
                       <div
                         id="booking-travel-date"
-                        className="flex h-10 items-center rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700"
+                        className="flex h-10 items-center rounded-md border border-slate-200 bg-slate-50 px-3 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                       >
                         {travelDate ? format(travelDate, 'PPP') : 'Not selected yet'}
                       </div>
@@ -347,7 +347,7 @@ export function BookingForm({ product }: BookingFormProps) {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:justify-end">
+                  <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 dark:border-slate-700 sm:flex-row sm:justify-end">
                     <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                       Close
                     </Button>
@@ -359,22 +359,22 @@ export function BookingForm({ product }: BookingFormProps) {
                 </div>
               ) : (
                 <div className="mt-6 space-y-5">
-                  <div className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-[linear-gradient(180deg,#f8fbff_0%,#f1f5f9_100%)]">
-                    <div className="border-b border-slate-200 px-5 py-4">
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700">
+                  <div className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-[linear-gradient(180deg,#f8fbff_0%,#f1f5f9_100%)] dark:border-slate-700 dark:bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)]">
+                    <div className="border-b border-slate-200 px-5 py-4 dark:border-slate-700">
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-sky-700 dark:text-sky-300">
                         Selected Itinerary
                       </p>
-                      <h3 className="mt-2 text-xl font-semibold text-slate-950">
+                      <h3 className="mt-2 text-xl font-semibold text-slate-950 dark:text-slate-50">
                         {product.title}
                       </h3>
                     </div>
                     <div className="grid gap-4 p-5 md:grid-cols-2">
-                      <div className="space-y-3 rounded-2xl bg-white p-4 shadow-sm">
-                        <div className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                      <div className="space-y-3 rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-900">
+                        <div className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-200">
                           <CalendarDays className="h-4 w-4 text-sky-700" />
                           Trip details
                         </div>
-                        <div className="space-y-2 text-sm text-slate-600">
+                        <div className="space-y-2 text-sm text-slate-600 dark:text-slate-300">
                           <p>Duration: {product.duration}</p>
                           <p>Location: {product.location}</p>
                           <p>Group size: {product.groupSize}</p>
@@ -399,7 +399,7 @@ export function BookingForm({ product }: BookingFormProps) {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 sm:flex-row sm:justify-between">
+                  <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 dark:border-slate-700 sm:flex-row sm:justify-between">
                     <Button variant="outline" onClick={handleBackStep}>
                       Back
                     </Button>
@@ -421,7 +421,7 @@ export function BookingForm({ product }: BookingFormProps) {
               )}
             </div>
 
-            <div className="border-t border-slate-200 bg-slate-950 p-5 text-white lg:border-l lg:border-t-0 md:p-8">
+            <div className="border-t border-slate-200 bg-slate-950 px-5 pb-6 pt-5 text-white lg:border-l lg:border-t-0 md:p-8">
               <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200">
                   Booking Access
