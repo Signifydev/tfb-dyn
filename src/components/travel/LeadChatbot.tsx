@@ -175,6 +175,52 @@ const travellerLabels: Record<TravellerSize, string> = {
 
 const allProducts = getAllProducts();
 
+function normalizeStoredIntent(value: unknown): TravelCategory | null {
+  switch (value) {
+    case 'tour-packages':
+    case 'adventure-activities':
+    case 'trekking-camps':
+    case 'bike-expeditions':
+    case 'char-dham':
+    case 'helicopter-services':
+    case 'mice':
+    case 'custom-trip':
+      return value;
+    case 'tour-package':
+      return 'tour-packages';
+    case 'adventure':
+      return 'adventure-activities';
+    case 'pilgrimage':
+      return 'char-dham';
+    default:
+      return null;
+  }
+}
+
+function normalizeStoredTraveller(value: unknown): TravellerSize | null {
+  switch (value) {
+    case 'solo':
+    case 'couple':
+    case 'family':
+    case 'group':
+      return value;
+    default:
+      return null;
+  }
+}
+
+function normalizeStoredTravelWindow(value: unknown): TravelWindow | null {
+  switch (value) {
+    case 'this-month':
+    case 'next-month':
+    case 'next-3-months':
+    case 'just-exploring':
+      return value;
+    default:
+      return null;
+  }
+}
+
 function getTravellerLabel(category: TravelCategory | null, traveller: TravellerSize): string {
   if (category === 'mice') {
     return {
@@ -256,6 +302,9 @@ function readStoredMemory(): ChatMemory {
       lead: {
         ...initialLeadState,
         ...(parsed.lead ?? {}),
+        intent: normalizeStoredIntent(parsed.lead?.intent),
+        travelWindow: normalizeStoredTravelWindow(parsed.lead?.travelWindow),
+        travellers: normalizeStoredTraveller(parsed.lead?.travellers),
       },
     };
   } catch {
