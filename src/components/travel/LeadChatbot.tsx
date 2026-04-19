@@ -31,7 +31,8 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { getAllProducts } from '@/lib/products';
+import { fetchAllProducts } from '@/lib/api/products-client';
+import type { Product } from '@/lib/products';
 
 type TravelCategory =
   | 'tour-packages'
@@ -172,8 +173,6 @@ const travellerLabels: Record<TravellerSize, string> = {
   'family': 'Family',
   'group': 'Group',
 };
-
-const allProducts = getAllProducts();
 
 function normalizeStoredIntent(value: unknown): TravelCategory | null {
   switch (value) {
@@ -368,6 +367,7 @@ export function LeadChatbot() {
   const [hasUnreadMessage, setHasUnreadMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [justSubmitted, setJustSubmitted] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const memory = readStoredMemory();
@@ -376,6 +376,27 @@ export function LeadChatbot() {
     setHasSubmitted(memory.hasSubmitted);
     setLastAssistantMessage(memory.lastAssistantMessage);
     setHydrated(true);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    void fetchAllProducts()
+      .then((items) => {
+        if (active) {
+          setProducts(items);
+        }
+      })
+      .catch((error) => {
+        console.error('Error loading chatbot recommendations:', error);
+        if (active) {
+          setProducts([]);
+        }
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -565,7 +586,7 @@ export function LeadChatbot() {
     const selectedCategory = lead.intent === 'custom-trip' ? null : lead.intent;
     const query = lead.destination.trim().toLowerCase();
 
-    const scored = allProducts.map((product) => {
+    const scored = products.map((product) => {
       let score = 0;
 
       if (selectedCategory && product.category === selectedCategory) {
@@ -613,18 +634,8 @@ export function LeadChatbot() {
       .slice(0, 3)
       .map(({ product }) => product);
 
-    if (primaryMatches.length >= 3) {
-      return primaryMatches;
-    }
-
-    const existingSlugs = new Set(primaryMatches.map((product) => product.slug));
-    const fallbackMatches = allProducts
-      .filter((product) => !existingSlugs.has(product.slug))
-      .sort((a, b) => Number(b.featured) - Number(a.featured) || b.rating - a.rating)
-      .slice(0, 3 - primaryMatches.length);
-
-    return [...primaryMatches, ...fallbackMatches];
-  }, [lead.destination, lead.intent, lead.travelWindow, lead.travellers]);
+    return primaryMatches;
+  }, [lead.destination, lead.intent, lead.travelWindow, lead.travellers, products]);
 
   const summaryLine = useMemo(() => {
     if (!lead.intent && !lead.destination && !lead.travelWindow && !lead.travellers) {
@@ -1258,6 +1269,7 @@ export function LeadChatbot() {
                         <Link
                           key={product.slug}
                           href={`/products/${product.slug}`}
+                          onClick={() => closeAssistant(false)}
                           className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition hover:border-sky-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-sky-500"
                         >
                           <div className="flex gap-3">
