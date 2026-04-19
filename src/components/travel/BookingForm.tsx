@@ -306,9 +306,9 @@ export function BookingForm({ product }: BookingFormProps) {
       </div>
 
       <Dialog open={isDialogOpen} onOpenChange={resetFlow}>
-        <DialogContent className="max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] max-w-5xl overflow-y-auto rounded-[1.5rem] border-0 bg-white p-0 shadow-[0_40px_120px_rgba(15,23,42,0.22)] dark:bg-slate-950 dark:text-slate-100 sm:max-h-[92vh] sm:w-full sm:rounded-[2rem] lg:overflow-hidden">
-          <div className="grid gap-0 py-4 sm:py-0 lg:grid-cols-[1.25fr_0.75fr]">
-            <div className="px-5 pb-6 pt-4 md:p-8">
+        <DialogContent className="max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] max-w-5xl overflow-hidden rounded-[1.5rem] border-0 bg-white p-0 shadow-[0_40px_120px_rgba(15,23,42,0.22)] dark:bg-slate-950 dark:text-slate-100 sm:max-h-[92vh] sm:w-full sm:rounded-[2rem]">
+          <div className="grid max-h-[92vh] gap-0 py-4 sm:py-0 lg:grid-cols-[1.25fr_0.75fr]">
+            <div className="overflow-y-auto px-5 pb-6 pt-4 md:p-8">
               <DialogHeader className="text-left">
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
                   <CheckCircle2 className="h-3.5 w-3.5" />
@@ -396,7 +396,7 @@ export function BookingForm({ product }: BookingFormProps) {
                     />
                   </div>
 
-                  <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 dark:border-slate-700 sm:flex-row sm:justify-end">
+                  <div className="sticky bottom-0 -mx-5 flex flex-col gap-3 border-t border-slate-200 bg-white px-5 pt-4 dark:border-slate-700 dark:bg-slate-950 sm:flex-row sm:justify-end md:-mx-8 md:px-8">
                     <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                       Close
                     </Button>
@@ -448,7 +448,7 @@ export function BookingForm({ product }: BookingFormProps) {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 dark:border-slate-700 sm:flex-row sm:justify-between">
+                  <div className="sticky bottom-0 -mx-5 flex flex-col gap-3 border-t border-slate-200 bg-white px-5 pt-4 dark:border-slate-700 dark:bg-slate-950 sm:flex-row sm:justify-between md:-mx-8 md:px-8">
                     <Button variant="outline" onClick={handleBackStep}>
                       Back
                     </Button>
@@ -493,7 +493,7 @@ export function BookingForm({ product }: BookingFormProps) {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 dark:border-slate-700 sm:flex-row sm:justify-between">
+                  <div className="sticky bottom-0 -mx-5 flex flex-col gap-3 border-t border-slate-200 bg-white px-5 pt-4 dark:border-slate-700 dark:bg-slate-950 sm:flex-row sm:justify-between md:-mx-8 md:px-8">
                     <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                       Close
                     </Button>
@@ -506,7 +506,7 @@ export function BookingForm({ product }: BookingFormProps) {
               )}
             </div>
 
-            <div className="border-t border-slate-200 bg-slate-950 px-5 pb-6 pt-5 text-white lg:border-l lg:border-t-0 md:p-8">
+            <div className="overflow-y-auto border-t border-slate-200 bg-slate-950 px-5 pb-6 pt-5 text-white lg:border-l lg:border-t-0 md:p-8">
               <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200">
                   {user ? 'Booking Support' : 'Booking Access'}
