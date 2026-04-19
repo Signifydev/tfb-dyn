@@ -209,9 +209,9 @@ export function PromoPopup() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] max-w-3xl overflow-y-auto rounded-[1.5rem] border border-slate-200/70 bg-white p-0 text-slate-950 shadow-[0_40px_120px_rgba(15,23,42,0.24)] dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50 sm:max-h-[92vh] sm:w-full sm:rounded-[2rem] md:overflow-hidden [&>button]:right-3 [&>button]:top-3 [&>button]:rounded-full [&>button]:border [&>button]:border-white/40 [&>button]:bg-slate-950/75 [&>button]:p-1.5 [&>button]:text-white [&>button]:opacity-100 [&>button]:backdrop-blur [&>button]:hover:bg-slate-950 [&>button]:focus:ring-sky-400 dark:[&>button]:border-slate-700 dark:[&>button]:bg-slate-900/90 dark:[&>button]:text-slate-100 dark:[&>button]:hover:bg-slate-800">
+      <DialogContent className="max-h-[calc(100dvh-1.5rem)] w-[calc(100vw-1.5rem)] max-w-3xl overflow-y-auto rounded-[1.5rem] border border-slate-200/70 bg-white p-0 text-slate-950 shadow-[0_40px_120px_rgba(15,23,42,0.24)] dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50 sm:max-h-[92vh] sm:w-full sm:rounded-[2rem] md:max-w-4xl md:overflow-y-auto [&>button]:right-3 [&>button]:top-3 [&>button]:rounded-full [&>button]:border [&>button]:border-white/40 [&>button]:bg-slate-950/75 [&>button]:p-1.5 [&>button]:text-white [&>button]:opacity-100 [&>button]:backdrop-blur [&>button]:hover:bg-slate-950 [&>button]:focus:ring-sky-400 dark:[&>button]:border-slate-700 dark:[&>button]:bg-slate-900/90 dark:[&>button]:text-slate-100 dark:[&>button]:hover:bg-slate-800">
         {promo && (
-          <div className="grid gap-0 py-4 sm:py-0 md:grid-cols-[1.02fr_0.98fr]">
+          <div className="grid gap-0 py-4 sm:py-0 md:grid-cols-[0.9fr_1.1fr]">
             <div className="relative mx-4 min-h-[220px] overflow-hidden rounded-[1.5rem] md:mx-0 md:min-h-[100%] md:rounded-none">
               <Image
                 src={promo.image}
@@ -237,13 +237,13 @@ export function PromoPopup() {
               </div>
             </div>
 
-            <div className="bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] px-5 pb-6 pt-5 text-slate-950 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] dark:text-slate-50 md:p-8">
+            <div className="bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_100%)] px-5 pb-6 pt-5 text-slate-950 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] dark:text-slate-50 md:px-8 md:pb-8 md:pt-7">
               <DialogHeader className="text-left">
                 <div className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
                   <Sparkles className="h-3.5 w-3.5" />
                   {promo.categoryLabel}
                 </div>
-                <DialogTitle className="mt-4 pr-8 text-2xl font-semibold leading-tight text-slate-950 dark:text-slate-50 sm:text-3xl">
+                <DialogTitle className="mt-4 pr-10 text-2xl font-semibold leading-tight text-slate-950 dark:text-slate-50 lg:text-[2rem]">
                   {promo.title}
                 </DialogTitle>
                 <DialogDescription className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">

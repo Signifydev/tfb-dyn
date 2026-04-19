@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
@@ -49,11 +49,11 @@ const EXPERT_PHONE_HREF = 'tel:+916398522735';
 
 export function BookingForm({ product }: BookingFormProps) {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [travellers, setTravellers] = useState(1);
   const [travelDate, setTravelDate] = useState<Date | undefined>(undefined);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
   const [leadForm, setLeadForm] = useState<LeadFormState>({
     name: '',
     email: '',
@@ -81,6 +81,19 @@ export function BookingForm({ product }: BookingFormProps) {
 
   const loginHref = `/login?redirect=${encodeURIComponent(checkoutHref)}`;
   const signupHref = `/signup?redirect=${encodeURIComponent(checkoutHref)}`;
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    setLeadForm((current) => ({
+      ...current,
+      name: current.name || (user.user_metadata?.full_name as string | undefined) || '',
+      email: current.email || user.email || '',
+      phone: current.phone || (user.user_metadata?.phone as string | undefined) || '',
+    }));
+  }, [user]);
 
   const resetFlow = (open: boolean) => {
     setIsDialogOpen(open);
@@ -126,53 +139,79 @@ export function BookingForm({ product }: BookingFormProps) {
     setIsSubmitting(true);
 
     try {
-      const followUpMessage = [
-        `Booking lead for: ${product.title}`,
-        `Package slug: ${product.slug}`,
-        `Travel date: ${travelDate ? format(travelDate, 'PPP') : 'Not selected yet'}`,
-        `Travellers: ${travellers}`,
-        `Total package value: ${formattedTotalPrice}`,
-        leadForm.notes.trim() ? `Customer notes: ${leadForm.notes.trim()}` : '',
-      ]
-        .filter(Boolean)
-        .join('\n');
+      const travelDateLabel = travelDate ? format(travelDate, 'PPP') : 'Not selected yet';
+      const requestBody = {
+        product_slug: product.slug,
+        travel_date: travelDate ? travelDate.toISOString() : new Date().toISOString(),
+        travellers,
+        total_price: totalPrice,
+        customer_name: leadForm.name.trim(),
+        customer_email: leadForm.email.trim(),
+        customer_phone: leadForm.phone.trim(),
+        special_requests: leadForm.notes.trim() || null,
+      };
 
-      const response = await fetch('/api/contact', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: leadForm.name.trim(),
-          email: leadForm.email.trim(),
-          phone: leadForm.phone.trim(),
-          message: followUpMessage,
-          product_slug: product.slug,
-          booking_details: {
-            package_title: product.title,
-            package_slug: product.slug,
-            travel_date: travelDate ? format(travelDate, 'PPP') : 'Not selected yet',
-            travellers,
-            total_price: formattedTotalPrice,
-            location: product.location,
-            duration: product.duration,
-          },
-        }),
-      });
+      const response = user && session?.access_token
+        ? await fetch('/api/bookings', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify(requestBody),
+          })
+        : await fetch('/api/contact', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              name: leadForm.name.trim(),
+              email: leadForm.email.trim(),
+              phone: leadForm.phone.trim(),
+              message: [
+                `Booking lead for: ${product.title}`,
+                `Package slug: ${product.slug}`,
+                `Travel date: ${travelDateLabel}`,
+                `Travellers: ${travellers}`,
+                `Total package value: ${formattedTotalPrice}`,
+                leadForm.notes.trim() ? `Customer notes: ${leadForm.notes.trim()}` : '',
+              ]
+                .filter(Boolean)
+                .join('\n'),
+              product_slug: product.slug,
+              booking_details: {
+                package_title: product.title,
+                package_slug: product.slug,
+                travel_date: travelDateLabel,
+                travellers,
+                total_price: formattedTotalPrice,
+                location: product.location,
+                duration: product.duration,
+              },
+            }),
+          });
 
       const payload = await response.json();
 
       if (!response.ok) {
-        throw new Error(payload.error || 'Failed to save booking enquiry.');
+        throw new Error(
+          payload.error ||
+            (user ? 'Failed to save your booking request.' : 'Failed to save booking enquiry.')
+        );
       }
 
-      setIsDialogOpen(false);
-      router.push(user ? checkoutHref : loginHref);
+      if (user) {
+        setStep(3);
+      } else {
+        setIsDialogOpen(false);
+        router.push(loginHref);
+      }
     } catch (submissionError) {
       setError(
         submissionError instanceof Error
           ? submissionError.message
-          : 'Something went wrong while saving your booking enquiry.'
+          : 'Something went wrong while saving your booking request.'
       );
     } finally {
       setIsSubmitting(false);
@@ -273,15 +312,25 @@ export function BookingForm({ product }: BookingFormProps) {
               <DialogHeader className="text-left">
                 <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
                   <CheckCircle2 className="h-3.5 w-3.5" />
-                  Step {step} of 2
+                  {step === 3 ? 'Request Submitted' : `Step ${step} of 2`}
                 </div>
                 <DialogTitle className="text-2xl text-slate-950 dark:text-slate-50 md:text-3xl">
-                  {step === 1 ? 'Tell us who is booking' : 'Confirm your package details'}
+                  {step === 1
+                    ? 'Tell us who is booking'
+                    : step === 2
+                      ? user
+                        ? 'Confirm your booking request'
+                        : 'Confirm your package details'
+                      : 'Our team will connect with you within 24 hours'}
                 </DialogTitle>
                 <DialogDescription className="mt-2 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-300">
                   {step === 1
                     ? 'We will save these details for quick follow-up and use them to pre-fill your booking journey.'
-                    : 'Review the itinerary selection below. Once confirmed, we will save your lead and move you to the booking login or checkout flow.'}
+                    : step === 2
+                      ? user
+                        ? 'Review your travel details and send the booking request. Our team will confirm the next steps personally.'
+                        : 'Review the itinerary selection below. Once confirmed, we will save your lead and move you to the booking login or checkout flow.'
+                      : 'Your request is now logged in our system. We will review it and reach out with the next steps.'}
                 </DialogDescription>
               </DialogHeader>
 
@@ -357,7 +406,7 @@ export function BookingForm({ product }: BookingFormProps) {
                     </Button>
                   </div>
                 </div>
-              ) : (
+              ) : step === 2 ? (
                 <div className="mt-6 space-y-5">
                   <div className="overflow-hidden rounded-[1.75rem] border border-slate-200 bg-[linear-gradient(180deg,#f8fbff_0%,#f1f5f9_100%)] dark:border-slate-700 dark:bg-[linear-gradient(180deg,#0f172a_0%,#111827_100%)]">
                     <div className="border-b border-slate-200 px-5 py-4 dark:border-slate-700">
@@ -407,14 +456,50 @@ export function BookingForm({ product }: BookingFormProps) {
                       {isSubmitting ? (
                         <>
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Saving and continuing
+                          {user ? 'Sending request' : 'Saving and continuing'}
                         </>
                       ) : (
                         <>
-                          Confirm and Continue
+                          {user ? 'Book Now' : 'Confirm and Continue'}
                           <ArrowRight className="ml-2 h-4 w-4" />
                         </>
                       )}
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-6 space-y-5">
+                  <div className="rounded-[1.75rem] border border-emerald-200 bg-emerald-50 p-6 dark:border-emerald-900/40 dark:bg-emerald-950/20">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-emerald-600 shadow-sm dark:bg-slate-900 dark:text-emerald-300">
+                      <CheckCircle2 className="h-7 w-7" />
+                    </div>
+                    <h3 className="mt-4 text-xl font-semibold text-emerald-900 dark:text-emerald-100">
+                      Booking request received
+                    </h3>
+                    <p className="mt-3 text-sm leading-7 text-emerald-800 dark:text-emerald-200">
+                      Our team will connect to you within 24 hours to confirm availability, discuss the plan, and help you with the next steps.
+                    </p>
+                  </div>
+
+                  <div className="rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-900/80">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                      Your request summary
+                    </p>
+                    <div className="mt-3 space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                      <p>Package: {product.title}</p>
+                      <p>Travel date: {travelDate ? format(travelDate, 'PPP') : 'To be confirmed'}</p>
+                      <p>Travellers: {travellers}</p>
+                      <p>Contact: {leadForm.name} • {leadForm.phone}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 dark:border-slate-700 sm:flex-row sm:justify-between">
+                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                      Close
+                    </Button>
+                    <Button onClick={() => router.push('/account/bookings')}>
+                      View My Bookings
+                      <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </div>
                 </div>
@@ -424,27 +509,33 @@ export function BookingForm({ product }: BookingFormProps) {
             <div className="border-t border-slate-200 bg-slate-950 px-5 pb-6 pt-5 text-white lg:border-l lg:border-t-0 md:p-8">
               <div className="rounded-[1.75rem] border border-white/10 bg-white/5 p-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-sky-200">
-                  Booking Access
+                  {user ? 'Booking Support' : 'Booking Access'}
                 </p>
                 <h3 className="mt-3 text-2xl font-semibold">
-                  Log in or sign up to complete this itinerary booking
+                  {user
+                    ? 'Your request will be handled directly by our team'
+                    : 'Log in or sign up to complete this itinerary booking'}
                 </h3>
                 <p className="mt-3 text-sm leading-6 text-slate-300">
-                  Your selected package, traveller count, and travel date will carry into the booking flow automatically.
+                  {user
+                    ? 'Share your preferred date, group size, and any travel notes. We will review the request and reach out within 24 hours.'
+                    : 'Your selected package, traveller count, and travel date will carry into the booking flow automatically.'}
                 </p>
 
-                <div className="mt-6 space-y-3">
-                  <Link href={loginHref} className="block">
-                    <Button className="w-full bg-white text-slate-950 hover:bg-slate-100">
-                      Log In to Continue
-                    </Button>
-                  </Link>
-                  <Link href={signupHref} className="block">
-                    <Button variant="outline" className="w-full border-white/20 bg-white/5 text-white hover:bg-white/10">
-                      Sign Up for Booking
-                    </Button>
-                  </Link>
-                </div>
+                {!user && (
+                  <div className="mt-6 space-y-3">
+                    <Link href={loginHref} className="block">
+                      <Button className="w-full bg-white text-slate-950 hover:bg-slate-100">
+                        Log In to Continue
+                      </Button>
+                    </Link>
+                    <Link href={signupHref} className="block">
+                      <Button variant="outline" className="w-full border-white/20 bg-white/5 text-white hover:bg-white/10">
+                        Sign Up for Booking
+                      </Button>
+                    </Link>
+                  </div>
+                )}
 
                 <div className="mt-6 rounded-2xl border border-white/10 bg-slate-900/80 p-4">
                   <div className="flex items-center gap-3">

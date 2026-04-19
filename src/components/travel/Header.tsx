@@ -108,9 +108,6 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
                 <span>Wishlist</span>
                 {wishlistCount > 0 && <Badge>{wishlistCount}</Badge>}
               </Link>
-              <Link href="/staff-login-a7f3k" className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
-                Admin
-              </Link>
               <button
                 onClick={signOut}
                 className="w-full rounded-xl px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50"
