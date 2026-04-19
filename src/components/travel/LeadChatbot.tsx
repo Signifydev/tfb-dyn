@@ -368,6 +368,7 @@ export function LeadChatbot() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [justSubmitted, setJustSubmitted] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
+  const isDesktop = !isMobile;
 
   useEffect(() => {
     const memory = readStoredMemory();
@@ -844,14 +845,24 @@ export function LeadChatbot() {
     return bubbles;
   }, [hasSubmitted, lastAssistantMessage, lead.destination, lead.name]);
 
+  const desktopLauncherPosition = isDesktop ? 'bottom-6 right-6' : 'bottom-4 right-4 sm:bottom-6 sm:right-6';
+  const desktopTeaserWidth = isDesktop ? 'max-w-[320px]' : 'max-w-[280px]';
+  const categoryGridClassName = isDesktop ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-2 gap-3 lg:grid-cols-3';
+  const categoryCardClassName = isDesktop
+    ? 'group min-h-[132px] rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10'
+    : 'rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10';
+  const desktopChatboxClassName = isDesktop
+    ? '!inset-auto !bottom-24 !right-6 !top-auto h-[640px] w-[380px] rounded-2xl border border-slate-200/80 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_22%,#f8fafc_100%)] px-0 pb-0 pt-0 text-slate-950 shadow-[0_28px_70px_rgba(15,23,42,0.22)] dark:border-slate-700/80 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_28%,#111827_100%)] dark:text-slate-50'
+    : 'h-[88dvh] rounded-t-[1.75rem] border-0 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_22%,#f8fafc_100%)] px-0 pb-0 pt-0 text-slate-950 shadow-[0_30px_80px_rgba(15,23,42,0.24)] dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_28%,#111827_100%)] dark:text-slate-50 sm:h-full sm:max-w-[450px] sm:rounded-none';
+
   return (
     <>
-      <div className="fixed bottom-4 right-4 z-40 flex max-w-[calc(100vw-2rem)] flex-col items-end gap-3 sm:bottom-6 sm:right-6">
+      <div className={`fixed z-40 flex max-w-[calc(100vw-2rem)] flex-col items-end gap-3 ${desktopLauncherPosition}`}>
         {teaserVisible && !open && (
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="animate-in fade-in-0 slide-in-from-bottom-3 max-w-[280px] rounded-2xl border border-sky-200 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
+            className={`animate-in fade-in-0 slide-in-from-bottom-3 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 ${desktopTeaserWidth}`}
           >
             <div className="flex items-center gap-2">
               <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
@@ -895,7 +906,8 @@ export function LeadChatbot() {
       <Sheet open={open} onOpenChange={handleOpenChange}>
         <SheetContent
           side={isMobile ? 'bottom' : 'right'}
-          className="h-[88dvh] overflow-y-auto rounded-t-[1.75rem] border-0 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_22%,#f8fafc_100%)] px-0 pb-0 pt-0 text-slate-950 shadow-[0_30px_80px_rgba(15,23,42,0.24)] dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_28%,#111827_100%)] dark:text-slate-50 sm:h-full sm:max-w-[450px] sm:rounded-none [&>button]:hidden"
+          overlayClassName={isDesktop ? 'hidden' : undefined}
+          className={`${desktopChatboxClassName} overflow-y-auto [&>button]:hidden`}
         >
           <div className="sticky top-0 z-10 border-b border-slate-200/80 bg-white/90 px-5 pb-4 pt-5 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
             <SheetHeader className="text-left">
@@ -1003,7 +1015,7 @@ export function LeadChatbot() {
                         Start smart chat
                         <ArrowRight className="h-4 w-4" />
                       </Button>
-                      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                      <div className={categoryGridClassName}>
                         {intentOptions.map((option) => {
                           const Icon = categoryIcons[option.value];
 
@@ -1015,10 +1027,10 @@ export function LeadChatbot() {
                               beginConversation();
                               handleIntentSelect(option.value);
                             }}
-                            className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10"
+                            className={categoryCardClassName}
                           >
-                            <div className="flex items-start gap-2.5">
-                              <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
+                            <div className={`flex h-full ${isDesktop ? 'flex-col gap-3' : 'items-start gap-2.5'}`}>
+                              <span className={`${isDesktop ? 'inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200' : 'mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200'}`}>
                                 <Icon className="h-4 w-4" />
                               </span>
                               <div className="min-w-0">
@@ -1044,7 +1056,7 @@ export function LeadChatbot() {
                   <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
                     What are you planning right now?
                   </p>
-                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                  <div className={categoryGridClassName}>
                     {intentOptions.map((option) => {
                       const Icon = categoryIcons[option.value];
 
@@ -1053,10 +1065,10 @@ export function LeadChatbot() {
                         key={option.value}
                         type="button"
                         onClick={() => handleIntentSelect(option.value)}
-                        className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10"
+                        className={categoryCardClassName}
                       >
-                        <div className="flex items-start gap-2.5">
-                          <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
+                        <div className={`flex h-full ${isDesktop ? 'flex-col gap-3' : 'items-start gap-2.5'}`}>
+                          <span className={`${isDesktop ? 'inline-flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200' : 'mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200'}`}>
                             <Icon className="h-4 w-4" />
                           </span>
                           <div className="min-w-0">
