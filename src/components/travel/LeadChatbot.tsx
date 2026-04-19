@@ -61,7 +61,7 @@ const DISMISS_KEY = 'tfb-chatbot-dismissed-at';
 const ROUTE_PROMPT_KEY = 'tfb-chatbot-last-route';
 const CHAT_MEMORY_KEY = 'tfb-chatbot-memory';
 const CHAT_OPEN_KEY = 'tfb-chatbot-open';
-const NOTIFICATION_SHOWN_KEY = 'tfb-chatbot-notification-shown';
+const NOTIFICATION_SHOWN_KEY = 'tfb-chatbot-notification-shown-v2';
 
 const intentOptions: Array<QuickOption<TravelIntent>> = [
   {
@@ -279,7 +279,7 @@ export function LeadChatbot() {
     const memory = readStoredMemory();
     const lastRoute = window.sessionStorage.getItem(ROUTE_PROMPT_KEY);
     const openDelay = lastRoute && lastRoute !== pathname ? REOPEN_DELAY_MS : AUTO_OPEN_DELAY_MS;
-    const hasShownNotification = window.localStorage.getItem(NOTIFICATION_SHOWN_KEY) === 'true';
+    const hasShownNotification = window.sessionStorage.getItem(NOTIFICATION_SHOWN_KEY) === 'true';
 
     const teaserTimer = hasShownNotification
       ? null
@@ -293,7 +293,7 @@ export function LeadChatbot() {
           }
           setTeaserVisible(true);
           setHasUnreadMessage(true);
-          window.localStorage.setItem(NOTIFICATION_SHOWN_KEY, 'true');
+          window.sessionStorage.setItem(NOTIFICATION_SHOWN_KEY, 'true');
         }, TEASER_DELAY_MS);
 
     const openTimer = window.setTimeout(() => {
@@ -521,7 +521,7 @@ export function LeadChatbot() {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="max-w-[280px] rounded-2xl border border-sky-200 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
+            className="animate-in fade-in-0 slide-in-from-bottom-3 max-w-[280px] rounded-2xl border border-sky-200 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
           >
             <div className="flex items-center gap-2">
               <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
@@ -540,16 +540,19 @@ export function LeadChatbot() {
           type="button"
           size="icon"
           onClick={() => setOpen(true)}
-          className="group relative h-16 w-16 rounded-full border border-white/20 bg-[linear-gradient(135deg,#0f172a,#2563eb)] p-0 text-white shadow-[0_20px_45px_rgba(37,99,235,0.35)] hover:opacity-95 dark:border-slate-800 dark:bg-[linear-gradient(135deg,#020617,#1d4ed8)]"
+          className={`group relative h-16 w-16 rounded-full border border-white/20 bg-[linear-gradient(135deg,#0f172a,#2563eb)] p-0 text-white shadow-[0_20px_45px_rgba(37,99,235,0.35)] hover:opacity-95 dark:border-slate-800 dark:bg-[linear-gradient(135deg,#020617,#1d4ed8)] ${hasUnreadMessage && !open ? 'animate-bounce' : ''}`}
         >
           <span className="absolute inset-0 rounded-full bg-sky-400/25 opacity-0 blur-xl transition-opacity group-hover:opacity-100" />
           <span className="absolute inset-0 rounded-full border border-white/20 animate-pulse" />
           {hasUnreadMessage && !open && (
             <>
-              <span className="absolute -right-0.5 -top-0.5 z-10 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-white bg-rose-500 px-1 text-[10px] font-bold text-white dark:border-slate-950">
+              <span className="absolute -right-0.5 -top-0.5 z-20 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-white bg-rose-500 px-1 text-[10px] font-bold text-white shadow-lg dark:border-slate-950">
                 1
               </span>
-              <span className="absolute -right-0.5 -top-0.5 h-6 w-6 animate-ping rounded-full bg-rose-400/70" />
+              <span className="absolute -right-0.5 -top-0.5 z-10 h-6 w-6 animate-ping rounded-full bg-rose-400/70" />
+              <span className="absolute -left-28 top-1/2 hidden -translate-y-1/2 rounded-full bg-rose-500 px-3 py-1 text-[11px] font-semibold text-white shadow-lg sm:block">
+                1 new message
+              </span>
             </>
           )}
           <div className="relative flex h-full w-full items-center justify-center rounded-full">
