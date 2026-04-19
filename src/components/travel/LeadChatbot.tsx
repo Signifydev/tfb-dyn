@@ -4,11 +4,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import {
   ArrowRight,
+  Bot,
   CheckCircle2,
   ChevronRight,
-  MessageCircleMore,
   Send,
-  Sparkles,
   UserRound,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -16,7 +15,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
@@ -202,6 +200,7 @@ export function LeadChatbot() {
   const [lastAssistantMessage, setLastAssistantMessage] = useState(initialMemory.lastAssistantMessage);
   const [teaserVisible, setTeaserVisible] = useState(false);
   const [teaserMessage, setTeaserMessage] = useState('Need help choosing the right trip?');
+  const [hasUnreadMessage, setHasUnreadMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -233,6 +232,7 @@ export function LeadChatbot() {
     broadcastChatVisibility(open);
     if (open) {
       setTeaserVisible(false);
+      setHasUnreadMessage(false);
     }
 
     return () => {
@@ -258,10 +258,12 @@ export function LeadChatbot() {
         setTeaserMessage('Need help finding the best travel option?');
       }
       setTeaserVisible(true);
+      setHasUnreadMessage(true);
     }, TEASER_DELAY_MS);
 
     const openTimer = window.setTimeout(() => {
       setOpen(true);
+      setHasUnreadMessage(false);
       window.sessionStorage.setItem(ROUTE_PROMPT_KEY, pathname);
     }, openDelay);
 
@@ -319,6 +321,7 @@ export function LeadChatbot() {
   const closeAssistant = (persistDismiss: boolean) => {
     setOpen(false);
     setTeaserVisible(false);
+    setHasUnreadMessage(false);
 
     if (persistDismiss && typeof window !== 'undefined') {
       window.localStorage.setItem(DISMISS_KEY, String(Date.now()));
@@ -387,7 +390,7 @@ export function LeadChatbot() {
     if (mode === 'offers') {
       setStep(5);
       setLastAssistantMessage(
-        `I still remember your interest in ${lead.destination || 'that trip'}. If you want, I can keep this lead warm and your team can push the best matching offer.`
+        `I still remember your interest in ${lead.destination || 'that trip'}. If you want, I can keep this conversation active and help surface a better matching offer.`
       );
       return;
     }
@@ -451,7 +454,7 @@ export function LeadChatbot() {
       setLastAssistantMessage(
         `Saved. I will remember that you were exploring ${lead.destination || 'this trip'} so we can continue from here next time.`
       );
-      toast.success('Travel details saved. The chatbot will remember this conversation next time too.');
+      toast.success('Your details are saved. TFB Buddy will remember this conversation next time too.');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Something went wrong while saving the lead.');
     } finally {
@@ -461,7 +464,7 @@ export function LeadChatbot() {
 
   const assistantBubbles = useMemo(() => {
     const bubbles = [
-      'I can help you compare packages, understand timing, and leave your team with a better lead than a plain contact form.',
+      'I can help you compare packages, discover better timings, and make trip planning feel much easier.',
     ];
 
     if (hasSubmitted) {
@@ -483,7 +486,15 @@ export function LeadChatbot() {
             onClick={() => setOpen(true)}
             className="max-w-[280px] rounded-2xl border border-sky-200 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200"
           >
-            <p className="font-semibold text-slate-950 dark:text-slate-50">Travel Assistant</p>
+            <div className="flex items-center gap-2">
+              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
+                <Bot className="h-4 w-4" />
+              </span>
+              <p className="font-semibold text-slate-950 dark:text-slate-50">TFB Buddy</p>
+              <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+                New
+              </span>
+            </div>
             <p className="mt-1 leading-6">{teaserMessage}</p>
           </button>
         )}
@@ -496,8 +507,16 @@ export function LeadChatbot() {
         >
           <span className="absolute inset-0 rounded-full bg-sky-400/25 opacity-0 blur-xl transition-opacity group-hover:opacity-100" />
           <span className="absolute inset-0 rounded-full border border-white/20 animate-pulse" />
-          <MessageCircleMore className="relative h-6 w-6" />
-          <span className="sr-only">Open travel assistant</span>
+          {hasUnreadMessage && !open && (
+            <>
+              <span className="absolute -right-0.5 -top-0.5 z-10 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-white bg-rose-500 px-1 text-[10px] font-bold text-white dark:border-slate-950">
+                1
+              </span>
+              <span className="absolute -right-0.5 -top-0.5 h-6 w-6 animate-ping rounded-full bg-rose-400/70" />
+            </>
+          )}
+          <Bot className="relative h-6 w-6" />
+          <span className="sr-only">Open TFB Buddy</span>
         </Button>
       </div>
 
@@ -510,15 +529,12 @@ export function LeadChatbot() {
             <SheetHeader className="text-left">
               <div className="flex items-center gap-3 pr-10">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#dbeafe,#bfdbfe)] text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
-                  <Sparkles className="h-5 w-5" />
+                  <Bot className="h-5 w-5" />
                 </div>
                 <div>
                   <SheetTitle className="text-xl text-slate-950 dark:text-slate-50">
-                    Travel Assistant
+                    TFB Buddy
                   </SheetTitle>
-                  <SheetDescription className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                    Interactive lead capture that remembers the conversation.
-                  </SheetDescription>
                 </div>
               </div>
             </SheetHeader>
@@ -562,7 +578,7 @@ export function LeadChatbot() {
             <div className="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                  Live Chat Flow
+                  TFB Buddy
                 </p>
                 <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                   {progressLabel}
@@ -773,7 +789,7 @@ export function LeadChatbot() {
                   />
 
                   <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm dark:border-slate-700 dark:bg-slate-900">
-                    <p className="font-semibold text-slate-900 dark:text-slate-50">Travel brief</p>
+                    <p className="font-semibold text-slate-900 dark:text-slate-50">Your trip summary</p>
                     <p className="mt-2 text-slate-600 dark:text-slate-300">{summaryLine}</p>
                   </div>
 
@@ -782,7 +798,7 @@ export function LeadChatbot() {
                       Back
                     </Button>
                     <Button className="rounded-xl" onClick={() => handleSubmit('lead')} disabled={isSubmitting}>
-                      {isSubmitting ? 'Saving lead...' : 'Save and Remember'}
+                      {isSubmitting ? 'Saving...' : 'Save and Remember'}
                       {!isSubmitting && <Send className="h-4 w-4" />}
                     </Button>
                   </div>
@@ -794,7 +810,7 @@ export function LeadChatbot() {
                   <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-200">
                     <div className="flex items-center gap-2 font-semibold">
                       <CheckCircle2 className="h-4 w-4" />
-                      Chat remembered
+                      Welcome back
                     </div>
                     <p className="mt-2">
                       I still have your last brief: {summaryLine}
