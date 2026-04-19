@@ -55,13 +55,12 @@ interface QuickOption<T extends string> {
 
 const AUTO_OPEN_DELAY_MS = 20000;
 const REOPEN_DELAY_MS = 45000;
-const TEASER_DELAY_MS = 10000;
+const TEASER_DELAY_MS = 15000;
 const DISMISS_DURATION_MS = 6 * 60 * 60 * 1000;
 const DISMISS_KEY = 'tfb-chatbot-dismissed-at';
 const ROUTE_PROMPT_KEY = 'tfb-chatbot-last-route';
 const CHAT_MEMORY_KEY = 'tfb-chatbot-memory';
 const CHAT_OPEN_KEY = 'tfb-chatbot-open';
-const NOTIFICATION_SHOWN_KEY = 'tfb-chatbot-notification-shown-v2';
 
 const intentOptions: Array<QuickOption<TravelIntent>> = [
   {
@@ -272,41 +271,38 @@ export function LeadChatbot() {
   }, [open]);
 
   useEffect(() => {
-    if (!hydrated || shouldSuppressAutoPrompt()) {
+    if (!hydrated || typeof window === 'undefined') {
       return;
     }
 
     const memory = readStoredMemory();
     const lastRoute = window.sessionStorage.getItem(ROUTE_PROMPT_KEY);
     const openDelay = lastRoute && lastRoute !== pathname ? REOPEN_DELAY_MS : AUTO_OPEN_DELAY_MS;
-    const hasShownNotification = window.sessionStorage.getItem(NOTIFICATION_SHOWN_KEY) === 'true';
+    const teaserTimer = window.setTimeout(() => {
+      if (memory.hasSubmitted && memory.lead.destination) {
+        setTeaserMessage(`Welcome back. Still planning ${memory.lead.destination}?`);
+      } else if (memory.lead.intent) {
+        setTeaserMessage(`Want smarter ${intentLabels[memory.lead.intent].toLowerCase()} suggestions?`);
+      } else {
+        setTeaserMessage('New message from TFB Buddy');
+      }
+      setTeaserVisible(true);
+      setHasUnreadMessage(true);
+    }, TEASER_DELAY_MS);
 
-    const teaserTimer = hasShownNotification
+    const openTimer = shouldSuppressAutoPrompt()
       ? null
       : window.setTimeout(() => {
-          if (memory.hasSubmitted && memory.lead.destination) {
-            setTeaserMessage(`Welcome back. Still planning ${memory.lead.destination}?`);
-          } else if (memory.lead.intent) {
-            setTeaserMessage(`Want smarter ${intentLabels[memory.lead.intent].toLowerCase()} suggestions?`);
-          } else {
-            setTeaserMessage('New message from TFB Buddy');
-          }
-          setTeaserVisible(true);
-          setHasUnreadMessage(true);
-          window.sessionStorage.setItem(NOTIFICATION_SHOWN_KEY, 'true');
-        }, TEASER_DELAY_MS);
-
-    const openTimer = window.setTimeout(() => {
-      setOpen(true);
-      setHasUnreadMessage(false);
-      window.sessionStorage.setItem(ROUTE_PROMPT_KEY, pathname);
-    }, openDelay);
+          setOpen(true);
+          setHasUnreadMessage(false);
+          window.sessionStorage.setItem(ROUTE_PROMPT_KEY, pathname);
+        }, openDelay);
 
     return () => {
-      if (teaserTimer) {
-        window.clearTimeout(teaserTimer);
+      window.clearTimeout(teaserTimer);
+      if (openTimer) {
+        window.clearTimeout(openTimer);
       }
-      window.clearTimeout(openTimer);
     };
   }, [hydrated, pathname]);
 

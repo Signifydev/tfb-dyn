@@ -56,8 +56,17 @@ const categories: Category[] = CATEGORY_DEFINITIONS.filter((category) =>
 }));
 
 function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount: number; signOut: () => void }) {
+  const pathname = usePathname();
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
+  const closeMenu = () => setOpen(false);
+
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <Button
           variant="ghost"
@@ -69,7 +78,7 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
       </SheetTrigger>
       <SheetContent side="right" className="w-[86vw] max-w-sm overflow-y-auto px-0">
         <div className="border-b px-5 py-5">
-          <Link href="/">
+          <Link href="/" onClick={closeMenu}>
             <Image src="/logo.png" alt="Logo" width={120} height={40} />
           </Link>
         </div>
@@ -86,6 +95,7 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
                 <Link
                   key={cat.id}
                   href={cat.href}
+                  onClick={closeMenu}
                   className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
                 >
                   <Icon className="h-4 w-4 text-blue-600" />
@@ -99,18 +109,21 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
         <div className="border-t px-5 py-5">
           {user ? (
             <div className="space-y-2">
-              <Link href="/account/profile" className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <Link href="/account/profile" onClick={closeMenu} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
                 Profile
               </Link>
-              <Link href="/account/bookings" className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <Link href="/account/bookings" onClick={closeMenu} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
                 Bookings
               </Link>
-              <Link href="/account/wishlist" className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <Link href="/account/wishlist" onClick={closeMenu} className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
                 <span>Wishlist</span>
                 {wishlistCount > 0 && <Badge>{wishlistCount}</Badge>}
               </Link>
               <button
-                onClick={signOut}
+                onClick={() => {
+                  closeMenu();
+                  signOut();
+                }}
                 className="w-full rounded-xl px-4 py-3 text-left text-sm font-medium text-red-600 hover:bg-red-50"
               >
                 Logout
@@ -118,12 +131,12 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
             </div>
           ) : (
             <div className="space-y-3">
-              <Link href="/login" className="block">
+              <Link href="/login" onClick={closeMenu} className="block">
                 <Button variant="outline" className="w-full">
                   Sign In
                 </Button>
               </Link>
-              <Link href="/signup" className="block">
+              <Link href="/signup" onClick={closeMenu} className="block">
                 <Button className="w-full">Sign Up</Button>
               </Link>
             </div>
