@@ -18,6 +18,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { usePathname } from 'next/navigation';
 import { CATEGORY_DEFINITIONS, getCategoryHref } from '@/lib/categories';
+import { readWishlist, syncGlobalWishlistToUser } from '@/lib/wishlist-storage';
 import {
   Map,
   Mountain,
@@ -151,10 +152,19 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    if (user) {
-      const saved = localStorage.getItem(`wishlist_${user.id}`);
-      if (saved) setWishlistCount(JSON.parse(saved).length);
-    }
+    const updateWishlistCount = () => {
+      const items = user ? syncGlobalWishlistToUser(user.id) : readWishlist(null);
+      setWishlistCount(items.length);
+    };
+
+    updateWishlistCount();
+    window.addEventListener('storage', updateWishlistCount);
+    window.addEventListener('tfb-wishlist-updated', updateWishlistCount);
+
+    return () => {
+      window.removeEventListener('storage', updateWishlistCount);
+      window.removeEventListener('tfb-wishlist-updated', updateWishlistCount);
+    };
   }, [user]);
 
   const scrollLeft = () => {

@@ -4,11 +4,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Heart, Star, MapPin, Users, Trash2 } from 'lucide-react';
 import { getProductBySlug, type Product } from '@/lib/products';
+import { readWishlist, syncGlobalWishlistToUser, writeWishlist } from '@/lib/wishlist-storage';
 
 export default function WishlistPage() {
   const { user } = useAuth();
@@ -16,46 +16,31 @@ export default function WishlistPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    loadWishlist();
+    void loadWishlist();
+  }, [user]);
+
+  useEffect(() => {
+    const handleWishlistChange = () => {
+      void loadWishlist();
+    };
+
+    window.addEventListener('storage', handleWishlistChange);
+    window.addEventListener('tfb-wishlist-updated', handleWishlistChange);
+
+    return () => {
+      window.removeEventListener('storage', handleWishlistChange);
+      window.removeEventListener('tfb-wishlist-updated', handleWishlistChange);
+    };
   }, [user]);
 
   const loadWishlist = async () => {
     setIsLoading(true);
     try {
-      if (user) {
-        // Try to load from Supabase
-        const { data } = await supabase
-          .from('wishlist')
-          .select('product_slug')
-          .eq('user_id', user.id);
-
-        if (data && data.length > 0) {
-          const products = data
-            .map((item) => getProductBySlug(item.product_slug))
-            .filter(Boolean) as Product[];
-          setWishlistItems(products);
-        } else {
-          // Fall back to local storage
-          const local = localStorage.getItem(`wishlist_${user.id}`);
-          if (local) {
-            const slugs = JSON.parse(local);
-            const products = slugs
-              .map((slug: string) => getProductBySlug(slug))
-              .filter(Boolean) as Product[];
-            setWishlistItems(products);
-          }
-        }
-      } else {
-        // Anonymous wishlist
-        const local = localStorage.getItem('wishlist_global');
-        if (local) {
-          const slugs = JSON.parse(local);
-          const products = slugs
-            .map((slug: string) => getProductBySlug(slug))
-            .filter(Boolean) as Product[];
-          setWishlistItems(products);
-        }
-      }
+      const slugs = user ? syncGlobalWishlistToUser(user.id) : readWishlist(null);
+      const products = slugs
+        .map((slug) => getProductBySlug(slug))
+        .filter(Boolean) as Product[];
+      setWishlistItems(products);
     } catch (error) {
       console.error('Error loading wishlist:', error);
     } finally {
@@ -66,28 +51,11 @@ export default function WishlistPage() {
   const removeFromWishlist = async (slug: string) => {
     setWishlistItems((prev) => prev.filter((p) => p.slug !== slug));
 
-    if (user) {
-      // Try to remove from Supabase
-      await supabase
-        .from('wishlist')
-        .delete()
-        .eq('user_id', user.id)
-        .eq('product_slug', slug);
-
-      // Also update local storage
-      const local = localStorage.getItem(`wishlist_${user.id}`);
-      if (local) {
-        const slugs = JSON.parse(local).filter((s: string) => s !== slug);
-        localStorage.setItem(`wishlist_${user.id}`, JSON.stringify(slugs));
-      }
-    } else {
-      // Update global local storage
-      const local = localStorage.getItem('wishlist_global');
-      if (local) {
-        const slugs = JSON.parse(local).filter((s: string) => s !== slug);
-        localStorage.setItem('wishlist_global', JSON.stringify(slugs));
-      }
-    }
+    const currentItems = user ? readWishlist(user.id) : readWishlist(null);
+    writeWishlist(
+      currentItems.filter((item) => item !== slug),
+      user?.id
+    );
   };
 
   if (isLoading) {

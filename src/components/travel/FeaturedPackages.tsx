@@ -3,33 +3,43 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '@/hooks/useAuth';
 import { Star, Heart, MapPin, Users } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { fetchFeaturedProducts } from '@/lib/api/products-client';
 import type { Product } from '@/lib/products';
+import { readWishlist, syncGlobalWishlistToUser, toggleWishlistItem } from '@/lib/wishlist-storage';
 
 export function FeaturedPackages() {
+  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [wishlist, setWishlist] = useState<string[]>([]);
 
   useEffect(() => {
+    const applyWishlist = () => {
+      const items = user ? syncGlobalWishlistToUser(user.id) : readWishlist(null);
+      setWishlist(items);
+    };
+
     void fetchFeaturedProducts().then(setProducts);
-    const saved = localStorage.getItem('wishlist_global');
-    if (saved) {
-      setWishlist(JSON.parse(saved));
-    }
-  }, []);
+    applyWishlist();
+
+    window.addEventListener('storage', applyWishlist);
+    window.addEventListener('tfb-wishlist-updated', applyWishlist);
+
+    return () => {
+      window.removeEventListener('storage', applyWishlist);
+      window.removeEventListener('tfb-wishlist-updated', applyWishlist);
+    };
+  }, [user]);
 
   const toggleWishlist = (slug: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setWishlist((prev) => (prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug]));
-    const updated = wishlist.includes(slug)
-      ? wishlist.filter((s) => s !== slug)
-      : [...wishlist, slug];
-    localStorage.setItem('wishlist_global', JSON.stringify(updated));
+    const updated = toggleWishlistItem(slug, user?.id);
+    setWishlist(updated);
   };
 
   return (

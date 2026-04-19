@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useAuth } from '@/hooks/useAuth';
 import { Star, Heart, MapPin, Users, Filter, SlidersHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,6 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import type { Product } from '@/lib/products';
+import { readWishlist, toggleWishlistItem, syncGlobalWishlistToUser } from '@/lib/wishlist-storage';
 
 interface PackageListProps {
   products: Product[];
@@ -33,6 +35,7 @@ const SORT_OPTIONS = [
 ];
 
 export function PackageList({ products: initialProducts, showFilters = true }: PackageListProps) {
+  const { user } = useAuth();
   const maxPrice = useMemo(
     () => Math.max(100000, ...initialProducts.map((product) => product.price)),
     [initialProducts]
@@ -44,11 +47,20 @@ export function PackageList({ products: initialProducts, showFilters = true }: P
   const [showOnlyFeatured, setShowOnlyFeatured] = useState(false);
 
   useEffect(() => {
-    const saved = localStorage.getItem('wishlist_global');
-    if (saved) {
-      setWishlist(JSON.parse(saved));
-    }
-  }, []);
+    const applyWishlist = () => {
+      const items = user ? syncGlobalWishlistToUser(user.id) : readWishlist(null);
+      setWishlist(items);
+    };
+
+    applyWishlist();
+    window.addEventListener('storage', applyWishlist);
+    window.addEventListener('tfb-wishlist-updated', applyWishlist);
+
+    return () => {
+      window.removeEventListener('storage', applyWishlist);
+      window.removeEventListener('tfb-wishlist-updated', applyWishlist);
+    };
+  }, [user]);
 
   useEffect(() => {
     setProducts(initialProducts);
@@ -58,11 +70,8 @@ export function PackageList({ products: initialProducts, showFilters = true }: P
   const toggleWishlist = (slug: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setWishlist((prev) => {
-      const updated = prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug];
-      localStorage.setItem('wishlist_global', JSON.stringify(updated));
-      return updated;
-    });
+    const updated = toggleWishlistItem(slug, user?.id);
+    setWishlist(updated);
   };
 
   const filteredProducts = products
