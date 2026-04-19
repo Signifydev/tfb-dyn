@@ -58,7 +58,11 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full border border-slate-200 md:hidden">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-10 w-10 rounded-full border border-slate-200 bg-white/80 text-slate-700 backdrop-blur md:hidden dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-100 dark:hover:bg-slate-800"
+        >
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
@@ -281,7 +285,7 @@ export function Header() {
       )}
 
       <div
-        className={`fixed left-0 top-0 z-50 w-full border-b bg-white/90 shadow-sm backdrop-blur-md transition-all duration-300 ${
+        className={`fixed left-0 top-0 z-50 w-full border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-md transition-all duration-300 dark:border-slate-800/80 dark:bg-slate-950/92 ${
           isHome ? (scrolled ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-5 opacity-0') : 'opacity-100'
         }`}
       >

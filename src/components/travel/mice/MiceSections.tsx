@@ -326,25 +326,3 @@ export function MiceIndustriesSection() {
   );
 }
 
-export function MiceCaseStudiesPlaceholderSection() {
-  return (
-    <section className="pb-16 pt-14 md:pb-20 md:pt-18">
-      <div className="container mx-auto px-4">
-        <Card className="overflow-hidden rounded-[2rem] border-0 bg-[linear-gradient(135deg,#0f172a,#1d4ed8)] text-white shadow-[0_28px_80px_rgba(15,23,42,0.2)]">
-          <CardContent className="p-8 md:p-10">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-sky-200">
-              Future Scope
-            </p>
-            <h2 className="mt-4 text-3xl font-semibold md:text-4xl">
-              Testimonials and case studies can plug in here next
-            </h2>
-            <p className="mt-4 max-w-3xl text-sm leading-7 text-slate-200 md:text-base">
-              This block is reserved for future corporate proof points such as event outcomes,
-              client stories, repeat engagement metrics, or sector-specific case studies.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    </section>
-  );
-}
