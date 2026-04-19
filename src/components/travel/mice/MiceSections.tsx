@@ -326,3 +326,25 @@ export function MiceIndustriesSection() {
   );
 }
 
+export function MiceCaseStudiesPlaceholderSection() {
+  return (
+    <section className="py-14 md:py-18">
+      <div className="container mx-auto px-4">
+        <Card className="rounded-[2rem] border border-dashed border-slate-300 bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/60">
+          <CardContent className="p-8 md:p-10">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-sky-700 dark:text-sky-300">
+              Future Scope
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold text-slate-950 dark:text-slate-50 md:text-4xl">
+              Testimonials and case studies can be added here next
+            </h2>
+            <p className="mt-4 max-w-3xl text-base leading-8 text-slate-600 dark:text-slate-300">
+              This section is reserved for corporate success stories, client feedback, and
+              outcome-driven event snapshots that will strengthen trust as the MICE portfolio grows.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+  );
+}

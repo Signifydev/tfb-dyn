@@ -4,12 +4,11 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Calendar, Users, MapPin, ArrowRight } from 'lucide-react';
+import { Calendar, Users, ArrowRight } from 'lucide-react';
 import { getProductBySlug } from '@/lib/products';
 
 interface Booking {
@@ -24,26 +23,31 @@ interface Booking {
 }
 
 export default function BookingsPage() {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (user) {
+    if (user && session?.access_token) {
       fetchBookings();
     }
-  }, [user]);
+  }, [user, session]);
 
   const fetchBookings = async () => {
     try {
-      const { data, error } = await supabase
-        .from('bookings')
-        .select('*')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false });
+      const response = await fetch('/api/bookings', {
+        headers: {
+          Authorization: `Bearer ${session?.access_token}`,
+        },
+      });
 
-      if (error) throw error;
-      setBookings(data || []);
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.error || 'Failed to fetch bookings.');
+      }
+
+      setBookings(payload.data || []);
     } catch (error) {
       console.error('Error fetching bookings:', error);
     } finally {

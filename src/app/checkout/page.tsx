@@ -1,11 +1,10 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -18,8 +17,7 @@ import { getProductBySlug as getLocalProductBySlug, type Product } from '@/lib/p
 
 function CheckoutContent() {
   const searchParams = useSearchParams();
-  const router = useRouter();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
 
   const productSlug = searchParams.get('product') || '';
   const travellersParam = searchParams.get('travellers') || '1';
@@ -27,8 +25,8 @@ function CheckoutContent() {
 
   const [product, setProduct] = useState<Product | null>(null);
   const [isProductLoading, setIsProductLoading] = useState(true);
-  const [travellers, setTravellers] = useState(parseInt(travellersParam));
-  const [travelDate, setTravelDate] = useState(dateParam ? new Date(dateParam) : undefined);
+  const [travellers] = useState(parseInt(travellersParam, 10));
+  const [travelDate] = useState(dateParam ? new Date(dateParam) : undefined);
   const [customerName, setCustomerName] = useState('');
   const [customerEmail, setCustomerEmail] = useState(user?.email || '');
   const [customerPhone, setCustomerPhone] = useState('');
@@ -68,50 +66,55 @@ function CheckoutContent() {
   }, [productSlug]);
 
   useEffect(() => {
-    if (user) {
-      setCustomerEmail(user.email || '');
-      if (user.user_metadata?.full_name) {
-        setCustomerName(user.user_metadata.full_name);
-      }
+    if (!user) {
+      return;
+    }
+
+    setCustomerEmail(user.email || '');
+    if (user.user_metadata?.full_name) {
+      setCustomerName(user.user_metadata.full_name);
     }
   }, [user]);
 
   const totalPrice = product ? product.price * travellers : 0;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      // Create booking
-      const { data, error: dbError } = await supabase
-        .from('bookings')
-        .insert({
-          user_id: user?.id,
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session?.access_token || ''}`,
+        },
+        body: JSON.stringify({
           product_slug: productSlug,
-          travel_date: travelDate?.toISOString().split('T')[0],
+          travel_date: travelDate?.toISOString() || new Date().toISOString(),
           travellers,
           total_price: totalPrice,
-          status: 'confirmed',
           customer_name: customerName,
           customer_email: customerEmail,
           customer_phone: customerPhone,
-          special_requests: specialRequests,
-        })
-        .select()
-        .maybeSingle();
+          special_requests: specialRequests || null,
+        }),
+      });
 
-      if (dbError) throw dbError;
+      const payload = await response.json();
 
-      setBookingId(data?.id || '');
+      if (!response.ok) {
+        throw new Error(payload.error || 'Failed to create booking request.');
+      }
+
+      setBookingId(payload.data?.id || '');
       setSuccess(true);
-    } catch (err) {
-      console.error('Booking error:', err);
-      setError('Failed to create booking. Please try again.');
+    } catch (submitError) {
+      console.error('Booking error:', submitError);
+      setError('Failed to create booking request. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -119,7 +122,7 @@ function CheckoutContent() {
 
   if (isProductLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="flex min-h-screen items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
@@ -129,7 +132,7 @@ function CheckoutContent() {
     return (
       <div className="min-h-screen bg-slate-50 pb-12 pt-24 md:pt-28">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-2xl font-bold text-slate-900 mb-4">Product not found</h1>
+          <h1 className="mb-4 text-2xl font-bold text-slate-900">Product not found</h1>
           <Link href="/">
             <Button>Back to Home</Button>
           </Link>
@@ -142,22 +145,20 @@ function CheckoutContent() {
     return (
       <div className="min-h-screen bg-slate-50 pb-12 pt-24 md:pt-28">
         <div className="container mx-auto px-4">
-          <Card className="max-w-xl mx-auto text-center">
-            <CardContent className="pt-12 pb-8">
-              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+          <Card className="mx-auto max-w-xl text-center">
+            <CardContent className="pb-8 pt-12">
+              <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
                 <CheckCircle className="h-10 w-10 text-green-600" />
               </div>
-              <h1 className="text-2xl font-bold text-slate-900 mb-2">Booking Confirmed!</h1>
-              <p className="text-slate-600 mb-4">
-                Your trip to {product.title} has been confirmed.
-              </p>
-              <p className="text-sm text-slate-500 mb-6">
+              <h1 className="mb-2 text-2xl font-bold text-slate-900">Booking Request Submitted!</h1>
+              <p className="mb-4 text-slate-600">Your request for {product.title} has been received.</p>
+              <p className="mb-6 text-sm text-slate-500">
                 Booking ID: <span className="font-mono font-medium">{bookingId.slice(0, 8)}</span>
               </p>
-              <p className="text-sm text-slate-600 mb-8">
-                A confirmation email has been sent to <strong>{customerEmail}</strong>
+              <p className="mb-8 text-sm text-slate-600">
+                Our team will connect with you within 24 hours at <strong>{customerEmail}</strong>
               </p>
-              <div className="flex gap-3 justify-center">
+              <div className="flex justify-center gap-3">
                 <Link href="/account/bookings">
                   <Button>View My Bookings</Button>
                 </Link>
@@ -175,13 +176,15 @@ function CheckoutContent() {
   return (
     <div className="min-h-screen bg-slate-50 pb-8 pt-24 md:pt-28">
       <div className="container mx-auto px-4">
-        <Link href={`/products/${productSlug}`} className="inline-flex items-center gap-2 text-slate-600 hover:text-slate-900 mb-6">
+        <Link
+          href={`/products/${productSlug}`}
+          className="mb-6 inline-flex items-center gap-2 text-slate-600 hover:text-slate-900"
+        >
           <ArrowLeft className="h-4 w-4" />
           Back to Package
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Form */}
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <Card>
               <CardHeader>
@@ -189,20 +192,20 @@ function CheckoutContent() {
               </CardHeader>
               <CardContent>
                 <form onSubmit={handleSubmit} className="space-y-6">
-                  {error && (
+                  {error ? (
                     <Alert variant="destructive">
                       <AlertCircle className="h-4 w-4" />
                       <AlertDescription>{error}</AlertDescription>
                     </Alert>
-                  )}
+                  ) : null}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                     <div className="space-y-2">
                       <Label htmlFor="name">Full Name *</Label>
                       <Input
                         id="name"
                         value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
+                        onChange={(event) => setCustomerName(event.target.value)}
                         required
                       />
                     </div>
@@ -213,7 +216,7 @@ function CheckoutContent() {
                         id="email"
                         type="email"
                         value={customerEmail}
-                        onChange={(e) => setCustomerEmail(e.target.value)}
+                        onChange={(event) => setCustomerEmail(event.target.value)}
                         required
                       />
                     </div>
@@ -224,7 +227,7 @@ function CheckoutContent() {
                         id="phone"
                         type="tel"
                         value={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
+                        onChange={(event) => setCustomerPhone(event.target.value)}
                         placeholder="+91 98765 43210"
                         required
                       />
@@ -232,8 +235,8 @@ function CheckoutContent() {
 
                     <div className="space-y-2">
                       <Label>Travel Date *</Label>
-                      <div className="h-10 px-3 py-2 rounded-md border border-input bg-white flex items-center">
-                        <Calendar className="h-4 w-4 mr-2 text-slate-400" />
+                      <div className="flex h-10 items-center rounded-md border border-input bg-white px-3 py-2">
+                        <Calendar className="mr-2 h-4 w-4 text-slate-400" />
                         {travelDate ? format(travelDate, 'PPP') : 'Select a date'}
                       </div>
                     </div>
@@ -244,24 +247,24 @@ function CheckoutContent() {
                     <Input
                       id="requests"
                       value={specialRequests}
-                      onChange={(e) => setSpecialRequests(e.target.value)}
+                      onChange={(event) => setSpecialRequests(event.target.value)}
                       placeholder="Any dietary requirements, accessibility needs, etc."
                     />
                   </div>
 
-                  <div className="pt-4 border-t">
+                  <div className="border-t pt-4">
                     <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
                       {isLoading ? (
                         <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Processing...
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Submitting request...
                         </>
                       ) : (
-                        `Pay ₹${totalPrice.toLocaleString()}`
+                        `Submit Request - INR ${totalPrice.toLocaleString('en-IN')}`
                       )}
                     </Button>
-                    <p className="text-xs text-slate-500 text-center mt-3">
-                      By completing this booking, you agree to our Terms of Service and Privacy Policy.
+                    <p className="mt-3 text-center text-xs text-slate-500">
+                      Your request goes to our team for review and confirmation within 24 hours.
                     </p>
                   </div>
                 </form>
@@ -269,7 +272,6 @@ function CheckoutContent() {
             </Card>
           </div>
 
-          {/* Order Summary */}
           <div className="lg:col-span-1">
             <Card className="lg:sticky lg:top-24">
               <CardHeader>
@@ -277,7 +279,7 @@ function CheckoutContent() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex gap-4">
-                  <div className="relative w-20 h-20 rounded-lg overflow-hidden flex-shrink-0">
+                  <div className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg">
                     <Image
                       src={product.heroImage}
                       alt={product.title}
@@ -308,14 +310,14 @@ function CheckoutContent() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t space-y-2">
+                <div className="space-y-2 border-t pt-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-600">Price per person</span>
-                    <span>₹{product.price.toLocaleString()}</span>
+                    <span>INR {product.price.toLocaleString('en-IN')}</span>
                   </div>
-                  <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                  <div className="flex justify-between border-t pt-2 text-lg font-bold">
                     <span>Total</span>
-                    <span className="text-blue-600">₹{totalPrice.toLocaleString()}</span>
+                    <span className="text-blue-600">INR {totalPrice.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
               </CardContent>
@@ -329,7 +331,13 @@ function CheckoutContent() {
 
 export default function CheckoutPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><Loader2 className="h-8 w-8 animate-spin" /></div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      }
+    >
       <CheckoutContent />
     </Suspense>
   );
