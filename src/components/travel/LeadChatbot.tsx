@@ -9,6 +9,7 @@ import {
   ChevronRight,
   Send,
   UserRound,
+  X,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -54,12 +55,13 @@ interface QuickOption<T extends string> {
 
 const AUTO_OPEN_DELAY_MS = 20000;
 const REOPEN_DELAY_MS = 45000;
-const TEASER_DELAY_MS = 12000;
+const TEASER_DELAY_MS = 10000;
 const DISMISS_DURATION_MS = 6 * 60 * 60 * 1000;
 const DISMISS_KEY = 'tfb-chatbot-dismissed-at';
 const ROUTE_PROMPT_KEY = 'tfb-chatbot-last-route';
 const CHAT_MEMORY_KEY = 'tfb-chatbot-memory';
 const CHAT_OPEN_KEY = 'tfb-chatbot-open';
+const NOTIFICATION_SHOWN_KEY = 'tfb-chatbot-notification-shown';
 
 const intentOptions: Array<QuickOption<TravelIntent>> = [
   {
@@ -189,6 +191,35 @@ function broadcastChatVisibility(isOpen: boolean) {
   );
 }
 
+function BuddyAvatar({
+  size = 'md',
+  className = '',
+}: {
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
+}) {
+  const sizeClasses =
+    size === 'sm'
+      ? 'h-10 w-10'
+      : size === 'lg'
+        ? 'h-16 w-16'
+        : 'h-12 w-12';
+
+  return (
+    <div className={`relative ${sizeClasses} ${className}`}>
+      <div className="absolute inset-0 rounded-[34%] bg-[linear-gradient(145deg,#0f172a,#2563eb)] shadow-[0_12px_25px_rgba(37,99,235,0.28)]" />
+      <div className="absolute inset-[10%] rounded-[30%] bg-[radial-gradient(circle_at_top,#dbeafe_0%,#bfdbfe_28%,#60a5fa_62%,#1d4ed8_100%)]" />
+      <div className="absolute inset-x-[24%] top-[28%] h-[18%] rounded-full bg-slate-950/15" />
+      <div className="absolute left-[28%] top-[36%] h-[12%] w-[12%] rounded-full bg-slate-950 shadow-[0_0_0_3px_rgba(255,255,255,0.24)]" />
+      <div className="absolute right-[28%] top-[36%] h-[12%] w-[12%] rounded-full bg-slate-950 shadow-[0_0_0_3px_rgba(255,255,255,0.24)]" />
+      <div className="absolute inset-x-[31%] bottom-[26%] h-[10%] rounded-full border-2 border-slate-950/80 border-t-0 border-l-0 border-r-0" />
+      <div className="absolute -right-[4%] -top-[4%] flex h-[28%] w-[28%] items-center justify-center rounded-full border border-white/60 bg-white/90 text-[10px] font-bold text-sky-700">
+        AI
+      </div>
+    </div>
+  );
+}
+
 export function LeadChatbot() {
   const pathname = usePathname();
   const isMobile = useIsMobile();
@@ -248,18 +279,22 @@ export function LeadChatbot() {
     const memory = readStoredMemory();
     const lastRoute = window.sessionStorage.getItem(ROUTE_PROMPT_KEY);
     const openDelay = lastRoute && lastRoute !== pathname ? REOPEN_DELAY_MS : AUTO_OPEN_DELAY_MS;
+    const hasShownNotification = window.localStorage.getItem(NOTIFICATION_SHOWN_KEY) === 'true';
 
-    const teaserTimer = window.setTimeout(() => {
-      if (memory.hasSubmitted && memory.lead.destination) {
-        setTeaserMessage(`Welcome back. Still planning ${memory.lead.destination}?`);
-      } else if (memory.lead.intent) {
-        setTeaserMessage(`Want smarter ${intentLabels[memory.lead.intent].toLowerCase()} suggestions?`);
-      } else {
-        setTeaserMessage('Need help finding the best travel option?');
-      }
-      setTeaserVisible(true);
-      setHasUnreadMessage(true);
-    }, TEASER_DELAY_MS);
+    const teaserTimer = hasShownNotification
+      ? null
+      : window.setTimeout(() => {
+          if (memory.hasSubmitted && memory.lead.destination) {
+            setTeaserMessage(`Welcome back. Still planning ${memory.lead.destination}?`);
+          } else if (memory.lead.intent) {
+            setTeaserMessage(`Want smarter ${intentLabels[memory.lead.intent].toLowerCase()} suggestions?`);
+          } else {
+            setTeaserMessage('New message from TFB Buddy');
+          }
+          setTeaserVisible(true);
+          setHasUnreadMessage(true);
+          window.localStorage.setItem(NOTIFICATION_SHOWN_KEY, 'true');
+        }, TEASER_DELAY_MS);
 
     const openTimer = window.setTimeout(() => {
       setOpen(true);
@@ -268,7 +303,9 @@ export function LeadChatbot() {
     }, openDelay);
 
     return () => {
-      window.clearTimeout(teaserTimer);
+      if (teaserTimer) {
+        window.clearTimeout(teaserTimer);
+      }
       window.clearTimeout(openTimer);
     };
   }, [hydrated, pathname]);
@@ -503,7 +540,7 @@ export function LeadChatbot() {
           type="button"
           size="icon"
           onClick={() => setOpen(true)}
-          className="group relative h-14 w-14 rounded-full bg-[linear-gradient(135deg,#0f172a,#2563eb)] text-white shadow-[0_20px_45px_rgba(37,99,235,0.35)] hover:opacity-95 dark:bg-[linear-gradient(135deg,#020617,#1d4ed8)]"
+          className="group relative h-16 w-16 rounded-full border border-white/20 bg-[linear-gradient(135deg,#0f172a,#2563eb)] p-0 text-white shadow-[0_20px_45px_rgba(37,99,235,0.35)] hover:opacity-95 dark:border-slate-800 dark:bg-[linear-gradient(135deg,#020617,#1d4ed8)]"
         >
           <span className="absolute inset-0 rounded-full bg-sky-400/25 opacity-0 blur-xl transition-opacity group-hover:opacity-100" />
           <span className="absolute inset-0 rounded-full border border-white/20 animate-pulse" />
@@ -515,7 +552,9 @@ export function LeadChatbot() {
               <span className="absolute -right-0.5 -top-0.5 h-6 w-6 animate-ping rounded-full bg-rose-400/70" />
             </>
           )}
-          <Bot className="relative h-6 w-6" />
+          <div className="relative flex h-full w-full items-center justify-center rounded-full">
+            <BuddyAvatar size="md" className="scale-[0.92]" />
+          </div>
           <span className="sr-only">Open TFB Buddy</span>
         </Button>
       </div>
@@ -523,19 +562,36 @@ export function LeadChatbot() {
       <Sheet open={open} onOpenChange={handleOpenChange}>
         <SheetContent
           side={isMobile ? 'bottom' : 'right'}
-          className="h-[88dvh] overflow-y-auto rounded-t-[1.75rem] border-0 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_22%,#f8fafc_100%)] px-0 pb-0 pt-0 text-slate-950 shadow-[0_30px_80px_rgba(15,23,42,0.24)] dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_28%,#111827_100%)] dark:text-slate-50 sm:h-full sm:max-w-[450px] sm:rounded-none [&>button]:right-4 [&>button]:top-4 [&>button]:rounded-full [&>button]:border [&>button]:border-slate-200 [&>button]:bg-white/90 [&>button]:p-1.5 [&>button]:text-slate-600 [&>button]:opacity-100 dark:[&>button]:border-slate-700 dark:[&>button]:bg-slate-950/90 dark:[&>button]:text-slate-200"
+          className="h-[88dvh] overflow-y-auto rounded-t-[1.75rem] border-0 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_22%,#f8fafc_100%)] px-0 pb-0 pt-0 text-slate-950 shadow-[0_30px_80px_rgba(15,23,42,0.24)] dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_28%,#111827_100%)] dark:text-slate-50 sm:h-full sm:max-w-[450px] sm:rounded-none [&>button]:hidden"
         >
           <div className="sticky top-0 z-10 border-b border-slate-200/80 bg-white/90 px-5 pb-4 pt-5 backdrop-blur dark:border-slate-800 dark:bg-slate-950/90">
             <SheetHeader className="text-left">
-              <div className="flex items-center gap-3 pr-10">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[linear-gradient(135deg,#dbeafe,#bfdbfe)] text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
-                  <Bot className="h-5 w-5" />
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <BuddyAvatar size="lg" />
+                  <div>
+                    <div className="inline-flex items-center gap-2 rounded-full bg-sky-100 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.22em] text-sky-800 dark:bg-sky-500/15 dark:text-sky-200">
+                      AI Travel Agent
+                    </div>
+                    <SheetTitle className="mt-2 bg-[linear-gradient(135deg,#0f172a,#2563eb,#0ea5e9)] bg-clip-text text-2xl font-semibold tracking-tight text-transparent dark:bg-[linear-gradient(135deg,#f8fafc,#7dd3fc,#60a5fa)]">
+                      TFB Buddy
+                    </SheetTitle>
+                    <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                      Your smart trip planning companion
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <SheetTitle className="text-xl text-slate-950 dark:text-slate-50">
-                    TFB Buddy
-                  </SheetTitle>
-                </div>
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="mt-1 shrink-0 rounded-full border border-slate-200 bg-white/80 text-slate-600 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-200 dark:hover:bg-slate-800"
+                  onClick={() => closeAssistant(true)}
+                >
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Close TFB Buddy</span>
+                </Button>
               </div>
             </SheetHeader>
           </div>
