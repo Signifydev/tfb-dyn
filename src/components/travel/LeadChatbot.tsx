@@ -1,15 +1,24 @@
 'use client';
 
+import Image from 'next/image';
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import {
   ArrowRight,
+  Bike,
   Bot,
+  Briefcase,
   CheckCircle2,
   ChevronRight,
+  Helicopter,
+  Landmark,
+  Map,
   Send,
+  Tent,
   UserRound,
   X,
+  Mountain,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -22,14 +31,23 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { getAllProducts } from '@/lib/products';
 
-type TravelIntent = 'tour-package' | 'adventure' | 'pilgrimage' | 'custom-trip';
+type TravelCategory =
+  | 'tour-packages'
+  | 'adventure-activities'
+  | 'trekking-camps'
+  | 'bike-expeditions'
+  | 'char-dham'
+  | 'helicopter-services'
+  | 'mice'
+  | 'custom-trip';
 type TravelWindow = 'this-month' | 'next-month' | 'next-3-months' | 'just-exploring';
 type TravellerSize = 'solo' | 'couple' | 'family' | 'group';
 type ChatStep = 0 | 1 | 2 | 3 | 4 | 5;
 
 interface LeadState {
-  intent: TravelIntent | null;
+  intent: TravelCategory | null;
   destination: string;
   travelWindow: TravelWindow | null;
   travellers: TravellerSize | null;
@@ -62,26 +80,57 @@ const ROUTE_PROMPT_KEY = 'tfb-chatbot-last-route';
 const CHAT_MEMORY_KEY = 'tfb-chatbot-memory';
 const CHAT_OPEN_KEY = 'tfb-chatbot-open';
 
-const intentOptions: Array<QuickOption<TravelIntent>> = [
+const categoryIcons = {
+  'tour-packages': Map,
+  'adventure-activities': Mountain,
+  'trekking-camps': Tent,
+  'bike-expeditions': Bike,
+  'char-dham': Landmark,
+  'helicopter-services': Helicopter,
+  'mice': Briefcase,
+  'custom-trip': Map,
+} as const;
+
+const intentOptions: Array<QuickOption<TravelCategory>> = [
   {
-    value: 'tour-package',
-    label: 'Tour package',
-    helper: 'Ready-made itineraries, pricing, and best-match offers.',
+    value: 'tour-packages',
+    label: 'Tour Packages',
+    helper: 'Destination-based itineraries and ready packages.',
   },
   {
-    value: 'adventure',
-    label: 'Adventure trip',
-    helper: 'Treks, rides, and activity-heavy travel plans.',
+    value: 'adventure-activities',
+    label: 'Adventure Activities',
+    helper: 'Thrilling activities and experience-led trips.',
   },
   {
-    value: 'pilgrimage',
-    label: 'Pilgrimage',
-    helper: 'Spiritual circuits with timing and comfort in mind.',
+    value: 'trekking-camps',
+    label: 'Trekking & Camps',
+    helper: 'Treks, camp stays, and outdoor mountain plans.',
+  },
+  {
+    value: 'bike-expeditions',
+    label: 'Bike Expeditions',
+    helper: 'Motorcycle tours, routes, and riding support.',
+  },
+  {
+    value: 'char-dham',
+    label: 'CharDham Yatra',
+    helper: 'Pilgrimage planning with route and comfort support.',
+  },
+  {
+    value: 'helicopter-services',
+    label: 'Helicopter Services',
+    helper: 'Heli bookings, aerial access, and premium transfers.',
+  },
+  {
+    value: 'mice',
+    label: 'MICE',
+    helper: 'Meetings, incentives, conferences, and events.',
   },
   {
     value: 'custom-trip',
-    label: 'Custom trip',
-    helper: 'Flexible planning around your route and travel style.',
+    label: 'Custom Trip',
+    helper: 'Tailor-made trips based on your route and style.',
   },
 ];
 
@@ -99,10 +148,14 @@ const travellerOptions: Array<QuickOption<TravellerSize>> = [
   { value: 'group', label: 'Group', helper: 'Friends, corporate, or larger mixed travel plans.' },
 ];
 
-const intentLabels: Record<TravelIntent, string> = {
-  'tour-package': 'Tour Package',
-  'adventure': 'Adventure Trip',
-  'pilgrimage': 'Pilgrimage',
+const intentLabels: Record<TravelCategory, string> = {
+  'tour-packages': 'Tour Packages',
+  'adventure-activities': 'Adventure Activities',
+  'trekking-camps': 'Trekking & Camps',
+  'bike-expeditions': 'Bike Expeditions',
+  'char-dham': 'CharDham Yatra',
+  'helicopter-services': 'Helicopter Services',
+  'mice': 'MICE',
   'custom-trip': 'Custom Trip',
 };
 
@@ -119,6 +172,39 @@ const travellerLabels: Record<TravellerSize, string> = {
   'family': 'Family',
   'group': 'Group',
 };
+
+const allProducts = getAllProducts();
+
+function getTravellerLabel(category: TravelCategory | null, traveller: TravellerSize): string {
+  if (category === 'mice') {
+    return {
+      'solo': 'Small team',
+      'couple': 'Department group',
+      'family': 'Company team',
+      'group': 'Large event group',
+    }[traveller];
+  }
+
+  if (category === 'helicopter-services') {
+    return {
+      'solo': '1 passenger',
+      'couple': '2 passengers',
+      'family': '3-5 passengers',
+      'group': '6+ passengers',
+    }[traveller];
+  }
+
+  if (category === 'custom-trip') {
+    return {
+      'solo': 'Solo traveller',
+      'couple': 'Couple',
+      'family': 'Family trip',
+      'group': 'Group trip',
+    }[traveller];
+  }
+
+  return travellerLabels[traveller];
+}
 
 const initialLeadState: LeadState = {
   intent: null,
@@ -232,6 +318,7 @@ export function LeadChatbot() {
   const [teaserMessage, setTeaserMessage] = useState('Need help choosing the right trip?');
   const [hasUnreadMessage, setHasUnreadMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [justSubmitted, setJustSubmitted] = useState(false);
 
   useEffect(() => {
     const memory = readStoredMemory();
@@ -308,17 +395,187 @@ export function LeadChatbot() {
 
   const destinationPrompt = useMemo(() => {
     switch (lead.intent) {
-      case 'adventure':
-        return 'Nice choice. What kind of adventure or destination are you thinking about?';
-      case 'pilgrimage':
-        return 'That helps. Which pilgrimage route or spiritual destination are you considering?';
+      case 'tour-packages':
+        return 'Great choice. Which destination or type of destination are you looking for in our tour packages?';
+      case 'adventure-activities':
+        return 'Nice. Which adventure activity or destination are you looking for?';
+      case 'trekking-camps':
+        return 'Perfect. Which trek, camp, or mountain destination are you interested in?';
+      case 'bike-expeditions':
+        return 'Sounds exciting. Which bike expedition route or destination are you planning for?';
+      case 'char-dham':
+        return 'Understood. Which CharDham route, yatra plan, or spiritual destination are you considering?';
+      case 'helicopter-services':
+        return 'Sure. Which helicopter service, route, or destination do you need help with?';
+      case 'mice':
+        return 'Great. Which corporate destination, event city, or MICE requirement are you planning for?';
       case 'custom-trip':
-        return 'Perfect. What route, city, or custom plan should I help shape first?';
-      case 'tour-package':
+        return 'Perfect. Which destination, route, or kind of custom trip are you looking to build?';
       default:
         return 'Great. Which destination or package are you most interested in right now?';
     }
   }, [lead.intent]);
+
+  const destinationPlaceholder = useMemo(() => {
+    switch (lead.intent) {
+      case 'tour-packages':
+        return 'Example: Kashmir, Goa, Kerala, Bali...';
+      case 'adventure-activities':
+        return 'Example: River rafting in Rishikesh, skiing in Gulmarg...';
+      case 'trekking-camps':
+        return 'Example: Kedarkantha, Hampta Pass, Chopta camp...';
+      case 'bike-expeditions':
+        return 'Example: Leh Ladakh, Spiti Valley, Zanskar...';
+      case 'char-dham':
+        return 'Example: Kedarnath, Badrinath, CharDham by road...';
+      case 'helicopter-services':
+        return 'Example: Kedarnath helicopter, Do Dham heli tour...';
+      case 'mice':
+        return 'Example: Corporate offsite in Goa, conference in Dubai...';
+      case 'custom-trip':
+        return 'Example: Kashmir with Gulmarg, Rajasthan family circuit, Europe honeymoon...';
+      default:
+        return 'Example: Char Dham, Kashmir, Leh, Goa...';
+    }
+  }, [lead.intent]);
+
+  const destinationSuggestions = useMemo(() => {
+    switch (lead.intent) {
+      case 'tour-packages':
+        return ['Kashmir', 'Goa', 'Kerala', 'Dubai'];
+      case 'adventure-activities':
+        return ['River Rafting', 'Skiing', 'Paragliding', 'Bungee Jumping'];
+      case 'trekking-camps':
+        return ['Kedarkantha', 'Hampta Pass', 'Chopta', 'Valley of Flowers'];
+      case 'bike-expeditions':
+        return ['Leh Ladakh', 'Spiti Valley', 'Zanskar', 'Srinagar to Leh'];
+      case 'char-dham':
+        return ['CharDham Yatra', 'Kedarnath', 'Badrinath', 'Do Dham'];
+      case 'helicopter-services':
+        return ['Kedarnath Heli', 'Do Dham Heli', 'CharDham Heli', 'Heli Charter'];
+      case 'mice':
+        return ['Goa Offsite', 'Jaipur Event', 'Dubai Conference', 'Rishikesh Retreat'];
+      case 'custom-trip':
+        return ['Kashmir Family Trip', 'Europe Honeymoon', 'Rajasthan Circuit', 'Leh with Nubra'];
+      default:
+        return ['Char Dham', 'Kashmir', 'Leh Ladakh', 'Goa'];
+    }
+  }, [lead.intent]);
+
+  const planningPrompt = useMemo(() => {
+    switch (lead.intent) {
+      case 'mice':
+        return 'When are you planning this event or business travel?';
+      case 'helicopter-services':
+        return 'When are you planning this helicopter service?';
+      case 'char-dham':
+        return 'When are you planning your yatra?';
+      case 'custom-trip':
+        return 'When are you planning this custom trip?';
+      default:
+        return 'When are you hoping to travel?';
+    }
+  }, [lead.intent]);
+
+  const travellerPrompt = useMemo(() => {
+    switch (lead.intent) {
+      case 'mice':
+        return 'How large is the team or event group?';
+      case 'helicopter-services':
+        return 'How many passengers are we planning for?';
+      case 'custom-trip':
+        return 'How many travellers are we planning for this custom trip?';
+      default:
+        return 'How many travellers are we planning for?';
+    }
+  }, [lead.intent]);
+
+  const travellerOptionsForCategory = useMemo(() => {
+    if (lead.intent === 'mice') {
+      return [
+        { value: 'solo', label: 'Small Team', helper: 'A compact offsite, leadership, or small meeting group.' },
+        { value: 'couple', label: 'Department', helper: 'A department-level gathering or focused team event.' },
+        { value: 'family', label: 'Company Team', helper: 'A broader internal team or multi-function event.' },
+        { value: 'group', label: 'Large Event', helper: 'A major conference, reward trip, or large gathering.' },
+      ] satisfies Array<QuickOption<TravellerSize>>;
+    }
+
+    if (lead.intent === 'helicopter-services') {
+      return [
+        { value: 'solo', label: '1 Passenger', helper: 'A single-seat requirement or solo booking.' },
+        { value: 'couple', label: '2 Passengers', helper: 'Best for couples or two-person travel.' },
+        { value: 'family', label: '3-5 Passengers', helper: 'Suitable for family or small private groups.' },
+        { value: 'group', label: '6+ Passengers', helper: 'Useful for batch planning or larger private movement.' },
+      ] satisfies Array<QuickOption<TravellerSize>>;
+    }
+
+    return travellerOptions;
+  }, [lead.intent]);
+
+  const matchingPackages = useMemo(() => {
+    const selectedCategory = lead.intent === 'custom-trip' ? null : lead.intent;
+    const query = lead.destination.trim().toLowerCase();
+
+    const scored = allProducts.map((product) => {
+      let score = 0;
+
+      if (selectedCategory && product.category === selectedCategory) {
+        score += 6;
+      }
+
+      if (lead.intent === 'custom-trip' && product.featured) {
+        score += 2;
+      }
+
+      if (query) {
+        const haystacks = [
+          product.title,
+          product.location,
+          product.description,
+          product.category,
+          ...product.highlights,
+        ].map((value) => value.toLowerCase());
+
+        if (haystacks.some((value) => value.includes(query))) {
+          score += 5;
+        } else {
+          const queryWords = query.split(/\s+/).filter(Boolean);
+          const partialMatches = queryWords.filter((word) =>
+            haystacks.some((value) => value.includes(word))
+          ).length;
+          score += partialMatches;
+        }
+      }
+
+      if (lead.travelWindow === 'this-month' && product.duration.includes('2 Days')) {
+        score += 1;
+      }
+
+      if (lead.travellers === 'group' && /people|guests|riders|batch/i.test(product.groupSize)) {
+        score += 1;
+      }
+
+      return { product, score };
+    });
+
+    const primaryMatches = scored
+      .filter(({ score, product }) => score > 0 || product.featured)
+      .sort((a, b) => b.score - a.score || b.product.rating - a.product.rating)
+      .slice(0, 3)
+      .map(({ product }) => product);
+
+    if (primaryMatches.length >= 3) {
+      return primaryMatches;
+    }
+
+    const existingSlugs = new Set(primaryMatches.map((product) => product.slug));
+    const fallbackMatches = allProducts
+      .filter((product) => !existingSlugs.has(product.slug))
+      .sort((a, b) => Number(b.featured) - Number(a.featured) || b.rating - a.rating)
+      .slice(0, 3 - primaryMatches.length);
+
+    return [...primaryMatches, ...fallbackMatches];
+  }, [lead.destination, lead.intent, lead.travelWindow, lead.travellers]);
 
   const summaryLine = useMemo(() => {
     if (!lead.intent && !lead.destination && !lead.travelWindow && !lead.travellers) {
@@ -329,7 +586,7 @@ export function LeadChatbot() {
       lead.intent ? intentLabels[lead.intent] : null,
       lead.destination ? `for ${lead.destination}` : null,
       lead.travelWindow ? travelWindowLabels[lead.travelWindow] : null,
-      lead.travellers ? travellerLabels[lead.travellers].toLowerCase() : null,
+      lead.travellers ? getTravellerLabel(lead.intent, lead.travellers).toLowerCase() : null,
     ]
       .filter(Boolean)
       .join(', ');
@@ -373,27 +630,37 @@ export function LeadChatbot() {
   const beginConversation = () => {
     if (hasSubmitted) {
       setStep(5);
+      setJustSubmitted(false);
       setLastAssistantMessage('Welcome back. I remembered your last travel brief so we can continue from there.');
       setOpen(true);
       return;
     }
 
     setStep(1);
+    setJustSubmitted(false);
     setLastAssistantMessage('Let me understand what kind of trip you are planning so I can keep this useful and quick.');
     setOpen(true);
   };
 
-  const handleIntentSelect = (value: TravelIntent) => {
+  const handleIntentSelect = (value: TravelCategory) => {
     updateLead('intent', value);
     setStep(2);
     setLastAssistantMessage(
-      value === 'adventure'
-        ? 'Adventure trips get better when we match season, route, and difficulty.'
-        : value === 'pilgrimage'
-          ? 'Pilgrimage planning works best when we balance comfort, timing, and route flow.'
-          : value === 'custom-trip'
-            ? 'Custom trips are easiest when we anchor the route first and shape the rest around it.'
-            : 'Packages are easier to compare once I know the destination you are leaning toward.'
+      value === 'adventure-activities'
+        ? 'Adventure plans get much better when we match the activity, destination, and comfort level.'
+        : value === 'trekking-camps'
+          ? 'Treks and camps are easier to shortlist once I know the route, location, or experience style.'
+          : value === 'bike-expeditions'
+            ? 'Bike expeditions depend a lot on route preference, season, and riding comfort.'
+            : value === 'char-dham'
+              ? 'CharDham planning works best when we align the route, travel pace, and comfort expectations.'
+              : value === 'helicopter-services'
+              ? 'Helicopter services are easiest to plan once I know the route, destination, or transfer need.'
+              : value === 'mice'
+                ? 'MICE planning becomes sharper once we know the destination, event type, and group need.'
+                : value === 'custom-trip'
+                  ? 'Custom trips become far easier once we know the route, destination style, and the kind of travel experience you want.'
+                  : 'Tour packages are easier to match once I know the destination or destination style you want.'
     );
   };
 
@@ -404,7 +671,13 @@ export function LeadChatbot() {
     }
 
     setStep(3);
-    setLastAssistantMessage(`Good direction. I will use ${lead.destination.trim()} as the main interest while we narrow the timing and group style.`);
+    setLastAssistantMessage(
+      lead.intent === 'mice'
+        ? `Good direction. I will use ${lead.destination.trim()} as the main event or destination focus while we narrow timing and group size.`
+        : lead.intent === 'helicopter-services'
+          ? `Perfect. I will use ${lead.destination.trim()} as the main heli route or service while we narrow timing and passenger count.`
+          : `Good direction. I will use ${lead.destination.trim()} as the main interest while we narrow the timing and group style.`
+    );
   };
 
   const handleTravelProfileContinue = () => {
@@ -415,7 +688,7 @@ export function LeadChatbot() {
 
     setStep(4);
     setLastAssistantMessage(
-      `Nice. I have enough context to make follow-up feel sharper: ${travelWindowLabels[lead.travelWindow]} for a ${travellerLabels[lead.travellers].toLowerCase()}.`
+      `Nice. I have enough context to make follow-up feel sharper: ${travelWindowLabels[lead.travelWindow]} for a ${getTravellerLabel(lead.intent, lead.travellers).toLowerCase()}.`
     );
   };
 
@@ -451,10 +724,10 @@ export function LeadChatbot() {
         ? 'Returning visitor reopened chatbot and requested more offers or a fresh follow-up.'
         : 'Lead captured from chatbot assistant.',
       `Page path: ${pathname}`,
-      lead.intent ? `Travel intent: ${intentLabels[lead.intent]}` : '',
+      lead.intent ? `Travel category: ${intentLabels[lead.intent]}` : '',
       lead.destination.trim() ? `Destination interest: ${lead.destination.trim()}` : '',
       lead.travelWindow ? `Preferred travel window: ${travelWindowLabels[lead.travelWindow]}` : '',
-      lead.travellers ? `Traveller type: ${travellerLabels[lead.travellers]}` : '',
+      lead.travellers ? `Traveller type: ${getTravellerLabel(lead.intent, lead.travellers)}` : '',
       lead.notes.trim() ? `Extra notes: ${lead.notes.trim()}` : '',
       hasSubmitted ? 'Customer had an earlier remembered chat session.' : '',
     ]
@@ -483,11 +756,12 @@ export function LeadChatbot() {
       }
 
       setHasSubmitted(true);
+      setJustSubmitted(true);
       setStep(5);
       setLastAssistantMessage(
-        `Saved. I will remember that you were exploring ${lead.destination || 'this trip'} so we can continue from here next time.`
+        `Enquiry received for ${lead.destination || 'your trip'}. Our team will get back to you within 24 hours.`
       );
-      toast.success('Your details are saved. TFB Buddy will remember this conversation next time too.');
+      toast.success('Our team will get back to you within 24 hours.');
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Something went wrong while saving the lead.');
     } finally {
@@ -622,9 +896,9 @@ export function LeadChatbot() {
               )}
 
               {lead.travelWindow && lead.travellers && (
-                <div className="flex justify-end">
+                  <div className="flex justify-end">
                   <div className="max-w-[84%] rounded-[1.4rem] rounded-br-md bg-sky-100 px-4 py-3 text-sm leading-6 text-sky-950 dark:bg-sky-500/15 dark:text-sky-100">
-                    {travelWindowLabels[lead.travelWindow]} for a {travellerLabels[lead.travellers].toLowerCase()}.
+                    {travelWindowLabels[lead.travelWindow]} for a {getTravellerLabel(lead.intent, lead.travellers).toLowerCase()}.
                   </div>
                 </div>
               )}
@@ -669,8 +943,11 @@ export function LeadChatbot() {
                         Start smart chat
                         <ArrowRight className="h-4 w-4" />
                       </Button>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        {intentOptions.slice(0, 2).map((option) => (
+                      <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                        {intentOptions.map((option) => {
+                          const Icon = categoryIcons[option.value];
+
+                          return (
                           <button
                             key={option.value}
                             type="button"
@@ -678,12 +955,20 @@ export function LeadChatbot() {
                               beginConversation();
                               handleIntentSelect(option.value);
                             }}
-                            className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10"
+                            className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10"
                           >
-                            <p className="font-semibold text-slate-900 dark:text-slate-50">{option.label}</p>
-                            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{option.helper}</p>
+                            <div className="flex items-start gap-2.5">
+                              <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
+                                <Icon className="h-4 w-4" />
+                              </span>
+                              <div className="min-w-0">
+                                <p className="text-sm font-semibold leading-5 text-slate-900 dark:text-slate-50">{option.label}</p>
+                                <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-300">{option.helper}</p>
+                              </div>
+                            </div>
                           </button>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -699,18 +984,29 @@ export function LeadChatbot() {
                   <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
                     What are you planning right now?
                   </p>
-                  <div className="grid gap-3">
-                    {intentOptions.map((option) => (
+                  <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
+                    {intentOptions.map((option) => {
+                      const Icon = categoryIcons[option.value];
+
+                      return (
                       <button
                         key={option.value}
                         type="button"
                         onClick={() => handleIntentSelect(option.value)}
-                        className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10"
+                        className="rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10"
                       >
-                        <p className="font-semibold text-slate-900 dark:text-slate-50">{option.label}</p>
-                        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{option.helper}</p>
+                        <div className="flex items-start gap-2.5">
+                          <span className="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
+                            <Icon className="h-4 w-4" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="text-sm font-semibold leading-5 text-slate-900 dark:text-slate-50">{option.label}</p>
+                            <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-300">{option.helper}</p>
+                          </div>
+                        </div>
                       </button>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
@@ -723,11 +1019,11 @@ export function LeadChatbot() {
                   <Input
                     value={lead.destination}
                     onChange={(event) => updateLead('destination', event.target.value)}
-                    placeholder="Example: Char Dham, Kashmir, Leh, Goa..."
+                    placeholder={destinationPlaceholder}
                     className="h-11 rounded-xl"
                   />
                   <div className="grid grid-cols-2 gap-3">
-                    {['Char Dham', 'Kashmir', 'Leh Ladakh', 'Goa'].map((option) => (
+                    {destinationSuggestions.map((option) => (
                       <Button
                         key={option}
                         type="button"
@@ -753,9 +1049,9 @@ export function LeadChatbot() {
               {step === 3 && (
                 <div className="space-y-4">
                   <p className="text-sm font-medium text-slate-800 dark:text-slate-100">
-                    When are you hoping to travel?
+                    {planningPrompt}
                   </p>
-                  <div className="grid gap-3">
+                  <div className="grid grid-cols-2 gap-3">
                     {travelWindowOptions.map((option) => (
                       <button
                         key={option.value}
@@ -767,17 +1063,17 @@ export function LeadChatbot() {
                             : 'border-slate-200 bg-slate-50 hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10'
                         }`}
                       >
-                        <p className="font-semibold text-slate-900 dark:text-slate-50">{option.label}</p>
-                        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{option.helper}</p>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-50">{option.label}</p>
+                        <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-300">{option.helper}</p>
                       </button>
                     ))}
                   </div>
 
                   <p className="pt-1 text-sm font-medium text-slate-800 dark:text-slate-100">
-                    How many travellers are we planning for?
+                    {travellerPrompt}
                   </p>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {travellerOptions.map((option) => (
+                  <div className="grid grid-cols-2 gap-3">
+                    {travellerOptionsForCategory.map((option) => (
                       <button
                         key={option.value}
                         type="button"
@@ -788,8 +1084,8 @@ export function LeadChatbot() {
                             : 'border-slate-200 bg-slate-50 hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10'
                         }`}
                       >
-                        <p className="font-semibold text-slate-900 dark:text-slate-50">{option.label}</p>
-                        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{option.helper}</p>
+                        <p className="text-sm font-semibold text-slate-900 dark:text-slate-50">{option.label}</p>
+                        <p className="mt-1 text-xs leading-5 text-slate-600 dark:text-slate-300">{option.helper}</p>
                       </button>
                     ))}
                   </div>
@@ -853,7 +1149,7 @@ export function LeadChatbot() {
                       Back
                     </Button>
                     <Button className="rounded-xl" onClick={() => handleSubmit('lead')} disabled={isSubmitting}>
-                      {isSubmitting ? 'Saving...' : 'Save and Remember'}
+                      {isSubmitting ? 'Sending...' : 'Enquire Now!'}
                       {!isSubmitting && <Send className="h-4 w-4" />}
                     </Button>
                   </div>
@@ -865,11 +1161,18 @@ export function LeadChatbot() {
                   <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm leading-6 text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-200">
                     <div className="flex items-center gap-2 font-semibold">
                       <CheckCircle2 className="h-4 w-4" />
-                      Welcome back
+                      {justSubmitted ? 'Enquiry received' : 'Welcome back'}
                     </div>
                     <p className="mt-2">
-                      I still have your last brief: {summaryLine}
+                      {justSubmitted
+                        ? 'Our team will get back to you within 24 hours.'
+                        : `I still have your last brief: ${summaryLine}`}
                     </p>
+                    {justSubmitted && (
+                      <p className="mt-2">
+                        Request summary: {summaryLine}
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid gap-3">
@@ -889,6 +1192,53 @@ export function LeadChatbot() {
 
                   <div className="rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 dark:bg-slate-800/80 dark:text-slate-200">
                     Before you exit, I can keep nudging toward a better match using the context already saved here instead of making you repeat everything.
+                  </div>
+
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
+                        Related Packages
+                      </p>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">
+                        Based on your category and destination
+                      </span>
+                    </div>
+
+                    <div className="grid gap-3">
+                      {matchingPackages.map((product) => (
+                        <Link
+                          key={product.slug}
+                          href={`/products/${product.slug}`}
+                          className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm transition hover:border-sky-300 hover:shadow-md dark:border-slate-800 dark:bg-slate-900/80 dark:hover:border-sky-500"
+                        >
+                          <div className="flex gap-3">
+                            <div className="relative h-20 w-24 shrink-0 overflow-hidden rounded-xl">
+                              <Image
+                                src={product.heroImage}
+                                alt={product.title}
+                                fill
+                                sizes="96px"
+                                className="object-cover"
+                              />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="line-clamp-1 text-sm font-semibold text-slate-900 dark:text-slate-50">
+                                {product.title}
+                              </p>
+                              <p className="mt-1 line-clamp-2 text-xs leading-5 text-slate-600 dark:text-slate-300">
+                                {product.location} | {product.duration}
+                              </p>
+                              <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500 dark:text-slate-400">
+                                {product.highlights.slice(0, 2).join(' | ')}
+                              </p>
+                              <p className="mt-2 text-xs font-medium text-sky-700 dark:text-sky-300">
+                                View itinerary
+                              </p>
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
                   </div>
                 </div>
               )}
