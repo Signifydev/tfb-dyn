@@ -852,7 +852,7 @@ export function LeadChatbot() {
     ? 'group min-h-[132px] rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10'
     : 'rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10';
   const desktopChatboxClassName = isDesktop
-    ? '!inset-auto !bottom-24 !right-6 !top-auto h-[640px] w-[380px] rounded-2xl border border-slate-200/80 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_22%,#f8fafc_100%)] px-0 pb-0 pt-0 text-slate-950 shadow-[0_28px_70px_rgba(15,23,42,0.22)] dark:border-slate-700/80 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_28%,#111827_100%)] dark:text-slate-50'
+    ? '!inset-x-auto !left-auto !right-6 !bottom-0 !top-auto h-[560px] w-[380px] rounded-t-2xl border border-b-0 border-slate-200/80 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_22%,#f8fafc_100%)] px-0 pb-0 pt-0 text-slate-950 shadow-[0_24px_60px_rgba(15,23,42,0.18)] dark:border-slate-700/80 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_28%,#111827_100%)] dark:text-slate-50'
     : 'h-[88dvh] rounded-t-[1.75rem] border-0 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_22%,#f8fafc_100%)] px-0 pb-0 pt-0 text-slate-950 shadow-[0_30px_80px_rgba(15,23,42,0.24)] dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_28%,#111827_100%)] dark:text-slate-50 sm:h-full sm:max-w-[450px] sm:rounded-none';
 
   return (
@@ -905,7 +905,7 @@ export function LeadChatbot() {
 
       <Sheet open={open} onOpenChange={handleOpenChange}>
         <SheetContent
-          side={isMobile ? 'bottom' : 'right'}
+          side="bottom"
           overlayClassName={isDesktop ? 'hidden' : undefined}
           className={`${desktopChatboxClassName} overflow-y-auto [&>button]:hidden`}
         >
