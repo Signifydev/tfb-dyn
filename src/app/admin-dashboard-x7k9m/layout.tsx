@@ -4,44 +4,44 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { LayoutDashboard, BookOpen, MessageSquare, Package, LogOut, Shield } from 'lucide-react';
+import { LayoutDashboard, BookOpen, MessageSquare, Package, LogOut, Shield, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
 
 const NAV_ITEMS = [
+  { href: '/admin-dashboard-x7k9m', label: 'Overview', icon: LayoutDashboard },
   { href: '/admin-dashboard-x7k9m/bookings', label: 'Bookings', icon: BookOpen },
   { href: '/admin-dashboard-x7k9m/enquiries', label: 'Enquiries', icon: MessageSquare },
   { href: '/admin-dashboard-x7k9m/products', label: 'Products', icon: Package },
+  { href: '/admin-dashboard-x7k9m/team', label: 'Team', icon: Users },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, isLoading: authLoading, signOut } = useAuth();
+  const { user, session, isLoading: authLoading, signOut } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    checkAdminAccess();
-  }, [user]);
+    void checkAdminAccess();
+  }, [user, session?.access_token]);
 
   const checkAdminAccess = async () => {
-    if (!user) {
+    if (!user || !session?.access_token) {
       router.push('/staff-login-a7f3k');
       return;
     }
 
     try {
-      const { data } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
+      const response = await fetch('/api/admin/access', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+      const payload = await response.json();
 
-      if (!data) {
+      if (!response.ok || !payload.data?.isAdmin) {
         router.push('/');
         return;
       }
@@ -110,7 +110,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <div className="flex gap-1 py-2">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive = item.href === '/admin-dashboard-x7k9m'
+                ? pathname === item.href
+                : pathname.startsWith(item.href);
               return (
                 <Link
                   key={item.href}

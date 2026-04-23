@@ -13,7 +13,7 @@ import { AlertCircle, Shield, Loader2 } from 'lucide-react';
 
 export default function StaffLoginPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -21,24 +21,24 @@ export default function StaffLoginPage() {
   const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
-    checkAdminAccess();
-  }, [user]);
+    void checkAdminAccess();
+  }, [user, session?.access_token]);
 
   const checkAdminAccess = async () => {
-    if (!user) {
+    if (!user || !session?.access_token) {
       setIsVerifying(false);
       return;
     }
 
     try {
-      const { data, error } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
+      const response = await fetch('/api/admin/access', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+      const payload = await response.json();
 
-      if (data) {
+      if (response.ok && payload.data?.isAdmin) {
         router.push('/admin-dashboard-x7k9m/bookings');
       }
     } catch (err) {
@@ -54,22 +54,21 @@ export default function StaffLoginPage() {
     setIsLoading(true);
 
     try {
-      const { data, error: signInError } = await supabase.auth.signInWithPassword({
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (signInError) throw signInError;
 
-      // Check if user is admin
-      const { data: roleData } = await supabase
-        .from('user_roles')
-        .select('role')
-        .eq('user_id', data.user.id)
-        .eq('role', 'admin')
-        .maybeSingle();
+      const response = await fetch('/api/admin/access', {
+        headers: {
+          Authorization: `Bearer ${signInData.session?.access_token || ''}`,
+        },
+      });
+      const payload = await response.json();
 
-      if (!roleData) {
+      if (!response.ok || !payload.data?.isAdmin) {
         await supabase.auth.signOut();
         setError('Access denied. Admin credentials required.');
         setIsLoading(false);
@@ -100,7 +99,9 @@ export default function StaffLoginPage() {
             <Shield className="h-8 w-8 text-blue-600" />
           </div>
           <CardTitle className="text-2xl font-bold">Staff Portal</CardTitle>
-          <CardDescription>Sign in to access the admin dashboard</CardDescription>
+          <CardDescription>
+            Sign in with your authorized internal Supabase account to access the admin dashboard.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

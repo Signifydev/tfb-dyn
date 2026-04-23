@@ -8,7 +8,7 @@ import {
   Tent,
   Bike,
   Church,
-  Plane,
+  Helicopter,
   Building2,
 } from 'lucide-react';
 
@@ -19,7 +19,7 @@ const iconMap: Record<string, any> = {
   'trekking-camps': Tent,
   'bike-expeditions': Bike,
   'char-dham': Church,
-  'helicopter-services': Plane,
+  'helicopter-services': Helicopter,
   mice: Building2,
 };
 
@@ -38,18 +38,20 @@ export default async function CategoryTabs() {
           </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="no-scrollbar -mx-2 flex gap-3 overflow-x-auto scroll-smooth px-2 py-2">
           {categories.map((cat) => {
             const Icon = iconMap[cat.slug] || Map;
 
             return (
-              <Link key={cat.id} href={getCategoryHref(cat.slug)}>
-                <div className="flex h-full flex-col items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-4 text-center text-slate-700 transition-all hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 md:px-6">
-                  <Icon className="h-5 w-5 md:h-6 md:w-6" />
-                  <span className="text-xs font-medium leading-snug md:text-sm">
+              <Link
+                key={cat.id}
+                href={getCategoryHref(cat.slug)}
+                className="group flex shrink-0 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-3 text-slate-700 shadow-sm transition-all hover:-translate-y-0.5 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-700 dark:hover:bg-slate-800 dark:hover:text-sky-200 md:px-5"
+              >
+                <Icon className="h-5 w-5 shrink-0 transition-transform group-hover:scale-110" />
+                <span className="whitespace-nowrap text-sm font-medium">
                     {cat.name}
-                  </span>
-                </div>
+                </span>
               </Link>
             );
           })}

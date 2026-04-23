@@ -2,6 +2,7 @@ import { HeroSection } from "@/components/travel/HeroSection";
 import CategoryTabs from "@/components/travel/CategoryTabs";
 import { CtaBanner } from "@/components/travel/CtaBanner";
 import { FeaturedPackages } from "@/components/travel/FeaturedPackages";
+import { HomepagePackageShowcase } from "@/components/travel/HomepagePackageShowcase";
 import { DestinationGrid } from "@/components/travel/DestinationGrid";
 import { FaqSection } from "@/components/travel/FaqSection";
 
@@ -11,6 +12,7 @@ export default function HomePage() {
       <HeroSection />
       <CategoryTabs />
       <FeaturedPackages />
+      <HomepagePackageShowcase />
       <CtaBanner />
       <DestinationGrid />
       <FaqSection />

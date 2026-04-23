@@ -8,8 +8,8 @@ import {
 } from '@/lib/products';
 
 const ACTIVE_PRODUCT_FILTER = 'is_active.is.null,is_active.eq.true';
+const PRODUCT_SELECT = '*, itinerary_destinations(*)';
 
-// Helper to map DB → UI
 function mapProduct(data: any): Product {
   const normalizedCategory = resolveCategory(data.category)?.slug ?? data.category;
 
@@ -19,14 +19,25 @@ function mapProduct(data: any): Product {
     heroImage: data.hero_image,
     originalPrice: data.original_price,
     groupSize: data.group_size,
+    destinations: Array.isArray(data.itinerary_destinations)
+      ? data.itinerary_destinations.map((destination: any) => ({
+          id: destination.id,
+          itinerary_id: destination.itinerary_id,
+          country: destination.country,
+          state: destination.state,
+          city: destination.city,
+          display_label: destination.display_label,
+          sort_order: destination.sort_order,
+          created_at: destination.created_at,
+        }))
+      : undefined,
   };
 }
 
-// Get by slug
 export async function getProductBySlug(slug: string): Promise<Product | null> {
   const { data, error } = await supabase
     .from('itineraries')
-    .select('*')
+    .select(PRODUCT_SELECT)
     .eq('slug', slug)
     .single();
 
@@ -37,11 +48,10 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   return data ? mapProduct(data) : getLocalProductBySlug(slug) ?? null;
 }
 
-// Get featured
 export async function getFeaturedProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from('itineraries')
-    .select('*')
+    .select(PRODUCT_SELECT)
     .eq('featured', true)
     .or(ACTIVE_PRODUCT_FILTER);
 
@@ -55,7 +65,7 @@ export async function getFeaturedProducts(): Promise<Product[]> {
 export async function getAllProducts(): Promise<Product[]> {
   const { data, error } = await supabase
     .from('itineraries')
-    .select('*')
+    .select(PRODUCT_SELECT)
     .or(ACTIVE_PRODUCT_FILTER);
 
   if (error) {
@@ -67,12 +77,11 @@ export async function getAllProducts(): Promise<Product[]> {
   return products.length > 0 ? products : getLocalAllProducts();
 }
 
-// Get by category
 export async function getProductsByCategory(category: string): Promise<Product[]> {
   const categorySlugs = getCategoryQuerySlugs(category);
   const { data, error } = await supabase
     .from('itineraries')
-    .select('*')
+    .select(PRODUCT_SELECT)
     .in('category', categorySlugs)
     .or(ACTIVE_PRODUCT_FILTER);
 

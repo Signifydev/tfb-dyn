@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { PackageList } from '@/components/travel/PackageList';
+import { TourPackagesHub } from '@/components/travel/TourPackagesHub';
 import {
   MiceAboutSection,
   MiceCaseStudiesPlaceholderSection,
@@ -16,10 +17,19 @@ import { getCategories } from '@/lib/api/categories';
 import { getProductsByCategory } from '@/lib/api/products';
 import { MICE_META } from '@/lib/mice-content';
 import { resolveCategory } from '@/lib/categories';
+import {
+  buildTourPackageStateCollections,
+  isInternationalTourPackage,
+  sortTourPackageProducts,
+} from '@/lib/tour-packages';
 
 interface PageProps {
   params: Promise<{
     category: string;
+  }>;
+  searchParams: Promise<{
+    scope?: string;
+    state?: string;
   }>;
 }
 
@@ -57,8 +67,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function CategoryPage({ params }: PageProps) {
+export default async function CategoryPage({ params, searchParams }: PageProps) {
   const { category: categoryParam } = await params;
+  const { scope, state } = await searchParams;
   const categories = await getCategories();
   const category =
     resolveCategory(categoryParam) ||
@@ -84,6 +95,55 @@ export default async function CategoryPage({ params }: PageProps) {
         <MiceCaseStudiesPlaceholderSection />
       </div>
     );
+  }
+
+  if (category?.slug === 'tour-packages' || categoryParam === 'tour-packages') {
+    const sortedProducts = sortTourPackageProducts(products);
+    const normalizedScope = scope?.toLowerCase();
+    const normalizedState = state?.trim().toLowerCase();
+
+    if (normalizedScope === 'domestic' || normalizedScope === 'international' || normalizedState) {
+      const domesticProducts = sortedProducts.filter((product) => !isInternationalTourPackage(product));
+      const internationalProducts = sortedProducts.filter((product) => isInternationalTourPackage(product));
+      let filteredProducts = normalizedScope === 'international' ? internationalProducts : domesticProducts;
+      let pageTitle = normalizedScope === 'international' ? 'International Tour Packages' : 'Domestic Tour Packages';
+      let pageDescription =
+        normalizedScope === 'international'
+          ? 'Explore international tour packages in one focused collection.'
+          : 'Explore domestic tour packages grouped for easier browsing.';
+
+      if (normalizedState) {
+        const stateCollections = buildTourPackageStateCollections(domesticProducts);
+        const selectedCollection = stateCollections.find(
+          (collection) => collection.name.toLowerCase() === normalizedState
+        );
+
+        if (selectedCollection) {
+          filteredProducts = selectedCollection.products;
+          pageTitle = `${selectedCollection.name} Tour Packages`;
+          pageDescription = `Explore all tour packages available for ${selectedCollection.name}.`;
+        } else {
+          filteredProducts = [];
+          pageTitle = `${state} Tour Packages`;
+          pageDescription = 'No tour packages were found for this state yet.';
+        }
+      }
+
+      return (
+        <div className="min-h-screen bg-slate-50 pb-8 pt-24 md:pt-28">
+          <div className="container mx-auto px-4">
+            <div className="mb-8">
+              <h1 className="mb-2 text-3xl font-bold text-slate-900">{pageTitle}</h1>
+              <p className="text-slate-600">{pageDescription}</p>
+            </div>
+
+            <PackageList products={filteredProducts} />
+          </div>
+        </div>
+      );
+    }
+
+    return <TourPackagesHub products={products} />;
   }
 
   return (

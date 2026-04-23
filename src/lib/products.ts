@@ -1,10 +1,12 @@
 import { CATEGORY_DEFINITIONS } from '@/lib/categories';
 
 export interface Product {
+  id?: string;
   slug: string;
   title: string;
   category: string;
   subcategory: string;
+  scope?: 'domestic' | 'international' | string | null;
   duration: string;
   price: number;
   originalPrice: number;
@@ -21,6 +23,18 @@ export interface Product {
   groupSize: string;
   description: string;
   highlights: string[];
+  destinations?: ProductDestination[];
+}
+
+export interface ProductDestination {
+  id?: number | string;
+  itinerary_id?: string;
+  country: string;
+  state?: string | null;
+  city?: string | null;
+  display_label?: string | null;
+  sort_order?: number | null;
+  created_at?: string;
 }
 
 export interface ItineraryDay {
