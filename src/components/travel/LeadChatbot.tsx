@@ -32,6 +32,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { fetchAllProducts } from '@/lib/api/products-client';
+import {
+  dispatchBrowserEvent,
+  readLocalStorage,
+  readSessionStorage,
+  writeLocalStorage,
+  writeSessionStorage,
+} from '@/lib/browser-storage';
 import type { Product } from '@/lib/products';
 
 type TravelCategory =
@@ -275,7 +282,7 @@ function shouldSuppressAutoPrompt() {
     return true;
   }
 
-  const dismissedAt = window.localStorage.getItem(DISMISS_KEY);
+  const dismissedAt = readLocalStorage(DISMISS_KEY);
   if (!dismissedAt) {
     return false;
   }
@@ -288,7 +295,7 @@ function readStoredMemory(): ChatMemory {
     return initialMemory;
   }
 
-  const stored = window.localStorage.getItem(CHAT_MEMORY_KEY);
+  const stored = readLocalStorage(CHAT_MEMORY_KEY);
   if (!stored) {
     return initialMemory;
   }
@@ -316,12 +323,8 @@ function broadcastChatVisibility(isOpen: boolean) {
     return;
   }
 
-  window.localStorage.setItem(CHAT_OPEN_KEY, isOpen ? 'true' : 'false');
-  window.dispatchEvent(
-    new CustomEvent('tfb-chatbot-visibility', {
-      detail: { open: isOpen },
-    })
-  );
+  writeLocalStorage(CHAT_OPEN_KEY, isOpen ? 'true' : 'false');
+  dispatchBrowserEvent('tfb-chatbot-visibility', { open: isOpen });
 }
 
 function BuddyAvatar({
@@ -413,7 +416,7 @@ export function LeadChatbot() {
       lastUpdatedAt: Date.now(),
     };
 
-    window.localStorage.setItem(CHAT_MEMORY_KEY, JSON.stringify(memory));
+    writeLocalStorage(CHAT_MEMORY_KEY, JSON.stringify(memory));
   }, [hydrated, lead, step, hasSubmitted, lastAssistantMessage]);
 
   useEffect(() => {
@@ -434,7 +437,7 @@ export function LeadChatbot() {
     }
 
     const memory = readStoredMemory();
-    const lastRoute = window.sessionStorage.getItem(ROUTE_PROMPT_KEY);
+    const lastRoute = readSessionStorage(ROUTE_PROMPT_KEY);
     const openDelay = lastRoute && lastRoute !== pathname ? REOPEN_DELAY_MS : AUTO_OPEN_DELAY_MS;
     const teaserTimer = window.setTimeout(() => {
       if (memory.hasSubmitted && memory.lead.destination) {
@@ -453,7 +456,7 @@ export function LeadChatbot() {
       : window.setTimeout(() => {
           setOpen(true);
           setHasUnreadMessage(false);
-          window.sessionStorage.setItem(ROUTE_PROMPT_KEY, pathname);
+          writeSessionStorage(ROUTE_PROMPT_KEY, pathname);
         }, openDelay);
 
     return () => {
@@ -675,7 +678,7 @@ export function LeadChatbot() {
     setHasUnreadMessage(false);
 
     if (persistDismiss && typeof window !== 'undefined') {
-      window.localStorage.setItem(DISMISS_KEY, String(Date.now()));
+      writeLocalStorage(DISMISS_KEY, String(Date.now()));
     }
   };
 

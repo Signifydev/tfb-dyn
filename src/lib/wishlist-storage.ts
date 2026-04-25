@@ -1,3 +1,10 @@
+import {
+  dispatchBrowserEvent,
+  readLocalStorage,
+  removeLocalStorage,
+  writeLocalStorage,
+} from '@/lib/browser-storage';
+
 export const WISHLIST_UPDATED_EVENT = 'tfb-wishlist-updated';
 
 export function getWishlistStorageKey(userId?: string | null) {
@@ -10,7 +17,7 @@ export function readWishlist(userId?: string | null) {
   }
 
   const key = getWishlistStorageKey(userId);
-  const saved = window.localStorage.getItem(key);
+  const saved = readLocalStorage(key);
 
   if (!saved) {
     return [];
@@ -31,15 +38,11 @@ export function writeWishlist(items: string[], userId?: string | null) {
 
   const uniqueItems = Array.from(new Set(items));
   const key = getWishlistStorageKey(userId);
-  window.localStorage.setItem(key, JSON.stringify(uniqueItems));
-  window.dispatchEvent(
-    new CustomEvent(WISHLIST_UPDATED_EVENT, {
-      detail: {
-        userId: userId || null,
-        items: uniqueItems,
-      },
-    })
-  );
+  writeLocalStorage(key, JSON.stringify(uniqueItems));
+  dispatchBrowserEvent(WISHLIST_UPDATED_EVENT, {
+    userId: userId || null,
+    items: uniqueItems,
+  });
 }
 
 export function toggleWishlistItem(slug: string, userId?: string | null) {
@@ -64,7 +67,7 @@ export function syncGlobalWishlistToUser(userId?: string | null) {
   writeWishlist(mergedItems, userId);
 
   if (globalItems.length > 0) {
-    window.localStorage.removeItem(getWishlistStorageKey(null));
+    removeLocalStorage(getWishlistStorageKey(null));
   }
 
   return mergedItems;

@@ -5,8 +5,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
 import { Header } from "@/components/travel/Header";
 import { Footer } from "@/components/travel/Footer";
-import { PromoPopup } from "@/components/travel/PromoPopup";
-import { LeadChatbot } from "@/components/travel/LeadChatbot";
+import { ClientSessionRecovery } from "@/components/travel/ClientSessionRecovery";
+import { DeferredTravelWidgets } from "@/components/travel/DeferredTravelWidgets";
 
 import "./globals.css";
 
@@ -43,11 +43,11 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <ClientSessionRecovery />
             <Header />
             <main className="flex-1">{children}</main>
             <Footer />
-            <PromoPopup />
-            <LeadChatbot />
+            <DeferredTravelWidgets />
             <Toaster />
           </ThemeProvider>
         </AuthProvider>

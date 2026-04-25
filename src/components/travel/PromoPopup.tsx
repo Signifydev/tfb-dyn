@@ -15,6 +15,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { fetchAllProducts } from '@/lib/api/products-client';
+import { readLocalStorage, readSessionStorage, writeSessionStorage } from '@/lib/browser-storage';
 import type { Product } from '@/lib/products';
 
 interface PromoContent {
@@ -33,7 +34,7 @@ const LANDING_PROMO_KEY = 'tfb-landing-promo-shown';
 const CHAT_OPEN_KEY = 'tfb-chatbot-open';
 
 function isChatbotOpen() {
-  return typeof window !== 'undefined' && window.localStorage.getItem(CHAT_OPEN_KEY) === 'true';
+  return readLocalStorage(CHAT_OPEN_KEY) === 'true';
 }
 
 function buildLandingPromo(products: Product[]): PromoContent | null {
@@ -145,8 +146,7 @@ export function PromoPopup() {
 
     let timer: ReturnType<typeof setTimeout> | null = null;
 
-    const hasSeenLandingPromo =
-      typeof window !== 'undefined' && sessionStorage.getItem(LANDING_PROMO_KEY) === 'true';
+    const hasSeenLandingPromo = readSessionStorage(LANDING_PROMO_KEY) === 'true';
 
     if (!hasMountedRef.current) {
       hasMountedRef.current = true;
@@ -159,7 +159,7 @@ export function PromoPopup() {
           }
           setPromo(landingPromo);
           setOpen(true);
-          sessionStorage.setItem(LANDING_PROMO_KEY, 'true');
+          writeSessionStorage(LANDING_PROMO_KEY, 'true');
         }, 10000);
       }
 
