@@ -137,7 +137,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
               <p className="text-slate-600">{pageDescription}</p>
             </div>
 
-            <PackageList products={filteredProducts} />
+            <PackageList products={filteredProducts} showFilters={false} />
           </div>
         </div>
       );
@@ -158,7 +158,7 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           </p>
         </div>
 
-        <PackageList products={products} />
+        <PackageList products={products} showFilters={false} />
       </div>
     </div>
   );

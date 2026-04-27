@@ -191,23 +191,27 @@ export function PackageList({ products: initialProducts, showFilters = true }: P
         <div className="flex-1">
           {filteredProducts.length === 0 ? (
             <div className="py-12 text-center">
-              <p className="mb-4 text-slate-500 dark:text-slate-400">No packages match your filters</p>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setPriceRange([0, maxPrice]);
-                  setShowOnlyFeatured(false);
-                }}
-              >
-                Clear Filters
-              </Button>
+              <p className="mb-4 text-slate-500 dark:text-slate-400">
+                {showFilters ? 'No packages match your filters' : 'No packages available right now'}
+              </p>
+              {showFilters ? (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setPriceRange([0, maxPrice]);
+                    setShowOnlyFeatured(false);
+                  }}
+                >
+                  Clear Filters
+                </Button>
+              ) : null}
             </div>
           ) : (
-            <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 xl:gap-8">
               {filteredProducts.map((product) => (
                 <Link key={product.slug} href={`/products/${product.slug}`}>
-                  <Card className="group h-full overflow-hidden transition-all duration-300 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900/90">
-                    <div className="relative aspect-[4/3] overflow-hidden">
+                  <Card className="group h-full overflow-hidden rounded-[1.75rem] border-slate-200/80 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.12)] dark:border-slate-700 dark:bg-slate-900/90">
+                    <div className="relative aspect-[5/4] overflow-hidden">
                       <Image
                         src={product.heroImage}
                         alt={product.title}
@@ -216,7 +220,7 @@ export function PackageList({ products: initialProducts, showFilters = true }: P
                       />
                       <button
                         onClick={(e) => toggleWishlist(product.slug, e)}
-                        className="absolute right-2 top-2 rounded-full bg-white/90 p-2 shadow-sm transition-colors hover:bg-white dark:bg-slate-900/90 dark:hover:bg-slate-800 md:right-3 md:top-3"
+                        className="absolute right-3 top-3 rounded-full bg-white/90 p-2.5 shadow-sm transition-colors hover:bg-white dark:bg-slate-900/90 dark:hover:bg-slate-800"
                       >
                         <Heart
                           className={`h-4 w-4 ${
@@ -225,42 +229,42 @@ export function PackageList({ products: initialProducts, showFilters = true }: P
                         />
                       </button>
                       {product.featured && (
-                        <Badge className="absolute left-2 top-2 bg-amber-500 md:left-3 md:top-3">Featured</Badge>
+                        <Badge className="absolute left-3 top-3 bg-amber-500 px-3 py-1">Featured</Badge>
                       )}
                     </div>
 
-                    <CardContent className="p-3 md:p-4">
-                      <div className="mb-2 flex items-center gap-2">
-                        <MapPin className="h-3 w-3 text-slate-500 dark:text-slate-400" />
-                        <span className="line-clamp-1 text-[11px] text-slate-500 dark:text-slate-400 md:text-xs">{product.location}</span>
+                    <CardContent className="p-5 md:p-6">
+                      <div className="mb-3 flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <span className="line-clamp-1 text-sm text-slate-500 dark:text-slate-400">{product.location}</span>
                       </div>
 
-                      <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-sky-300 md:text-base">
+                      <h3 className="mb-3 line-clamp-2 text-lg font-semibold leading-7 text-slate-900 transition-colors group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-sky-300">
                         {product.title}
                       </h3>
 
-                      <div className="mb-3 flex items-center gap-2">
-                        <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                        <span className="text-xs font-medium md:text-sm">{product.rating}</span>
-                        <span className="text-[11px] text-slate-500 dark:text-slate-400 md:text-sm">({product.reviews})</span>
+                      <div className="mb-4 flex items-center gap-2">
+                        <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
+                        <span className="text-sm font-medium">{product.rating}</span>
+                        <span className="text-sm text-slate-500 dark:text-slate-400">({product.reviews})</span>
                       </div>
 
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-sm font-bold text-blue-600 md:text-lg">
+                          <span className="text-xl font-bold text-blue-600">
                             Rs.{product.price.toLocaleString()}
                           </span>
-                          <span className="ml-1 text-[11px] text-slate-400 line-through dark:text-slate-500 md:text-sm">
+                          <span className="ml-2 text-sm text-slate-400 line-through dark:text-slate-500">
                             Rs.{product.originalPrice.toLocaleString()}
                           </span>
                         </div>
-                        <span className="hidden text-xs font-medium text-green-600 md:inline">
+                        <span className="text-sm font-medium text-green-600">
                           {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
                         </span>
                       </div>
 
-                      <div className="mt-3 flex items-center gap-2 border-t border-slate-100 pt-3 text-[11px] text-slate-500 dark:border-slate-800 dark:text-slate-400 md:text-xs">
-                        <Users className="h-3 w-3" />
+                      <div className="mt-4 flex items-center gap-2 border-t border-slate-100 pt-4 text-sm text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                        <Users className="h-4 w-4" />
                         <span className="line-clamp-1">{product.groupSize}</span>
                         <span className="mx-1">•</span>
                         <span className="line-clamp-1">{product.duration}</span>

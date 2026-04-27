@@ -1,125 +1,131 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { useAuth } from '@/hooks/useAuth';
-import { Star, Heart, MapPin, Users } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { fetchFeaturedProducts } from '@/lib/api/products-client';
+import { Card } from '@/components/ui/card';
+import { fetchAllProducts } from '@/lib/api/products-client';
 import type { Product } from '@/lib/products';
-import { readWishlist, syncGlobalWishlistToUser, toggleWishlistItem } from '@/lib/wishlist-storage';
+
+const FEATURED_DESTINATIONS = [
+  {
+    title: 'Himachal Tour Packages',
+    description:
+      'Snowy mountains, scenic valleys, adventure activities, honeymoon trips, family holidays and peaceful stays in Manali, Shimla, Dharamshala and beyond.',
+    cta: 'Explore Himachal',
+    href: '/search?q=Himachal',
+    fallbackImage: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200',
+    badge: 'Mountain Retreats',
+    badgeClassName: 'border-emerald-300/70 bg-emerald-500/80 text-white shadow-[0_10px_25px_rgba(16,185,129,0.28)]',
+    matchTerms: ['himachal', 'manali', 'shimla', 'dharamshala', 'spiti'],
+  },
+  {
+    title: 'Sikkim & Meghalaya Tour Packages',
+    description:
+      'Discover waterfalls, living root bridges, monasteries, lakes, valleys and the untouched beauty of Northeast India.',
+    cta: 'Explore Northeast',
+    href: '/search?q=Sikkim%20Meghalaya',
+    fallbackImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200',
+    badge: 'Hidden Gems',
+    badgeClassName: 'border-sky-300/70 bg-sky-500/80 text-white shadow-[0_10px_25px_rgba(14,165,233,0.28)]',
+    matchTerms: ['sikkim', 'meghalaya', 'gangtok', 'goechala', 'northeast', 'north east'],
+  },
+  {
+    title: 'Nepal Tour Packages',
+    description:
+      'Experience temples, mountain views, adventure, culture and spiritual travel across Kathmandu, Pokhara and Himalayan regions.',
+    cta: 'Explore Nepal',
+    href: '/search?q=Nepal',
+    fallbackImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200',
+    badge: 'Spiritual Trails',
+    badgeClassName: 'border-amber-300/70 bg-amber-500/80 text-white shadow-[0_10px_25px_rgba(245,158,11,0.28)]',
+    matchTerms: ['nepal', 'kathmandu', 'pokhara', 'himalayan'],
+  },
+] as const;
 
 export function FeaturedPackages() {
-  const { user } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
-  const [wishlist, setWishlist] = useState<string[]>([]);
 
   useEffect(() => {
-    const applyWishlist = () => {
-      const items = user ? syncGlobalWishlistToUser(user.id) : readWishlist(null);
-      setWishlist(items);
-    };
+    void fetchAllProducts().then(setProducts);
+  }, []);
 
-    void fetchFeaturedProducts().then(setProducts);
-    applyWishlist();
+  const featuredDestinations = useMemo(
+    () =>
+      FEATURED_DESTINATIONS.map((item) => {
+        const matchingProduct = products.find((product) => {
+          const searchable = [
+            product.title,
+            product.location,
+            product.description,
+            ...product.highlights,
+          ]
+            .join(' ')
+            .toLowerCase();
 
-    window.addEventListener('storage', applyWishlist);
-    window.addEventListener('tfb-wishlist-updated', applyWishlist);
+          return item.matchTerms.some((term) => searchable.includes(term));
+        });
 
-    return () => {
-      window.removeEventListener('storage', applyWishlist);
-      window.removeEventListener('tfb-wishlist-updated', applyWishlist);
-    };
-  }, [user]);
-
-  const toggleWishlist = (slug: string, e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const updated = toggleWishlistItem(slug, user?.id);
-    setWishlist(updated);
-  };
+        return {
+          ...item,
+          image: matchingProduct?.heroImage ?? item.fallbackImage,
+        };
+      }),
+    [products]
+  );
 
   return (
     <section className="py-12 md:py-16">
       <div className="container mx-auto px-4">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="mb-2 text-2xl font-bold text-slate-900 dark:text-slate-100 md:text-3xl">Featured Packages</h2>
-            <p className="text-slate-600 dark:text-slate-300">Handpicked experiences loved by travelers</p>
-          </div>
-          <Link href="/search">
-            <Button variant="outline" className="w-full sm:w-auto">View All Packages</Button>
-          </Link>
+        <div className="mb-8 max-w-4xl">
+          <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 md:text-4xl">
+            Explore Our Most Loved Travel Packages
+          </h2>
+          <p className="mt-3 text-base leading-7 text-slate-600 dark:text-slate-300 md:text-lg">
+            Handpicked journeys across India and beyond — from peaceful hills to cultural escapes and international adventures.
+          </p>
         </div>
 
-        <div className="grid grid-cols-2 gap-3 md:gap-6 lg:grid-cols-4">
-          {products.slice(0, 8).map((product) => (
-            <Link key={product.slug} href={`/products/${product.slug}`}>
-              <Card className="group h-full overflow-hidden transition-all duration-300 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900/90">
-                <div className="relative aspect-[4/3] overflow-hidden">
-                  <Image
-                    src={product.heroImage}
-                    alt={product.title}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  <button
-                    onClick={(e) => toggleWishlist(product.slug, e)}
-                    className="absolute right-2 top-2 rounded-full bg-white/90 p-2 shadow-sm transition-colors hover:bg-white dark:bg-slate-900/90 dark:hover:bg-slate-800 md:right-3 md:top-3"
-                  >
-                    <Heart
-                      className={`h-4 w-4 ${
-                        wishlist.includes(product.slug) ? 'fill-red-500 text-red-500' : 'text-slate-600 dark:text-slate-300'
-                      }`}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 xl:gap-8">
+          {featuredDestinations.map((item) => {
+            return (
+              <Link key={item.title} href={item.href} className="group block">
+                <Card className="group h-full overflow-hidden rounded-[1.75rem] border-slate-200/80 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.12)] dark:border-slate-700 dark:bg-slate-900/90">
+                  <div className="relative min-h-[28rem] overflow-hidden md:min-h-[30rem]">
+                    <Image
+                      src={item.image}
+                      alt={item.title}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
                     />
-                  </button>
-                  {product.featured && (
-                    <Badge className="absolute left-2 top-2 bg-amber-500 md:left-3 md:top-3">Featured</Badge>
-                  )}
-                </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/25 to-transparent" />
+                    <div className="absolute inset-0 flex flex-col justify-between p-5 md:p-6">
+                      <div className="flex items-start justify-between gap-3">
+                        <Badge className={`${item.badgeClassName} backdrop-blur-sm`}>
+                          {item.badge}
+                        </Badge>
+                      </div>
 
-                <CardContent className="p-3 md:p-4">
-                  <div className="mb-2 flex items-center gap-2">
-                    <MapPin className="h-3 w-3 text-slate-500 dark:text-slate-400" />
-                    <span className="line-clamp-1 text-[11px] text-slate-500 dark:text-slate-400 md:text-xs">{product.location}</span>
-                  </div>
-
-                  <h3 className="mb-2 line-clamp-2 text-sm font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-slate-100 dark:group-hover:text-sky-300 md:text-base">
-                    {product.title}
-                  </h3>
-
-                  <div className="mb-3 flex items-center gap-2">
-                    <div className="flex items-center gap-1">
-                      <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                      <span className="text-xs font-medium md:text-sm">{product.rating}</span>
-                    </div>
-                    <span className="text-[11px] text-slate-500 dark:text-slate-400 md:text-sm">({product.reviews})</span>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <span className="text-sm font-bold text-blue-600 md:text-lg">
-                        Rs.{product.price.toLocaleString()}
-                      </span>
-                      <span className="ml-1 text-[11px] text-slate-400 line-through dark:text-slate-500 md:ml-2 md:text-sm">
-                        Rs.{product.originalPrice.toLocaleString()}
-                      </span>
+                      <div>
+                        <h3 className="text-xl font-semibold leading-tight text-white md:text-2xl">
+                          {item.title}
+                        </h3>
+                        <p className="mt-3 text-sm leading-6 text-white/82 md:text-[15px]">
+                          {item.description}
+                        </p>
+                        <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white">
+                          {item.cta}
+                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                        </span>
+                      </div>
                     </div>
                   </div>
-
-                  <div className="mt-3 flex items-center gap-2 text-[11px] text-slate-500 dark:text-slate-400 md:text-xs">
-                    <Users className="h-3 w-3" />
-                    <span className="line-clamp-1">{product.groupSize}</span>
-                    <span className="mx-1">•</span>
-                    <span className="line-clamp-1">{product.duration}</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+                </Card>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>

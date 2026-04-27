@@ -1,13 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, CalendarClock, Flame } from 'lucide-react';
-import { getHomepageCta } from '@/lib/api/cta';
+import { type CtaBanner as CtaBannerData, getHomepageCta } from '@/lib/api/cta';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
-export async function CtaBanner() {
-  const cta = await getHomepageCta();
-
+function CtaBannerSection({ cta }: { cta: CtaBannerData }) {
   return (
     <section className="py-8 md:py-12">
       <div className="container mx-auto px-4">
@@ -66,4 +64,29 @@ export async function CtaBanner() {
       </div>
     </section>
   );
+}
+
+export async function CtaBanner() {
+  const cta = await getHomepageCta();
+
+  return <CtaBannerSection cta={cta} />;
+}
+
+const CUSTOM_TOUR_CTA: CtaBannerData = {
+  id: 'custom-tour-home-cta',
+  slug: 'customized-curated-tour-package',
+  title: 'Need a Customized or Curated Tour Package?',
+  subtitle: 'Personalized planning for every kind of traveler',
+  description:
+    'Tell us your destination, travel style, budget, and dates, and our experts will help craft a journey built around exactly what you want.',
+  offerText: 'Perfect for families, couples, groups, pilgrimages, and special interest travel',
+  buttonLabel: 'Talk to Expert',
+  buttonHref: '/contact',
+  imageUrl: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1600',
+  badge: 'Custom Planning',
+  placement: 'home_after_popular_destinations',
+};
+
+export function CustomTourCtaBanner() {
+  return <CtaBannerSection cta={CUSTOM_TOUR_CTA} />;
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Search, Compass, ChevronRight } from 'lucide-react';
+import { Search, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -111,7 +111,7 @@ export function HeroSection() {
               index === activeSlide ? 'opacity-100' : 'opacity-0'
             }`}
             style={{
-              backgroundImage: `linear-gradient(115deg, rgba(2,6,23,0.86), rgba(15,23,42,0.55)), url(${slide.image})`,
+              backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.64) 38%, rgba(0,0,0,0.8) 100%), url(${slide.image})`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
@@ -158,16 +158,8 @@ export function HeroSection() {
 
           <div className="mt-6 rounded-[2rem] border border-white/15 bg-white/12 p-4 shadow-2xl backdrop-blur-md md:mt-10 md:p-6">
             <div className="rounded-[1.5rem] bg-white p-5 text-slate-900 dark:bg-slate-900/95 dark:text-slate-100 md:p-6">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-100 text-blue-700 dark:bg-sky-500/15 dark:text-sky-200">
-                  <Compass className="h-5 w-5" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-sky-300">
-                    Smart Search
-                  </p>
-                  <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Find your next trip faster</h2>
-                </div>
+              <div className="mb-6">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">Find your next trip faster</h2>
               </div>
 
               <form onSubmit={handleSearch} className="space-y-4">

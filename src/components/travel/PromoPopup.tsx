@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { ArrowRight, Clock3, Flame, MapPinned, Sparkles } from 'lucide-react';
+import { ArrowRight, Flame, Sparkles } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -250,17 +250,6 @@ export function PromoPopup() {
                   {promo.description}
                 </DialogDescription>
               </DialogHeader>
-
-              <div className="mt-6 space-y-3 rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900/95">
-                <div className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
-                  <Clock3 className="h-4 w-4 text-sky-700" />
-                  Triggered based on time spent exploring the site
-                </div>
-                <div className="flex items-center gap-3 text-sm text-slate-700 dark:text-slate-200">
-                  <MapPinned className="h-4 w-4 text-emerald-600" />
-                  Designed to pull visitors back into a high-intent itinerary
-                </div>
-              </div>
 
               <div className="mt-6 flex flex-col gap-3 sm:flex-row">
                 <Link href={promo.href} className="block flex-1" onClick={() => setOpen(false)}>
