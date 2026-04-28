@@ -40,14 +40,17 @@ const iconMap: Record<string, LucideIcon> = {
   'tour-packages': Map,
   'adventure-activities': Mountain,
   'bike-expeditions': Bike,
+  'retreat-events': Mountain,
+  'group-tours': Briefcase,
   'trekking-camps': Tent,
   'char-dham': Landmark,
+  'yoga-meditation': Mountain,
   'helicopter-services': Helicopter,
   mice: Briefcase,
 };
 
 const categories: Category[] = CATEGORY_DEFINITIONS.filter((category) =>
-  ['tour-packages', 'adventure-activities', 'bike-expeditions', 'trekking-camps', 'char-dham', 'helicopter-services', 'mice'].includes(category.slug)
+  ['tour-packages', 'adventure-activities', 'bike-expeditions', 'retreat-events', 'group-tours', 'trekking-camps', 'char-dham', 'yoga-meditation', 'helicopter-services', 'mice'].includes(category.slug)
 ).map((category) => ({
   id: category.slug,
   label: category.name,
@@ -79,7 +82,7 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
       <SheetContent side="right" className="w-[86vw] max-w-sm overflow-y-auto px-0">
         <div className="border-b px-5 py-5">
           <Link href="/" onClick={closeMenu}>
-            <Image src="/logo.png" alt="Logo" width={120} height={40} />
+            <Image src="/logo.png" alt="Logo" width={144} height={48} />
           </Link>
         </div>
 
@@ -132,12 +135,12 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
           ) : (
             <div className="space-y-3">
               <Link href="/login" onClick={closeMenu} className="block">
-                <Button variant="outline" className="w-full">
+                <Button className="w-full bg-[#2c2c2c]/40 text-white backdrop-blur-md border border-white/10 hover:bg-[#2c2c2c]/50">
                   Sign In
                 </Button>
               </Link>
               <Link href="/signup" onClick={closeMenu} className="block">
-                <Button className="w-full">Sign Up</Button>
+                <Button className="w-full bg-[#2c2c2c]/40 text-white backdrop-blur-md border border-white/10 hover:bg-[#2c2c2c]/50">Sign Up</Button>
               </Link>
             </div>
           )}
@@ -194,7 +197,7 @@ export function Header() {
         <div className="absolute left-0 top-0 z-40 w-full">
           <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 sm:py-6">
             <Link href="/">
-              <Image src="/logo.png" alt="Logo" width={120} height={40} className="h-auto w-[108px] sm:w-[120px]" />
+              <Image src="/logo.png" alt="Logo" width={144} height={48} className="h-auto w-[129.6px] sm:w-[144px]" />
             </Link>
 
             <div className="hidden items-center gap-3 md:flex">
@@ -244,10 +247,10 @@ export function Header() {
               ) : (
                 <>
                   <Link href="/login">
-                    <Button variant="ghost">Sign In</Button>
+                    <Button className="bg-[#2c2c2c]/40 text-white backdrop-blur-md border border-white/10 hover:bg-[#2c2c2c]/50">Sign In</Button>
                   </Link>
                   <Link href="/signup">
-                    <Button>Sign Up</Button>
+                    <Button className="bg-[#2c2c2c]/40 text-white backdrop-blur-md border border-white/10 hover:bg-[#2c2c2c]/50">Sign Up</Button>
                   </Link>
                 </>
               )}
@@ -259,7 +262,7 @@ export function Header() {
           </div>
 
           <div className="mx-auto mt-1 hidden max-w-6xl rounded-2xl bg-white/80 px-4 py-4 shadow-lg backdrop-blur-md md:block md:px-6">
-            <div className="flex justify-between gap-2">
+            <div className="flex justify-between gap-1">
               {categories.map((cat) => {
                 const isActive = pathname.startsWith(cat.href);
                 const Icon = cat.icon;
@@ -281,7 +284,7 @@ export function Header() {
           </div>
 
           <div className="mt-3 px-4 md:hidden">
-            <div className="flex gap-2 overflow-x-auto rounded-2xl bg-white/80 px-3 py-3 shadow-lg backdrop-blur-md">
+            <div className="flex gap-1 overflow-x-auto rounded-2xl bg-white/80 px-3 py-3 shadow-lg backdrop-blur-md">
               {categories.map((cat) => {
                 const isActive = pathname.startsWith(cat.href);
                 const Icon = cat.icon;
@@ -315,7 +318,7 @@ export function Header() {
               <MobileMenu user={user} wishlistCount={wishlistCount} signOut={signOut} />
             </div>
             <Link href="/">
-              <Image src="/logo.png" alt="Logo" width={100} height={35} className="h-auto w-[90px] sm:w-[100px]" />
+              <Image src="/logo.png" alt="Logo" width={120} height={42} className="h-auto w-[108px] sm:w-[120px]" />
             </Link>
           </div>
 
@@ -326,7 +329,7 @@ export function Header() {
 
             <div
               ref={scrollRef}
-              className="flex max-w-[700px] gap-3 overflow-x-auto scroll-smooth no-scrollbar"
+              className="flex max-w-[700px] gap-1 overflow-x-auto scroll-smooth no-scrollbar"
             >
               {categories.map((cat) => {
                 const isActive = pathname.startsWith(cat.href);
@@ -367,7 +370,7 @@ export function Header() {
             ) : null}
 
             <Link href={user ? '/account/profile' : '/login'}>
-              <Button size="sm" className="px-3 sm:px-4">
+              <Button size="sm" className={`px-3 sm:px-4 ${ !user ? 'bg-[#2c2c2c]/40 text-white backdrop-blur-md border border-white/10 hover:bg-[#2c2c2c]/50' : ''}`}>
                 <span className="hidden sm:inline">{user ? 'My Account' : 'Login / Signup'}</span>
                 <span className="sm:hidden">{user ? 'Account' : 'Login'}</span>
               </Button>

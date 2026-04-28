@@ -47,6 +47,18 @@ export const CATEGORY_DEFINITIONS: CategoryDefinition[] = [
     aliases: ['chardham-yatra'],
   },
   {
+    slug: 'retreat-events',
+    name: 'Retreat & Events',
+    description: 'Corporate retreats & celebrations',
+    icon: 'Sparkles',
+  },
+  {
+    slug: 'yoga-meditation',
+    name: 'Yoga & Meditation',
+    description: 'Wellness retreats',
+    icon: 'Zap',
+  },
+  {
     slug: 'helicopter-services',
     name: 'Helicopter Services',
     description: 'Aerial tours',

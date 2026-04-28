@@ -11,6 +11,9 @@ import { fetchAllProducts } from '@/lib/api/products-client';
 import type { Product } from '@/lib/products';
 import { isInternationalTourPackage, sortTourPackageProducts } from '@/lib/tour-packages';
 
+const animationStyles = ``;
+
+
 const EXPERIENCE_SHOWCASE = [
   {
     title: 'Adventure Activities',
@@ -83,13 +86,11 @@ function TourScopeCard({
                 {count} packages
               </Badge>
             </div>
-            <div>
-              <h3 className="text-xl font-semibold text-white md:text-2xl">{title}</h3>
-              <p className="mt-2 max-w-sm text-sm leading-6 text-white/80">{description}</p>
-              <span className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                Explore
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </span>
+            <div className="flex flex-col items-start justify-between h-full">
+              <h3 className="text-2xl font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">{title}</h3>
+              <div className="flex justify-end w-full">
+                <ArrowRight className="h-7 w-7 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:-translate-y-2" />
+              </div>
             </div>
           </div>
         </div>
@@ -171,6 +172,7 @@ export function HomepagePackageShowcase({ categorySection }: { categorySection?:
         </div>
 
         <div className="mt-8 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3 xl:gap-8">
+          <style>{animationStyles}</style>
           {experienceShowcase.map((item) => (
             <Link key={item.title} href={item.href} className="group block">
               <Card className="group h-full overflow-hidden rounded-[1.75rem] border-slate-200/80 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.12)] dark:border-slate-700 dark:bg-slate-900/90">
@@ -189,17 +191,13 @@ export function HomepagePackageShowcase({ categorySection }: { categorySection?:
                       </Badge>
                     </div>
 
-                    <div>
-                      <h3 className="text-xl font-semibold leading-tight text-white md:text-2xl">
+                    <div className="flex flex-col items-start justify-between h-full">
+                      <h3 className="text-2xl font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">
                         {item.title}
                       </h3>
-                      <p className="mt-3 text-sm leading-6 text-white/82 md:text-[15px]">
-                        {item.description}
-                      </p>
-                      <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                        {item.cta}
-                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                      </span>
+                      <div className="flex justify-end w-full">
+                        <ArrowRight className="h-7 w-7 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:-translate-y-2" />
+                      </div>
                     </div>
                   </div>
                 </div>

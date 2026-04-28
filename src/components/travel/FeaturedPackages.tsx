@@ -9,6 +9,9 @@ import { Card } from '@/components/ui/card';
 import { fetchAllProducts } from '@/lib/api/products-client';
 import type { Product } from '@/lib/products';
 
+const animationStyles = ``;
+
+
 const FEATURED_DESTINATIONS = [
   {
     title: 'Himachal Tour Packages',
@@ -78,6 +81,7 @@ export function FeaturedPackages() {
 
   return (
     <section className="py-12 md:py-16">
+      <style>{animationStyles}</style>
       <div className="container mx-auto px-4">
         <div className="mb-8 max-w-4xl">
           <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 md:text-4xl">
@@ -109,16 +113,12 @@ export function FeaturedPackages() {
                       </div>
 
                       <div>
-                        <h3 className="text-xl font-semibold leading-tight text-white md:text-2xl">
+                        <h3 className="text-2xl font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">
                           {item.title}
                         </h3>
-                        <p className="mt-3 text-sm leading-6 text-white/82 md:text-[15px]">
-                          {item.description}
-                        </p>
-                        <span className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-white">
-                          {item.cta}
-                          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                        </span>
+                        <div className="mt-6 flex justify-end">
+                          <ArrowRight className="h-7 w-7 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:-translate-y-2" />
+                        </div>
                       </div>
                     </div>
                   </div>
