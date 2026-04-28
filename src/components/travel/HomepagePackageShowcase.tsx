@@ -87,7 +87,7 @@ function TourScopeCard({
               </Badge>
             </div>
             <div className="flex flex-col items-start justify-between h-full">
-              <h3 className="text-2xl font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">{title}</h3>
+              <h3 className="text-2xl font-display font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">{title}</h3>
               <div className="flex justify-end w-full">
                 <ArrowRight className="h-7 w-7 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:-translate-y-2" />
               </div>
@@ -192,7 +192,7 @@ export function HomepagePackageShowcase({ categorySection }: { categorySection?:
                     </div>
 
                     <div className="flex flex-col items-start justify-between h-full">
-                      <h3 className="text-2xl font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">
+                      <h3 className="text-2xl font-display font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">
                         {item.title}
                       </h3>
                       <div className="flex justify-end w-full">

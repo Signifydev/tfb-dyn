@@ -113,7 +113,7 @@ export function FeaturedPackages() {
                       </div>
 
                       <div>
-                        <h3 className="text-2xl font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">
+                        <h3 className="text-2xl font-display font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">
                           {item.title}
                         </h3>
                         <div className="mt-6 flex justify-end">

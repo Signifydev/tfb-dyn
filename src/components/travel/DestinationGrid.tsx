@@ -46,7 +46,7 @@ export function DestinationGrid() {
                   <MapPin className="h-4 w-4" />
                   <span className="text-xs md:text-sm">{dest.packages} packages</span>
                 </div>
-                <h3 className="mb-2 text-base font-bold text-white md:mb-3 md:text-xl">{dest.name}</h3>
+                <h3 className="mb-2 text-base font-display font-bold text-white md:mb-3 md:text-xl">{dest.name}</h3>
                 <Button
                   size="sm"
                   className="h-8 border-0 bg-white/20 px-3 text-xs text-white backdrop-blur-sm hover:bg-white/30 md:h-9 md:text-sm"
