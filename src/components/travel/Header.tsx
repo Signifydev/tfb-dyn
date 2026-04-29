@@ -323,7 +323,7 @@ export function Header() {
           </div>
 
           <div className="hidden flex-1 items-center justify-center gap-2 md:flex">
-            <button onClick={scrollLeft} className="h-8 w-8 rounded-full border border-slate-300 text-slate-700 dark:border-slate-600 dark:text-slate-900">
+            <button onClick={scrollLeft} className="h-8 w-8 rounded-full border border-slate-300 text-slate-700 hover:bg-gray-100 dark:border-white/30 dark:text-white dark:hover:bg-white/10">
               ‹
             </button>
 
@@ -340,7 +340,7 @@ export function Header() {
                     key={cat.id}
                     href={cat.href}
                     className={`flex items-center gap-2 rounded-full px-3 py-2 ${
-                      isActive ? 'bg-blue-100 text-blue-600' : 'text-slate-700 hover:bg-gray-100 dark:text-slate-900 dark:hover:bg-slate-700'
+                      isActive ? 'bg-blue-100 text-blue-600 dark:bg-white/20 dark:text-white' : 'text-slate-700 hover:bg-gray-100 dark:text-white dark:hover:bg-white/10'
                     }`}
                   >
                     <Icon className="h-5 w-5 shrink-0" />
@@ -350,7 +350,7 @@ export function Header() {
               })}
             </div>
 
-            <button onClick={scrollRight} className="h-8 w-8 rounded-full border border-slate-300 text-slate-700 dark:border-slate-600 dark:text-slate-900">
+            <button onClick={scrollRight} className="h-8 w-8 rounded-full border border-slate-300 text-slate-700 hover:bg-gray-100 dark:border-white/30 dark:text-white dark:hover:bg-white/10">
               ›
             </button>
           </div>
@@ -358,7 +358,7 @@ export function Header() {
           <div className="flex items-center gap-2">
             {user ? (
               <Link href="/account/wishlist" className="hidden sm:block">
-                <Button variant="ghost" size="sm" className="relative">
+                <Button variant="ghost" size="sm" className="relative dark:text-white dark:hover:bg-white/10 dark:hover:text-white">
                   <Heart className="h-4 w-4" />
                   {wishlistCount > 0 && (
                     <Badge className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center p-0 text-xs">
