@@ -5,23 +5,28 @@ import { type CtaBanner as CtaBannerData, getHomepageCta } from '@/lib/api/cta';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
+const CHAR_DHAM_CTA_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/3/30/Kedarnath_Temple.jpg';
+
 function CtaBannerSection({ cta }: { cta: CtaBannerData }) {
+  const isCharDhamCta = cta.slug.includes('char-dham') || cta.buttonHref.includes('char-dham');
+  const imageUrl = isCharDhamCta ? CHAR_DHAM_CTA_IMAGE : cta.imageUrl;
+
   return (
     <section className="py-8 md:py-12">
       <div className="container mx-auto px-4">
-        <div className="relative overflow-hidden rounded-[2rem] bg-slate-950 shadow-2xl">
+        <div className="relative min-h-[28rem] overflow-hidden rounded-[2rem] bg-slate-950 shadow-2xl md:min-h-[25rem]">
           <div className="absolute inset-0">
             <Image
-              src={cta.imageUrl}
+              src={imageUrl}
               alt={cta.title}
               fill
-              className="object-cover opacity-30"
+              className={`object-cover opacity-70 ${isCharDhamCta ? 'object-bottom' : 'object-center'}`}
             />
-            <div className="absolute inset-0 bg-[linear-gradient(110deg,rgba(2,6,23,0.92),rgba(15,23,42,0.78),rgba(30,41,59,0.45))]" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,0.30),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(59,130,246,0.22),transparent_28%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(2,6,23,0.88)_0%,rgba(15,23,42,0.72)_42%,rgba(15,23,42,0.22)_72%,rgba(15,23,42,0.08)_100%)]" />
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent" />
           </div>
 
-          <div className="relative grid gap-8 px-6 py-8 md:px-10 md:py-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+          <div className="relative grid min-h-[28rem] gap-8 px-6 py-8 md:min-h-[25rem] md:px-10 md:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
             <div className="max-w-2xl">
               <div className="mb-4 flex flex-wrap items-center gap-3">
                 {cta.badge && (

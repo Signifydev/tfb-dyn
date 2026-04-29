@@ -86,10 +86,10 @@ function TourScopeCard({
                 {count} packages
               </Badge>
             </div>
-            <div className="flex flex-col items-start justify-between h-full">
-              <h3 className="text-2xl font-display font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">{title}</h3>
-              <div className="flex justify-end w-full">
-                <ArrowRight className="h-7 w-7 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:-translate-y-2" />
+            <div className="flex flex-col items-start justify-end gap-3">
+              <div className="flex w-full items-end justify-between">
+                <h3 className="text-xl font-bold leading-tight text-white md:text-2xl lg:text-3xl tracking-tight text-left" style={{ fontFamily: 'var(--font-cinzel)' }}>{title}</h3>
+                <ArrowRight className="h-7 w-7 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:-translate-y-2 shrink-0" />
               </div>
             </div>
           </div>
@@ -191,12 +191,12 @@ export function HomepagePackageShowcase({ categorySection }: { categorySection?:
                       </Badge>
                     </div>
 
-                    <div className="flex flex-col items-start justify-between h-full">
-                      <h3 className="text-2xl font-display font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">
-                        {item.title}
-                      </h3>
-                      <div className="flex justify-end w-full">
-                        <ArrowRight className="h-7 w-7 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:-translate-y-2" />
+                    <div className="flex flex-col items-start justify-end gap-3">
+                      <div className="flex w-full items-end justify-between">
+                        <h3 className="text-xl font-bold leading-tight text-white md:text-2xl lg:text-3xl tracking-tight" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                          {item.title}
+                        </h3>
+                        <ArrowRight className="h-7 w-7 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:-translate-y-2 shrink-0" />
                       </div>
                     </div>
                   </div>

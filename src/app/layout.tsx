@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Beau_Rivage } from "next/font/google";
+import { Beau_Rivage, Cinzel } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
@@ -27,6 +27,12 @@ const beauRivage = Beau_Rivage({
   subsets: ["latin"],
 });
 
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  weight: ["700", "900"],
+  subsets: ["latin"],
+});
+
 export const metadata: Metadata = {
   title: "Travel For Benefits - Tour Packages, Adventure & Pilgrimage",
   description: "Discover curated tour packages, thrilling adventures, and pilgrimages across India. Book your dream trip today with exclusive benefits.",
@@ -41,7 +47,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${beauRivage.variable} antialiased min-h-screen flex flex-col`}
+        className={`${geistSans.variable} ${geistMono.variable} ${beauRivage.variable} ${cinzel.variable} antialiased min-h-screen flex flex-col`}
       >
         <AuthProvider>
           <ThemeProvider

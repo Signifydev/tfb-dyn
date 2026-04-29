@@ -99,7 +99,7 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
                   key={cat.id}
                   href={cat.href}
                   onClick={closeMenu}
-                  className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50"
+                  className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-900 dark:hover:bg-slate-800"
                 >
                   <Icon className="h-4 w-4 text-blue-600" />
                   <span>{cat.label}</span>
@@ -112,13 +112,13 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
         <div className="border-t px-5 py-5">
           {user ? (
             <div className="space-y-2">
-              <Link href="/account/profile" onClick={closeMenu} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <Link href="/account/profile" onClick={closeMenu} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-800">
                 Profile
               </Link>
-              <Link href="/account/bookings" onClick={closeMenu} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <Link href="/account/bookings" onClick={closeMenu} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-800">
                 Bookings
               </Link>
-              <Link href="/account/wishlist" onClick={closeMenu} className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50">
+              <Link href="/account/wishlist" onClick={closeMenu} className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-800">
                 <span>Wishlist</span>
                 {wishlistCount > 0 && <Badge>{wishlistCount}</Badge>}
               </Link>
@@ -261,8 +261,8 @@ export function Header() {
             </div>
           </div>
 
-          <div className="mx-auto mt-1 hidden max-w-6xl rounded-2xl bg-white/80 px-4 py-4 shadow-lg backdrop-blur-md md:block md:px-6">
-            <div className="flex justify-between gap-1">
+          <div className="mx-auto mt-1 hidden max-w-7xl rounded-2xl bg-white/85 px-4 py-4 shadow-lg backdrop-blur-md md:block md:px-6">
+            <div className="grid grid-cols-10 gap-2">
               {categories.map((cat) => {
                 const isActive = pathname.startsWith(cat.href);
                 const Icon = cat.icon;
@@ -271,12 +271,12 @@ export function Header() {
                   <Link
                     key={cat.id}
                     href={cat.href}
-                    className={`flex items-center gap-2 rounded-full px-3 py-2 ${
-                      isActive ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100'
+                    className={`flex min-h-20 flex-col items-center justify-center gap-2 rounded-2xl px-2 py-3 text-center transition-all hover:-translate-y-0.5 ${
+                      isActive ? 'bg-blue-100 text-blue-700' : 'bg-white/75 text-slate-800 hover:bg-slate-100 dark:bg-white/90 dark:text-slate-900 dark:hover:bg-white'
                     }`}
                   >
-                    <Icon className="h-5 w-5" />
-                    <span className="text-sm">{cat.label}</span>
+                    <Icon className="h-6 w-6 shrink-0" />
+                    <span className="text-[11px] font-bold leading-tight">{cat.label}</span>
                   </Link>
                 );
               })}
@@ -294,7 +294,7 @@ export function Header() {
                     key={cat.id}
                     href={cat.href}
                     className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-xs font-medium ${
-                      isActive ? 'bg-blue-100 text-blue-700' : 'bg-white text-slate-700'
+                      isActive ? 'bg-blue-100 text-blue-700' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-900'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -323,7 +323,7 @@ export function Header() {
           </div>
 
           <div className="hidden flex-1 items-center justify-center gap-2 md:flex">
-            <button onClick={scrollLeft} className="h-8 w-8 rounded-full border">
+            <button onClick={scrollLeft} className="h-8 w-8 rounded-full border border-slate-300 text-slate-700 dark:border-slate-600 dark:text-slate-900">
               ‹
             </button>
 
@@ -340,7 +340,7 @@ export function Header() {
                     key={cat.id}
                     href={cat.href}
                     className={`flex items-center gap-2 rounded-full px-3 py-2 ${
-                      isActive ? 'bg-blue-100 text-blue-600' : 'text-slate-700 hover:bg-gray-100'
+                      isActive ? 'bg-blue-100 text-blue-600' : 'text-slate-700 hover:bg-gray-100 dark:text-slate-900 dark:hover:bg-slate-700'
                     }`}
                   >
                     <Icon className="h-5 w-5 shrink-0" />
@@ -350,7 +350,7 @@ export function Header() {
               })}
             </div>
 
-            <button onClick={scrollRight} className="h-8 w-8 rounded-full border">
+            <button onClick={scrollRight} className="h-8 w-8 rounded-full border border-slate-300 text-slate-700 dark:border-slate-600 dark:text-slate-900">
               ›
             </button>
           </div>

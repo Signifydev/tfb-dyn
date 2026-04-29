@@ -15,28 +15,54 @@ import {
 } from '@/components/ui/select';
 import { CATEGORY_DEFINITIONS } from '@/lib/categories';
 import { fetchAllProducts } from '@/lib/api/products-client';
-import { getAvailableCitiesFromProducts, type Product } from '@/lib/products';
+import { getAllProducts, getAvailableCitiesFromProducts, type Product } from '@/lib/products';
 
-const HERO_SLIDES = [
+const HERO_SLIDE_CONTENT = [
   {
-    image: 'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1600',
-    eyebrow: 'Heritage Escapes',
-    title: 'Trace legendary journeys across India',
-    description: 'From royal circuits to timeless temple towns, discover handcrafted itineraries with seamless planning.',
+    key: 'himachal',
+    eyebrow: 'Himachal Escapes',
+    title: 'Find your perfect Himachal getaway',
+    description: 'Explore Manali, Shimla, Spiti, and mountain journeys shaped for couples, families, and adventure lovers.',
   },
   {
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600',
-    eyebrow: 'Road Adventures',
-    title: 'Ride, trek, and explore beyond the usual',
-    description: 'Choose bike expeditions, mountain camps, and raw Himalayan routes built for travelers who want stories.',
+    key: 'adventure',
+    eyebrow: 'Adventure Activities',
+    title: 'Explore adventure activities made for thrill seekers',
+    description: 'Pick high-energy experiences, scenic outdoor routes, and memorable activities with reliable planning support.',
   },
   {
-    image: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=1600',
-    eyebrow: 'Sacred Journeys',
-    title: 'Plan pilgrimages and helicopter darshan with ease',
-    description: 'Compare Char Dham, helicopter services, and spiritual circuits with destination-first search.',
+    key: 'bike-expedition',
+    eyebrow: 'Bike Expedition',
+    title: 'Ride iconic roads and mountain passes',
+    description: 'Join curated bike expeditions across rugged routes with planned stays, support, and unforgettable views.',
   },
 ];
+
+function getHeroImageForSlide(products: Product[], key: string): string {
+  const matchingProduct = products.find((product) => {
+    const searchable = [
+      product.title,
+      product.location,
+      product.description,
+      product.category,
+      ...product.highlights,
+    ]
+      .join(' ')
+      .toLowerCase();
+
+    if (key === 'himachal') {
+      return searchable.includes('himachal') || searchable.includes('manali') || searchable.includes('spiti');
+    }
+
+    if (key === 'adventure') {
+      return product.category === 'adventure-activities';
+    }
+
+    return product.category === 'bike-expeditions';
+  });
+
+  return matchingProduct?.heroImage ?? '';
+}
 
 export function HeroSection() {
   const router = useRouter();
@@ -44,7 +70,7 @@ export function HeroSection() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedCity, setSelectedCity] = useState('all');
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>(() => getAllProducts());
 
   const categories = useMemo(
     () =>
@@ -65,9 +91,17 @@ export function HeroSection() {
       { label: 'Destinations', value: `${cities.length}+` },
       { label: 'Support', value: '24/7' },
     ];
-  }, [cities.length]);
+  }, [cities.length, products]);
 
-  const activeHero = HERO_SLIDES[activeSlide];
+  const heroSlides = useMemo(
+    () =>
+      HERO_SLIDE_CONTENT.map((slide) => ({
+        ...slide,
+        image: getHeroImageForSlide(products, slide.key),
+      })),
+    [products]
+  );
+  const activeHero = heroSlides[activeSlide];
 
   useEffect(() => {
     void fetchAllProducts().then(setProducts);
@@ -75,7 +109,7 @@ export function HeroSection() {
 
   useEffect(() => {
     const interval = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % HERO_SLIDES.length);
+      setActiveSlide((current) => (current + 1) % HERO_SLIDE_CONTENT.length);
     }, 5000);
 
     return () => window.clearInterval(interval);
@@ -104,14 +138,14 @@ export function HeroSection() {
   return (
     <section className="relative min-h-[88vh] overflow-hidden bg-slate-950 text-white">
       <div className="absolute inset-0">
-        {HERO_SLIDES.map((slide, index) => (
+        {heroSlides.map((slide, index) => (
           <div
             key={slide.title}
             className={`absolute inset-0 transition-opacity duration-1000 ${
               index === activeSlide ? 'opacity-100' : 'opacity-0'
             }`}
             style={{
-              backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(0,0,0,0.64) 38%, rgba(0,0,0,0.8) 100%), url(${slide.image})`,
+              backgroundImage: `linear-gradient(180deg, rgba(255,255,255,0.52) 0%, rgba(255,255,255,0.28) 18%, rgba(0,0,0,0.58) 44%, rgba(0,0,0,0.8) 100%)${slide.image ? `, url(${slide.image})` : ''}`,
               backgroundSize: 'cover',
               backgroundPosition: 'center',
             }}
@@ -142,7 +176,7 @@ export function HeroSection() {
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              {HERO_SLIDES.map((slide, index) => (
+              {heroSlides.map((slide, index) => (
                 <button
                   key={slide.title}
                   type="button"

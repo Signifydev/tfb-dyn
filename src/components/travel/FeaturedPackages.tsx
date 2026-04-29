@@ -14,7 +14,7 @@ const animationStyles = ``;
 
 const FEATURED_DESTINATIONS = [
   {
-    title: 'Himachal Tour Packages',
+    title: 'Himachal',
     description:
       'Snowy mountains, scenic valleys, adventure activities, honeymoon trips, family holidays and peaceful stays in Manali, Shimla, Dharamshala and beyond.',
     cta: 'Explore Himachal',
@@ -25,7 +25,7 @@ const FEATURED_DESTINATIONS = [
     matchTerms: ['himachal', 'manali', 'shimla', 'dharamshala', 'spiti'],
   },
   {
-    title: 'Sikkim & Meghalaya Tour Packages',
+    title: 'Sikkim & Meghalaya',
     description:
       'Discover waterfalls, living root bridges, monasteries, lakes, valleys and the untouched beauty of Northeast India.',
     cta: 'Explore Northeast',
@@ -36,15 +36,15 @@ const FEATURED_DESTINATIONS = [
     matchTerms: ['sikkim', 'meghalaya', 'gangtok', 'goechala', 'northeast', 'north east'],
   },
   {
-    title: 'Nepal Tour Packages',
+    title: 'Nepal',
     description:
       'Experience temples, mountain views, adventure, culture and spiritual travel across Kathmandu, Pokhara and Himalayan regions.',
     cta: 'Explore Nepal',
     href: '/search?q=Nepal',
-    fallbackImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200',
+    fallbackImage: 'https://res.cloudinary.com/dunva5eod/image/upload/v1777300267/pexels-tkirkgoz-11479025_ciempl.jpg',
     badge: 'Spiritual Trails',
     badgeClassName: 'border-amber-300/70 bg-amber-500/80 text-white shadow-[0_10px_25px_rgba(245,158,11,0.28)]',
-    matchTerms: ['nepal', 'kathmandu', 'pokhara', 'himalayan'],
+    matchTerms: ['nepal', 'kathmandu', 'nagarkot', 'heritage', 'pashupatinath', 'boudhanath', 'swayambhunath', 'thamel', 'himalayan'],
   },
 ] as const;
 
@@ -58,18 +58,26 @@ export function FeaturedPackages() {
   const featuredDestinations = useMemo(
     () =>
       FEATURED_DESTINATIONS.map((item) => {
-        const matchingProduct = products.find((product) => {
-          const searchable = [
-            product.title,
-            product.location,
-            product.description,
-            ...product.highlights,
-          ]
-            .join(' ')
-            .toLowerCase();
+        // First, try to match by location directly
+        let matchingProduct = products.find((product) => 
+          product.location?.toLowerCase() === item.title.toLowerCase()
+        );
+        
+        // If no location match, then try matchTerms
+        if (!matchingProduct) {
+          matchingProduct = products.find((product) => {
+            const searchable = [
+              product.title,
+              product.location,
+              product.description,
+              ...product.highlights,
+            ]
+              .join(' ')
+              .toLowerCase();
 
-          return item.matchTerms.some((term) => searchable.includes(term));
-        });
+            return item.matchTerms.some((term) => searchable.includes(term));
+          });
+        }
 
         return {
           ...item,
@@ -112,12 +120,12 @@ export function FeaturedPackages() {
                         </Badge>
                       </div>
 
-                      <div>
-                        <h3 className="text-2xl font-display font-black leading-tight text-white md:text-3xl lg:text-4xl tracking-tight">
-                          {item.title}
-                        </h3>
-                        <div className="mt-6 flex justify-end">
-                          <ArrowRight className="h-7 w-7 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:-translate-y-2" />
+                      <div className="flex flex-col items-start justify-end gap-3">
+                        <div className="flex w-full items-end justify-between">
+                          <h3 className="text-xl font-bold leading-tight text-white md:text-2xl lg:text-3xl tracking-tight text-left" style={{ fontFamily: 'var(--font-cinzel)' }}>
+                            {item.title}
+                          </h3>
+                          <ArrowRight className="h-7 w-7 text-white transition-all duration-300 group-hover:translate-x-2 group-hover:-translate-y-2 shrink-0" />
                         </div>
                       </div>
                     </div>
