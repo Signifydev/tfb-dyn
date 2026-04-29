@@ -21,9 +21,9 @@ export function Footer() {
               Your trusted partner for unforgettable travel experiences across India. We specialize in curated tour packages, adventure trips, and pilgrimages.
             </p>
             <div className="flex flex-wrap gap-4">
-              <a href="#" className="text-sm text-slate-400 hover:text-blue-400">Facebook</a>
+              <a href="https://www.facebook.com/profile.php?id=61584412871090" target="_blank" rel="noopener noreferrer" className="text-sm text-slate-400 hover:text-blue-400">Facebook</a>
               <a href="#" className="text-sm text-slate-400 hover:text-blue-400">Twitter</a>
-              <a href="#" className="text-sm text-slate-400 hover:text-blue-400">Instagram</a>
+              <a href="https://www.instagram.com/travelforbenefits/" target="_blank" rel="noopener noreferrer" className="text-sm text-slate-400 hover:text-blue-400">Instagram</a>
               <a href="#" className="text-sm text-slate-400 hover:text-blue-400">YouTube</a>
             </div>
           </div>
