@@ -79,15 +79,15 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
           <Menu className="h-5 w-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-[86vw] max-w-sm overflow-y-auto px-0">
-        <div className="border-b px-5 py-5">
+      <SheetContent side="right" className="w-[86vw] max-w-sm overflow-y-auto px-0 dark:bg-slate-950">
+        <div className="border-b px-5 py-5 dark:border-slate-800">
           <Link href="/" onClick={closeMenu}>
             <Image src="/logo.png" alt="Logo" width={144} height={48} />
           </Link>
         </div>
 
         <div className="px-5 py-5">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-300">
             Categories
           </p>
           <div className="space-y-2">
@@ -99,9 +99,9 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
                   key={cat.id}
                   href={cat.href}
                   onClick={closeMenu}
-                  className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-900 dark:hover:bg-slate-800"
+                  className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-white dark:hover:bg-white/10"
                 >
-                  <Icon className="h-4 w-4 text-blue-600" />
+                  <Icon className="h-4 w-4 text-blue-600 dark:text-white" />
                   <span>{cat.label}</span>
                 </Link>
               );
@@ -109,16 +109,16 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
           </div>
         </div>
 
-        <div className="border-t px-5 py-5">
+        <div className="border-t px-5 py-5 dark:border-slate-800">
           {user ? (
             <div className="space-y-2">
-              <Link href="/account/profile" onClick={closeMenu} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-800">
+              <Link href="/account/profile" onClick={closeMenu} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-white dark:hover:bg-white/10">
                 Profile
               </Link>
-              <Link href="/account/bookings" onClick={closeMenu} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-800">
+              <Link href="/account/bookings" onClick={closeMenu} className="block rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-white dark:hover:bg-white/10">
                 Bookings
               </Link>
-              <Link href="/account/wishlist" onClick={closeMenu} className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-slate-900 dark:hover:bg-slate-800">
+              <Link href="/account/wishlist" onClick={closeMenu} className="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 dark:text-white dark:hover:bg-white/10">
                 <span>Wishlist</span>
                 {wishlistCount > 0 && <Badge>{wishlistCount}</Badge>}
               </Link>
@@ -294,7 +294,7 @@ export function Header() {
                     key={cat.id}
                     href={cat.href}
                     className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-xs font-medium ${
-                      isActive ? 'bg-blue-100 text-blue-700' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-900'
+                      isActive ? 'bg-blue-100 text-blue-700 dark:bg-white/20 dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-white'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
