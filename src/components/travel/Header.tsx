@@ -200,11 +200,11 @@ export function Header() {
               <Image src="/logo.png" alt="Logo" width={180} height={60} className="h-auto w-[129.6px] sm:w-[144px] md:w-[180px]" />
             </Link>
 
-            <div className="hidden items-center gap-3 md:flex">
+            <div className="hidden items-center gap-3 text-white md:flex">
               {user ? (
                 <>
                   <Link href="/account/wishlist">
-                    <Button variant="ghost" size="sm" className="relative">
+                    <Button variant="ghost" size="sm" className="relative text-white hover:bg-white/10 hover:text-white">
                       <Heart className="h-4 w-4" />
                       {wishlistCount > 0 && (
                         <Badge className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center p-0 text-xs">
@@ -216,7 +216,7 @@ export function Header() {
 
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="sm">
+                      <Button variant="ghost" size="sm" className="text-white hover:bg-white/10 hover:text-white">
                         <User className="mr-2 h-4 w-4" />
                         {user.email?.split('@')[0]}
                       </Button>
@@ -272,7 +272,7 @@ export function Header() {
                     key={cat.id}
                     href={cat.href}
                     className={`flex min-h-20 flex-col items-center justify-center gap-2 rounded-2xl px-2 py-3 text-center transition-all hover:-translate-y-0.5 ${
-                      isActive ? 'bg-blue-100 text-blue-700' : 'bg-white/75 text-slate-800 hover:bg-slate-100 dark:bg-white/90 dark:text-slate-900 dark:hover:bg-white'
+                      isActive ? 'bg-blue-100 text-blue-700 dark:bg-white/20 dark:text-white' : 'bg-white/75 text-slate-800 hover:bg-slate-100 dark:bg-white/10 dark:text-white dark:hover:bg-white/20'
                     }`}
                   >
                     <Icon className="h-6 w-6 shrink-0" />
