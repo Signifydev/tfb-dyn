@@ -195,9 +195,9 @@ export function Header() {
     <>
       {isHome && !scrolled && (
         <div className="absolute left-0 top-0 z-40 w-full">
-          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 sm:py-6">
+          <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 sm:py-4 md:py-3">
             <Link href="/">
-              <Image src="/logo.png" alt="Logo" width={144} height={48} className="h-auto w-[129.6px] sm:w-[144px]" />
+              <Image src="/logo.png" alt="Logo" width={180} height={60} className="h-auto w-[129.6px] sm:w-[144px] md:w-[180px]" />
             </Link>
 
             <div className="hidden items-center gap-3 md:flex">
@@ -261,7 +261,7 @@ export function Header() {
             </div>
           </div>
 
-          <div className="mx-auto mt-1 hidden max-w-7xl rounded-2xl bg-white/85 px-4 py-4 shadow-lg backdrop-blur-md md:block md:px-6">
+          <div className="mx-auto -mt-1 hidden max-w-7xl rounded-2xl bg-white/85 px-4 py-4 shadow-lg backdrop-blur-md md:block md:px-6">
             <div className="grid grid-cols-10 gap-2">
               {categories.map((cat) => {
                 const isActive = pathname.startsWith(cat.href);
@@ -312,13 +312,13 @@ export function Header() {
           isHome ? (scrolled ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-5 opacity-0') : 'opacity-100'
         }`}
       >
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3 md:py-2">
           <div className="flex items-center gap-3">
             <div className="md:hidden">
               <MobileMenu user={user} wishlistCount={wishlistCount} signOut={signOut} />
             </div>
             <Link href="/">
-              <Image src="/logo.png" alt="Logo" width={120} height={42} className="h-auto w-[108px] sm:w-[120px]" />
+              <Image src="/logo.png" alt="Logo" width={150} height={53} className="h-auto w-[108px] sm:w-[120px] md:w-[150px]" />
             </Link>
           </div>
 
