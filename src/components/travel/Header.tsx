@@ -41,7 +41,6 @@ const iconMap: Record<string, LucideIcon> = {
   'adventure-activities': Mountain,
   'bike-expeditions': Bike,
   'retreat-events': Mountain,
-  'group-tours': Briefcase,
   'trekking-camps': Tent,
   'char-dham': Landmark,
   'yoga-meditation': Mountain,
@@ -50,7 +49,7 @@ const iconMap: Record<string, LucideIcon> = {
 };
 
 const categories: Category[] = CATEGORY_DEFINITIONS.filter((category) =>
-  ['tour-packages', 'adventure-activities', 'bike-expeditions', 'retreat-events', 'group-tours', 'trekking-camps', 'char-dham', 'yoga-meditation', 'helicopter-services', 'mice'].includes(category.slug)
+  ['tour-packages', 'adventure-activities', 'bike-expeditions', 'retreat-events', 'trekking-camps', 'char-dham', 'yoga-meditation', 'helicopter-services', 'mice'].includes(category.slug)
 ).map((category) => ({
   id: category.slug,
   label: category.name,
@@ -99,7 +98,7 @@ function MobileMenu({ user, wishlistCount, signOut }: { user: any; wishlistCount
                   key={cat.id}
                   href={cat.href}
                   onClick={closeMenu}
-                  className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-white dark:hover:bg-white/10"
+                  className="flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition-colors hover:bg-[#ebc54a] hover:text-slate-900 dark:border-slate-700 dark:text-white dark:hover:bg-white/10 dark:hover:text-white"
                 >
                   <Icon className="h-4 w-4 text-blue-600 dark:text-white" />
                   <span>{cat.label}</span>
@@ -262,7 +261,7 @@ export function Header() {
           </div>
 
           <div className="mx-auto -mt-1 hidden max-w-7xl rounded-2xl bg-white/85 px-4 py-4 shadow-lg backdrop-blur-md md:block md:px-6">
-            <div className="grid grid-cols-10 gap-2">
+            <div className="grid grid-cols-9 gap-2">
               {categories.map((cat) => {
                 const isActive = pathname.startsWith(cat.href);
                 const Icon = cat.icon;
@@ -271,8 +270,8 @@ export function Header() {
                   <Link
                     key={cat.id}
                     href={cat.href}
-                    className={`flex min-h-20 flex-col items-center justify-center gap-2 rounded-2xl px-2 py-3 text-center transition-all hover:-translate-y-0.5 ${
-                      isActive ? 'bg-blue-100 text-blue-700' : 'bg-white/75 text-slate-800 hover:bg-slate-100 dark:bg-white/90 dark:text-slate-900 dark:hover:bg-white'
+                    className={`flex min-h-20 flex-col items-center justify-center gap-2 rounded-2xl px-2 py-3 text-center transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                      isActive ? 'bg-blue-100 text-blue-700 hover:bg-[#ebc54a] hover:text-slate-900 dark:hover:bg-white dark:hover:text-slate-900' : 'bg-white/75 text-slate-800 hover:bg-[#ebc54a] hover:text-slate-900 dark:bg-white/90 dark:text-slate-900 dark:hover:bg-white'
                     }`}
                   >
                     <Icon className="h-6 w-6 shrink-0" />
@@ -293,8 +292,8 @@ export function Header() {
                   <Link
                     key={cat.id}
                     href={cat.href}
-                    className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-xs font-medium ${
-                      isActive ? 'bg-blue-100 text-blue-700 dark:bg-white/20 dark:text-white' : 'bg-white text-slate-700 dark:bg-slate-800 dark:text-white'
+                    className={`flex shrink-0 items-center gap-2 rounded-full px-3 py-2 text-xs font-medium transition-colors ${
+                      isActive ? 'bg-blue-100 text-blue-700 hover:bg-[#ebc54a] hover:text-slate-900 dark:bg-white/20 dark:text-white dark:hover:bg-white/20 dark:hover:text-white' : 'bg-white text-slate-700 hover:bg-[#ebc54a] hover:text-slate-900 dark:bg-slate-800 dark:text-white dark:hover:bg-white/10 dark:hover:text-white'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -339,8 +338,8 @@ export function Header() {
                   <Link
                     key={cat.id}
                     href={cat.href}
-                    className={`flex items-center gap-2 rounded-full px-3 py-2 ${
-                      isActive ? 'bg-blue-100 text-blue-600 dark:bg-white/20 dark:text-white' : 'text-slate-700 hover:bg-gray-100 dark:text-white dark:hover:bg-white/10'
+                    className={`flex items-center gap-2 rounded-full px-3 py-2 transition-shadow hover:shadow-md ${
+                      isActive ? 'bg-blue-100 text-blue-600 hover:bg-[#ebc54a] hover:text-slate-900 dark:bg-white/20 dark:text-white dark:hover:bg-white/20 dark:hover:text-white' : 'text-slate-700 hover:bg-[#ebc54a] hover:text-slate-900 dark:text-white dark:hover:bg-white/10 dark:hover:text-white'
                     }`}
                   >
                     <Icon className="h-5 w-5 shrink-0" />
