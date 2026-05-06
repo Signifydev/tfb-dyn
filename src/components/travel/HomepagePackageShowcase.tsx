@@ -99,12 +99,22 @@ function TourScopeCard({
   );
 }
 
-export function HomepagePackageShowcase({ categorySection }: { categorySection?: ReactNode }) {
-  const [products, setProducts] = useState<Product[]>([]);
+export function HomepagePackageShowcase({
+  initialProducts = [],
+  categorySection,
+}: {
+  initialProducts?: Product[];
+  categorySection?: ReactNode;
+}) {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
 
   useEffect(() => {
+    if (initialProducts.length > 0) {
+      return;
+    }
+
     void fetchAllProducts().then(setProducts);
-  }, []);
+  }, [initialProducts.length]);
 
   const tourPackages = sortTourPackageProducts(products.filter((product) => product.category === 'tour-packages'));
   const domesticTourPackages = tourPackages.filter((product) => !isInternationalTourPackage(product));

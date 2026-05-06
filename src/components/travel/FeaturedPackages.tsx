@@ -48,12 +48,16 @@ const FEATURED_DESTINATIONS = [
   },
 ] as const;
 
-export function FeaturedPackages() {
-  const [products, setProducts] = useState<Product[]>([]);
+export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: Product[] }) {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
 
   useEffect(() => {
+    if (initialProducts.length > 0) {
+      return;
+    }
+
     void fetchAllProducts().then(setProducts);
-  }, []);
+  }, [initialProducts.length]);
 
   const featuredDestinations = useMemo(
     () =>

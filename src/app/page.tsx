@@ -6,6 +6,7 @@ import { HomepagePackageShowcase } from "@/components/travel/HomepagePackageShow
 import { DestinationGrid } from "@/components/travel/DestinationGrid";
 import { FaqSection } from "@/components/travel/FaqSection";
 import { BadgeIndianRupee, Headphones, Route, ShieldCheck, Sparkles } from "lucide-react";
+import { getAllProducts } from "@/lib/api/products";
 
 const WHY_CHOOSE_ITEMS = [
   {
@@ -37,14 +38,16 @@ const TRUST_POINTS = [
   { label: "Trip support", value: "24/7" },
 ] as const;
 
-export default function HomePage() {
+export default async function HomePage() {
+  const products = await getAllProducts();
+
   return (
     <>
-      <HeroSection />
-      <FeaturedPackages />
-      <HomepagePackageShowcase categorySection={<CategoryTabs />} />
+      <HeroSection initialProducts={products} />
+      <FeaturedPackages initialProducts={products} />
+      <HomepagePackageShowcase initialProducts={products} categorySection={<CategoryTabs />} />
       <CtaBanner />
-      <DestinationGrid />
+      <DestinationGrid initialProducts={products} />
       <CustomTourCtaBanner />
       <FaqSection />
 

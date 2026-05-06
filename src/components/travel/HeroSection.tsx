@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/select';
 import { CATEGORY_DEFINITIONS } from '@/lib/categories';
 import { fetchAllProducts } from '@/lib/api/products-client';
-import { getAllProducts, getAvailableCitiesFromProducts, type Product } from '@/lib/products';
+import { getAvailableCitiesFromProducts, type Product } from '@/lib/products';
 
 const HERO_SLIDE_CONTENT = [
   {
@@ -64,13 +64,13 @@ function getHeroImageForSlide(products: Product[], key: string): string {
   return matchingProduct?.heroImage ?? '';
 }
 
-export function HeroSection() {
+export function HeroSection({ initialProducts = [] }: { initialProducts?: Product[] }) {
   const router = useRouter();
   const [activeSlide, setActiveSlide] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedCity, setSelectedCity] = useState('all');
-  const [products, setProducts] = useState<Product[]>(() => getAllProducts());
+  const [products, setProducts] = useState<Product[]>(initialProducts);
 
   const categories = useMemo(
     () =>
@@ -104,8 +104,12 @@ export function HeroSection() {
   const activeHero = heroSlides[activeSlide];
 
   useEffect(() => {
+    if (initialProducts.length > 0) {
+      return;
+    }
+
     void fetchAllProducts().then(setProducts);
-  }, []);
+  }, [initialProducts.length]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {

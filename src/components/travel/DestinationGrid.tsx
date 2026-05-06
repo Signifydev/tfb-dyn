@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { MapPin, ArrowRight } from 'lucide-react';
 import { fetchAllProducts } from '@/lib/api/products-client';
-import { getDestinationsFromProducts } from '@/lib/products';
+import { getDestinationsFromProducts, type Product } from '@/lib/products';
 
 function getTileSize(index: number): { cols: number; rows: number } {
   const pattern = [
@@ -31,16 +31,20 @@ function getStableDestinationWeight(name: string): number {
   }, 0);
 }
 
-export function DestinationGrid() {
+export function DestinationGrid({ initialProducts = [] }: { initialProducts?: Product[] }) {
   const [destinations, setDestinations] = useState<
     { name: string; image: string; packages: number; category: string }[]
-  >([]);
+  >(() => getDestinationsFromProducts(initialProducts).slice(0, 12));
 
   useEffect(() => {
+    if (initialProducts.length > 0) {
+      return;
+    }
+
     void fetchAllProducts().then((products) => {
       setDestinations(getDestinationsFromProducts(products).slice(0, 12));
     });
-  }, []);
+  }, [initialProducts.length]);
 
   const displayDestinations = useMemo(
     () =>
