@@ -81,9 +81,11 @@ interface QuickOption<T extends string> {
 
 const AUTO_OPEN_DELAY_MS = 20000;
 const REOPEN_DELAY_MS = 45000;
-const TEASER_DELAY_MS = 15000;
+const TEASER_DELAY_MS = 60000;
+const TEASER_COOLDOWN_MS = 60000;
 const DISMISS_DURATION_MS = 6 * 60 * 60 * 1000;
 const DISMISS_KEY = 'tfb-chatbot-dismissed-at';
+const TEASER_DISMISS_KEY = 'tfb-chatbot-teaser-dismissed-at';
 const ROUTE_PROMPT_KEY = 'tfb-chatbot-last-route';
 const CHAT_MEMORY_KEY = 'tfb-chatbot-memory';
 const CHAT_OPEN_KEY = 'tfb-chatbot-open';
@@ -290,6 +292,23 @@ function shouldSuppressAutoPrompt() {
   return Date.now() - Number(dismissedAt) < DISMISS_DURATION_MS;
 }
 
+function shouldSuppressTeaserPrompt() {
+  if (typeof window === 'undefined') {
+    return true;
+  }
+
+  const dismissedAt = readSessionStorage(TEASER_DISMISS_KEY);
+  if (!dismissedAt) {
+    return false;
+  }
+
+  return Date.now() - Number(dismissedAt) < TEASER_COOLDOWN_MS;
+}
+
+function markTeaserPrompted() {
+  writeSessionStorage(TEASER_DISMISS_KEY, String(Date.now()));
+}
+
 function readStoredMemory(): ChatMemory {
   if (typeof window === 'undefined') {
     return initialMemory;
@@ -440,6 +459,10 @@ export function LeadChatbot() {
     const lastRoute = readSessionStorage(ROUTE_PROMPT_KEY);
     const openDelay = lastRoute && lastRoute !== pathname ? REOPEN_DELAY_MS : AUTO_OPEN_DELAY_MS;
     const teaserTimer = window.setTimeout(() => {
+      if (shouldSuppressTeaserPrompt()) {
+        return;
+      }
+
       if (memory.hasSubmitted && memory.lead.destination) {
         setTeaserMessage(`Welcome back. Still planning ${memory.lead.destination}?`);
       } else if (memory.lead.intent) {
@@ -449,6 +472,7 @@ export function LeadChatbot() {
       }
       setTeaserVisible(true);
       setHasUnreadMessage(true);
+      markTeaserPrompted();
     }, TEASER_DELAY_MS);
 
     const openTimer = shouldSuppressAutoPrompt()
@@ -682,6 +706,12 @@ export function LeadChatbot() {
     }
   };
 
+  const dismissTeaser = () => {
+    setTeaserVisible(false);
+    setHasUnreadMessage(false);
+    markTeaserPrompted();
+  };
+
   const handleOpenChange = (nextOpen: boolean) => {
     if (!nextOpen) {
       closeAssistant(true);
@@ -862,22 +892,36 @@ export function LeadChatbot() {
     <>
       <div className={`fixed z-40 flex max-w-[calc(100vw-2rem)] flex-col items-end gap-3 ${desktopLauncherPosition}`}>
         {teaserVisible && !open && (
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className={`animate-in fade-in-0 slide-in-from-bottom-3 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 ${desktopTeaserWidth}`}
+          <div
+            className={`animate-in fade-in-0 slide-in-from-bottom-3 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 ${desktopTeaserWidth}`}
           >
-            <div className="flex items-center gap-2">
-              <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
-                <Bot className="h-4 w-4" />
-              </span>
-              <p className="font-semibold text-slate-950 dark:text-slate-50">TFB Buddy</p>
-              <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
-                New
-              </span>
+            <div className="flex items-start gap-3">
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="min-w-0 flex-1 text-left transition hover:-translate-y-0.5"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-200">
+                    <Bot className="h-4 w-4" />
+                  </span>
+                  <p className="font-semibold text-slate-950 dark:text-slate-50">TFB Buddy</p>
+                  <span className="rounded-full bg-rose-500 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+                    New
+                  </span>
+                </div>
+                <p className="mt-1 leading-6">{teaserMessage}</p>
+              </button>
+              <button
+                type="button"
+                onClick={dismissTeaser}
+                className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:text-slate-500 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                aria-label="Close new message"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
-            <p className="mt-1 leading-6">{teaserMessage}</p>
-          </button>
+          </div>
         )}
 
         <Button
