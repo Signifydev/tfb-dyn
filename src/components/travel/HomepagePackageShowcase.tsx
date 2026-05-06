@@ -13,6 +13,8 @@ import { isInternationalTourPackage, sortTourPackageProducts } from '@/lib/tour-
 
 const animationStyles = ``;
 
+const DOMESTIC_TOUR_PACKAGES_IMAGE =
+  'https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=1200';
 
 const EXPERIENCE_SHOWCASE = [
   {
@@ -155,7 +157,7 @@ export function HomepagePackageShowcase({
           <TourScopeCard
             title="Domestic Tour Packages"
             href="/categories/tour-packages?scope=domestic"
-            image={domesticTourPackages[0]?.heroImage ?? ''}
+            image={DOMESTIC_TOUR_PACKAGES_IMAGE}
             count={domesticTourPackages.length}
             description="India journeys, state-wise circuits, heritage routes, beaches, hills, and spiritual escapes."
             accentClassName="bg-[linear-gradient(135deg,#0f766e_0%,#0f172a_58%,#082f49_100%)]"

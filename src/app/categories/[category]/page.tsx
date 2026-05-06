@@ -130,11 +130,11 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
       }
 
       return (
-        <div className="min-h-screen bg-slate-50 pb-8 pt-24 md:pt-28">
+        <div className="min-h-screen bg-[linear-gradient(180deg,#f8fbff_0%,#eef6ff_28%,#ffffff_100%)] pb-8 pt-24 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_35%,#111827_100%)] md:pt-28">
           <div className="container mx-auto px-4">
             <div className="mb-8">
-              <h1 className="mb-2 text-3xl font-bold text-slate-900">{pageTitle}</h1>
-              <p className="text-slate-600">{pageDescription}</p>
+              <h1 className="mb-2 text-3xl font-bold text-slate-900 dark:text-slate-100">{pageTitle}</h1>
+              <p className="text-slate-600 dark:text-slate-300">{pageDescription}</p>
             </div>
 
             <PackageList products={filteredProducts} showFilters={false} />
@@ -147,13 +147,13 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pb-8 pt-24 md:pt-28">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fbff_0%,#eef6ff_28%,#ffffff_100%)] pb-8 pt-24 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_35%,#111827_100%)] md:pt-28">
       <div className="container mx-auto px-4">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">
+          <h1 className="mb-2 text-3xl font-bold text-slate-900 dark:text-slate-100">
             {category?.name ?? categoryParam.replace(/-/g, ' ')}
           </h1>
-          <p className="text-slate-600">
+          <p className="text-slate-600 dark:text-slate-300">
             {getCategoryDescription(category) ?? 'Explore curated travel packages in this category.'}
           </p>
         </div>

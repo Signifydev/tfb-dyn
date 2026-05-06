@@ -7,6 +7,10 @@ import { MapPin, ArrowRight } from 'lucide-react';
 import { fetchAllProducts } from '@/lib/api/products-client';
 import { getDestinationsFromProducts, type Product } from '@/lib/products';
 
+const DESTINATION_IMAGE_OVERRIDES: Record<string, string> = {
+  Gujarat: 'https://images.unsplash.com/photo-1669015881702-951de590db31?w=1200',
+};
+
 function getTileSize(index: number): { cols: number; rows: number } {
   const pattern = [
     { cols: 2, rows: 2 },
@@ -48,9 +52,14 @@ export function DestinationGrid({ initialProducts = [] }: { initialProducts?: Pr
 
   const displayDestinations = useMemo(
     () =>
-      [...destinations].sort((a, b) => {
-        return getStableDestinationWeight(a.name) - getStableDestinationWeight(b.name);
-      }),
+      [...destinations]
+        .map((destination) => ({
+          ...destination,
+          image: DESTINATION_IMAGE_OVERRIDES[destination.name] ?? destination.image,
+        }))
+        .sort((a, b) => {
+          return getStableDestinationWeight(a.name) - getStableDestinationWeight(b.name);
+        }),
     [destinations]
   );
 

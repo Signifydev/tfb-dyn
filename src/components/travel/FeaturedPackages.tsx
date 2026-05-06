@@ -11,6 +11,11 @@ import type { Product } from '@/lib/products';
 
 const animationStyles = ``;
 
+const SPITI_VALLEY_IMAGE = 'https://images.unsplash.com/photo-1575408264798-b50b252663e6?w=1200';
+
+const FEATURED_DESTINATION_IMAGE_OVERRIDES: Record<string, string> = {
+  Himachal: SPITI_VALLEY_IMAGE,
+};
 
 const FEATURED_DESTINATIONS = [
   {
@@ -85,7 +90,7 @@ export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: P
 
         return {
           ...item,
-          image: matchingProduct?.heroImage ?? item.fallbackImage,
+          image: FEATURED_DESTINATION_IMAGE_OVERRIDES[item.title] ?? matchingProduct?.heroImage ?? item.fallbackImage,
         };
       }),
     [products]

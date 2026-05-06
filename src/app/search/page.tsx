@@ -78,13 +78,13 @@ function SearchContent() {
   const hasSearchContext = Boolean(query || category !== 'all' || city !== 'all');
 
   return (
-    <div className="min-h-screen bg-slate-50 px-0 pb-8 pt-28 md:pt-32">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fbff_0%,#eef6ff_28%,#ffffff_100%)] px-0 pb-8 pt-28 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_35%,#111827_100%)] md:pt-32">
       <div className="container mx-auto px-4">
-        <div className="mb-8 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+        <div className="mb-8 rounded-3xl border border-slate-200 bg-white/90 p-5 shadow-sm backdrop-blur dark:border-slate-700 dark:bg-slate-900/85 md:p-6">
           <form onSubmit={handleSearch} className="space-y-4">
             <div className="grid gap-4 lg:grid-cols-[1.3fr_0.85fr_0.85fr_auto]">
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-600">
+                <label className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-300">
                   Search packages
                 </label>
                 <div className="relative">
@@ -100,7 +100,7 @@ function SearchContent() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-600">
+                <label className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-300">
                   Category
                 </label>
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
@@ -119,7 +119,7 @@ function SearchContent() {
               </div>
 
               <div>
-                <label className="mb-2 block text-sm font-medium text-slate-600">
+                <label className="mb-2 block text-sm font-medium text-slate-600 dark:text-slate-300">
                   City
                 </label>
                 <Select value={selectedCity} onValueChange={setSelectedCity}>
@@ -147,10 +147,10 @@ function SearchContent() {
         {hasSearchContext ? (
           <>
             <div className="mb-6">
-              <h1 className="text-2xl font-bold text-slate-900">
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
                 Search Results
               </h1>
-              <p className="mt-1 text-slate-600">
+              <p className="mt-1 text-slate-600 dark:text-slate-300">
                 Found {results.length} {results.length === 1 ? 'package' : 'packages'}
                 {query ? ` for "${query}"` : ''}
               </p>
@@ -159,23 +159,23 @@ function SearchContent() {
             {results.length > 0 ? (
               <PackageList products={results} showFilters />
             ) : (
-              <div className="rounded-3xl border border-slate-200 bg-white py-16 text-center shadow-sm">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100">
+              <div className="rounded-3xl border border-slate-200 bg-white/90 py-16 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900/85">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 dark:bg-slate-800">
                   <Search className="h-8 w-8 text-slate-400" />
                 </div>
-                <h2 className="mb-2 text-xl font-semibold text-slate-900">No packages found</h2>
-                <p className="text-slate-600">
+                <h2 className="mb-2 text-xl font-semibold text-slate-900 dark:text-slate-100">No packages found</h2>
+                <p className="text-slate-600 dark:text-slate-300">
                   Try a different category, city, or keyword combination.
                 </p>
               </div>
             )}
           </>
         ) : (
-          <div className="rounded-3xl border border-slate-200 bg-white py-16 text-center shadow-sm">
-            <h2 className="mb-2 text-xl font-semibold text-slate-900">
+          <div className="rounded-3xl border border-slate-200 bg-white/90 py-16 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900/85">
+            <h2 className="mb-2 text-xl font-semibold text-slate-900 dark:text-slate-100">
               Search for your dream trip
             </h2>
-            <p className="text-slate-600">
+            <p className="text-slate-600 dark:text-slate-300">
               Use category, city, and keyword filters to explore packages on a separate results page.
             </p>
           </div>
@@ -189,7 +189,7 @@ function ButtonLikeSubmit() {
   return (
     <button
       type="submit"
-      className="inline-flex h-12 w-full items-center justify-center rounded-md bg-blue-600 px-6 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+      className="inline-flex h-12 w-full items-center justify-center rounded-md bg-blue-600 px-6 text-sm font-medium text-white transition-colors hover:bg-blue-700 dark:bg-sky-500 dark:hover:bg-sky-400"
     >
       Search
     </button>
@@ -206,9 +206,9 @@ export default function SearchPage() {
 
 function SearchLoading() {
   return (
-    <div className="min-h-screen bg-slate-50 px-0 pb-8 pt-28 md:pt-32">
+    <div className="min-h-screen bg-[linear-gradient(180deg,#f8fbff_0%,#eef6ff_28%,#ffffff_100%)] px-0 pb-8 pt-28 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_35%,#111827_100%)] md:pt-32">
       <div className="container mx-auto px-4">
-        <div className="mb-8 rounded-3xl bg-white p-6">
+        <div className="mb-8 rounded-3xl border border-slate-200 bg-white/90 p-6 dark:border-slate-700 dark:bg-slate-900/85">
           <Skeleton className="h-24 w-full" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
