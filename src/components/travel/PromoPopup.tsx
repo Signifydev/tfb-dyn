@@ -31,10 +31,31 @@ interface PromoContent {
 }
 
 const LANDING_PROMO_KEY = 'tfb-landing-promo-shown';
+const LAST_PROMO_SHOWN_AT_KEY = 'tfb-last-promo-shown-at';
 const CHAT_OPEN_KEY = 'tfb-chatbot-open';
+const PROMO_COOLDOWN_MS = 60000;
+const PROMO_DELAY_MS = 60000;
 
 function isChatbotOpen() {
   return readLocalStorage(CHAT_OPEN_KEY) === 'true';
+}
+
+function getLastPromoShownAt() {
+  const storedValue = readSessionStorage(LAST_PROMO_SHOWN_AT_KEY);
+  const parsedValue = storedValue ? Number(storedValue) : 0;
+
+  return Number.isFinite(parsedValue) ? parsedValue : 0;
+}
+
+function getPromoDelay() {
+  const elapsedSinceLastPromo = Date.now() - getLastPromoShownAt();
+  const remainingCooldown = Math.max(0, PROMO_COOLDOWN_MS - elapsedSinceLastPromo);
+
+  return Math.max(PROMO_DELAY_MS, remainingCooldown);
+}
+
+function markPromoShown() {
+  writeSessionStorage(LAST_PROMO_SHOWN_AT_KEY, String(Date.now()));
 }
 
 function buildLandingPromo(products: Product[]): PromoContent | null {
@@ -160,7 +181,8 @@ export function PromoPopup() {
           setPromo(landingPromo);
           setOpen(true);
           writeSessionStorage(LANDING_PROMO_KEY, 'true');
-        }, 10000);
+          markPromoShown();
+        }, getPromoDelay());
       }
 
       return () => {
@@ -181,8 +203,9 @@ export function PromoPopup() {
         if (nextPromo) {
           setPromo(nextPromo);
           setOpen(true);
+          markPromoShown();
         }
-      }, 60000);
+      }, getPromoDelay());
     }
 
     return () => {
