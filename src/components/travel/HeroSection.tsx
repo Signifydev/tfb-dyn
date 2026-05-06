@@ -17,6 +17,9 @@ import { CATEGORY_DEFINITIONS } from '@/lib/categories';
 import { fetchAllProducts } from '@/lib/api/products-client';
 import { getAvailableCitiesFromProducts, type Product } from '@/lib/products';
 
+const SPITI_VALLEY_IMAGE =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Key%2C_Spiti_Valley.jpg/1280px-Key%2C_Spiti_Valley.jpg';
+
 const HERO_SLIDE_CONTENT = [
   {
     key: 'himachal',
@@ -39,6 +42,10 @@ const HERO_SLIDE_CONTENT = [
 ];
 
 function getHeroImageForSlide(products: Product[], key: string): string {
+  if (key === 'himachal') {
+    return SPITI_VALLEY_IMAGE;
+  }
+
   const matchingProduct = products.find((product) => {
     const searchable = [
       product.title,
@@ -49,10 +56,6 @@ function getHeroImageForSlide(products: Product[], key: string): string {
     ]
       .join(' ')
       .toLowerCase();
-
-    if (key === 'himachal') {
-      return searchable.includes('himachal') || searchable.includes('manali') || searchable.includes('spiti');
-    }
 
     if (key === 'adventure') {
       return product.category === 'adventure-activities';

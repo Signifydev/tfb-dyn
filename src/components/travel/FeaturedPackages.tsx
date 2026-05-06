@@ -11,7 +11,8 @@ import type { Product } from '@/lib/products';
 
 const animationStyles = ``;
 
-const SPITI_VALLEY_IMAGE = 'https://images.unsplash.com/photo-1575408264798-b50b252663e6?w=1200';
+const SPITI_VALLEY_IMAGE =
+  'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Key%2C_Spiti_Valley.jpg/1280px-Key%2C_Spiti_Valley.jpg';
 
 const FEATURED_DESTINATION_IMAGE_OVERRIDES: Record<string, string> = {
   Himachal: SPITI_VALLEY_IMAGE,
@@ -90,7 +91,10 @@ export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: P
 
         return {
           ...item,
-          image: FEATURED_DESTINATION_IMAGE_OVERRIDES[item.title] ?? matchingProduct?.heroImage ?? item.fallbackImage,
+          image:
+            item.title === 'Himachal'
+              ? SPITI_VALLEY_IMAGE
+              : FEATURED_DESTINATION_IMAGE_OVERRIDES[item.title] ?? matchingProduct?.heroImage ?? item.fallbackImage,
         };
       }),
     [products]
