@@ -51,6 +51,7 @@ export const CATEGORY_DEFINITIONS: CategoryDefinition[] = [
     name: 'Retreat & Events',
     description: 'Corporate retreats & celebrations',
     icon: 'Sparkles',
+    aliases: ['wellness-retreats'],
   },
   {
     slug: 'yoga-meditation',
