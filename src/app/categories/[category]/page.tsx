@@ -13,9 +13,11 @@ import {
   MiceWhyChooseSection,
 } from '@/components/travel/mice/MiceSections';
 import { MiceLeadForm } from '@/components/travel/mice/MiceLeadForm';
+import { YogaMeditationPage } from '@/components/travel/yoga/YogaMeditationPage';
 import { getCategories } from '@/lib/api/categories';
 import { getProductsByCategory } from '@/lib/api/products';
 import { MICE_META } from '@/lib/mice-content';
+import { YOGA_META } from '@/lib/yoga-content';
 import { resolveCategory } from '@/lib/categories';
 import {
   buildTourPackageStateCollections,
@@ -61,6 +63,20 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  if (category.slug === 'yoga-meditation') {
+    return {
+      title: YOGA_META.title,
+      description: YOGA_META.description,
+      keywords: [
+        'yoga retreats India',
+        'meditation retreats India',
+        'wellness retreats',
+        'yoga teacher training India',
+        'Rishikesh yoga retreat',
+      ],
+    };
+  }
+
   return {
     title: `${category.name} | Travel For Benefits`,
     description: getCategoryDescription(category),
@@ -95,6 +111,10 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
         <MiceCaseStudiesPlaceholderSection />
       </div>
     );
+  }
+
+  if (category?.slug === 'yoga-meditation' || categoryParam === 'yoga-meditation') {
+    return <YogaMeditationPage />;
   }
 
   if (category?.slug === 'tour-packages' || categoryParam === 'tour-packages') {

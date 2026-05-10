@@ -11,15 +11,19 @@ import {
   Briefcase,
   CheckCircle2,
   ChevronRight,
+  Clock3,
   Helicopter,
   Landmark,
   Map,
+  MessageCircle,
   Send,
+  Sparkles,
   Tent,
   UserRound,
   X,
   Mountain,
 } from 'lucide-react';
+import { FaWhatsapp } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
@@ -89,6 +93,7 @@ const TEASER_DISMISS_KEY = 'tfb-chatbot-teaser-dismissed-at';
 const ROUTE_PROMPT_KEY = 'tfb-chatbot-last-route';
 const CHAT_MEMORY_KEY = 'tfb-chatbot-memory';
 const CHAT_OPEN_KEY = 'tfb-chatbot-open';
+const WHATSAPP_PHONE_NUMBER = '916398522735';
 
 const categoryIcons = {
   'tour-packages': Map,
@@ -275,7 +280,7 @@ const initialMemory: ChatMemory = {
   lead: initialLeadState,
   step: 0,
   hasSubmitted: false,
-  lastAssistantMessage: 'I can help you compare packages, lock the right dates, and connect you to your best next option.',
+  lastAssistantMessage: 'Tell me your travel mood and I will turn it into a sharper shortlist, not a generic enquiry.',
   lastUpdatedAt: 0,
 };
 
@@ -385,10 +390,12 @@ export function LeadChatbot() {
   const [hasSubmitted, setHasSubmitted] = useState(false);
   const [lastAssistantMessage, setLastAssistantMessage] = useState(initialMemory.lastAssistantMessage);
   const [teaserVisible, setTeaserVisible] = useState(false);
-  const [teaserMessage, setTeaserMessage] = useState('Need help choosing the right trip?');
+  const [teaserMessage, setTeaserMessage] = useState('Want me to shortlist trips in under a minute?');
   const [hasUnreadMessage, setHasUnreadMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [justSubmitted, setJustSubmitted] = useState(false);
+  const [whatsAppChatOpen, setWhatsAppChatOpen] = useState(false);
+  const [whatsAppMessage, setWhatsAppMessage] = useState('');
   const [products, setProducts] = useState<Product[]>([]);
   const isDesktop = !isMobile;
 
@@ -464,11 +471,11 @@ export function LeadChatbot() {
       }
 
       if (memory.hasSubmitted && memory.lead.destination) {
-        setTeaserMessage(`Welcome back. Still planning ${memory.lead.destination}?`);
+        setTeaserMessage(`Still thinking about ${memory.lead.destination}? I can pick up where we left off.`);
       } else if (memory.lead.intent) {
-        setTeaserMessage(`Want smarter ${intentLabels[memory.lead.intent].toLowerCase()} suggestions?`);
+        setTeaserMessage(`I can make your ${intentLabels[memory.lead.intent].toLowerCase()} search much sharper.`);
       } else {
-        setTeaserMessage('New message from TFB Buddy');
+        setTeaserMessage('I found a faster way to plan your next trip.');
       }
       setTeaserVisible(true);
       setHasUnreadMessage(true);
@@ -725,15 +732,60 @@ export function LeadChatbot() {
     if (hasSubmitted) {
       setStep(5);
       setJustSubmitted(false);
-      setLastAssistantMessage('Welcome back. I remembered your last travel brief so we can continue from there.');
+      setLastAssistantMessage('Welcome back. Your last travel brief is still here, so we can skip the boring repeat questions.');
       setOpen(true);
       return;
     }
 
     setStep(1);
     setJustSubmitted(false);
-    setLastAssistantMessage('Let me understand what kind of trip you are planning so I can keep this useful and quick.');
+    setLastAssistantMessage('Quick trip scan first: pick the travel style, then I will ask only what helps us recommend better.');
     setOpen(true);
+  };
+
+  const buildWhatsAppMessage = () => {
+    const hasTravelBrief = Boolean(
+      lead.intent ||
+        lead.destination.trim() ||
+        lead.travelWindow ||
+        lead.travellers ||
+        lead.notes.trim()
+    );
+    const hasContactDetails = Boolean(lead.name.trim() || lead.email.trim() || lead.phone.trim());
+
+    if (!hasTravelBrief && !hasContactDetails) {
+      return 'Hi TFB Team, I want to plan a trip. Please help me with the best packages and details.';
+    }
+
+    const conversation = [
+      'Hi TFB Team, I want to continue my travel enquiry from the website.',
+      lead.intent ? `Travel category: ${intentLabels[lead.intent]}` : null,
+      lead.destination.trim() ? `Destination interest: ${lead.destination.trim()}` : null,
+      lead.travelWindow ? `Preferred travel window: ${travelWindowLabels[lead.travelWindow]}` : null,
+      lead.travellers ? `Traveller type: ${getTravellerLabel(lead.intent, lead.travellers)}` : null,
+      lead.notes.trim() ? `Notes: ${lead.notes.trim()}` : null,
+      lead.name.trim() ? `Name: ${lead.name.trim()}` : null,
+      lead.phone.trim() ? `Phone: ${lead.phone.trim()}` : null,
+      lead.email.trim() ? `Email: ${lead.email.trim()}` : null,
+      `Page: ${pathname}`,
+    ].filter(Boolean);
+
+    return conversation.join('\n');
+  };
+
+  const openWhatsAppLauncher = () => {
+    setWhatsAppMessage(buildWhatsAppMessage());
+    setWhatsAppChatOpen(true);
+    setTeaserVisible(false);
+    setHasUnreadMessage(false);
+  };
+
+  const continueToWhatsApp = () => {
+    const message = encodeURIComponent(whatsAppMessage.trim() || buildWhatsAppMessage());
+    const whatsappUrl = `https://wa.me/${WHATSAPP_PHONE_NUMBER}?text=${message}`;
+
+    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    setWhatsAppChatOpen(false);
   };
 
   const handleIntentSelect = (value: TravelCategory) => {
@@ -741,20 +793,20 @@ export function LeadChatbot() {
     setStep(2);
     setLastAssistantMessage(
       value === 'adventure-activities'
-        ? 'Adventure plans get much better when we match the activity, destination, and comfort level.'
+        ? 'Good pick. Adventure gets better when we match thrill level, season, safety, and the right destination.'
         : value === 'trekking-camps'
-          ? 'Treks and camps are easier to shortlist once I know the route, location, or experience style.'
+          ? 'Nice. I will tune this around trail difficulty, camp comfort, weather, and your preferred mountain mood.'
           : value === 'bike-expeditions'
-            ? 'Bike expeditions depend a lot on route preference, season, and riding comfort.'
+            ? 'Love it. Bike routes depend on season, riding comfort, permits, and how raw you want the road to feel.'
             : value === 'char-dham'
-              ? 'CharDham planning works best when we align the route, travel pace, and comfort expectations.'
+              ? 'Understood. For CharDham, the magic is in pacing, comfort, darshan flow, and route support.'
               : value === 'helicopter-services'
-              ? 'Helicopter services are easiest to plan once I know the route, destination, or transfer need.'
+              ? 'Sure. Heli planning becomes clearer once we know the route, passenger count, and preferred date window.'
               : value === 'mice'
-                ? 'MICE planning becomes sharper once we know the destination, event type, and group need.'
+                ? 'Great. For MICE, I will focus on destination fit, group size, venue style, and execution support.'
                 : value === 'custom-trip'
-                  ? 'Custom trips become far easier once we know the route, destination style, and the kind of travel experience you want.'
-                  : 'Tour packages are easier to match once I know the destination or destination style you want.'
+                  ? 'Perfect. Custom trips work best when I know the destination style, pace, comfort level, and must-have moments.'
+                  : 'Great. I will shortlist better once I know whether you want mountains, beaches, culture, spirituality, or something mixed.'
     );
   };
 
@@ -767,10 +819,10 @@ export function LeadChatbot() {
     setStep(3);
     setLastAssistantMessage(
       lead.intent === 'mice'
-        ? `Good direction. I will use ${lead.destination.trim()} as the main event or destination focus while we narrow timing and group size.`
+        ? `Good direction. I will keep ${lead.destination.trim()} as the event focus while we narrow timing and group size.`
         : lead.intent === 'helicopter-services'
-          ? `Perfect. I will use ${lead.destination.trim()} as the main heli route or service while we narrow timing and passenger count.`
-          : `Good direction. I will use ${lead.destination.trim()} as the main interest while we narrow the timing and group style.`
+          ? `Perfect. I will keep ${lead.destination.trim()} as the heli route focus while we narrow timing and passenger count.`
+          : `Beautiful. I will keep ${lead.destination.trim()} as the anchor and now tune it by timing and traveller style.`
     );
   };
 
@@ -782,7 +834,7 @@ export function LeadChatbot() {
 
     setStep(4);
     setLastAssistantMessage(
-      `Nice. I have enough context to make follow-up feel sharper: ${travelWindowLabels[lead.travelWindow]} for a ${getTravellerLabel(lead.intent, lead.travellers).toLowerCase()}.`
+      `Nice. I have the planning shape now: ${travelWindowLabels[lead.travelWindow]} for a ${getTravellerLabel(lead.intent, lead.travellers).toLowerCase()}. One last step and our team can respond with context.`
     );
   };
 
@@ -797,12 +849,12 @@ export function LeadChatbot() {
 
     if (mode === 'update') {
       setStep(2);
-      setLastAssistantMessage('No problem. Let us refresh the destination, dates, or group details and make the next follow-up more relevant.');
+      setLastAssistantMessage('No problem. Refresh the destination, dates, or group details and I will reshape the brief instantly.');
       return;
     }
 
     setStep(4);
-    setLastAssistantMessage('Perfect. Your contact details are remembered, but you can update anything before I save a fresh callback request.');
+    setLastAssistantMessage('Perfect. Your contact details are remembered, and you can tweak anything before I save a fresh callback request.');
   };
 
   const handleSubmit = async (submissionType: 'lead' | 'more-offers' = 'lead') => {
@@ -865,7 +917,7 @@ export function LeadChatbot() {
 
   const assistantBubbles = useMemo(() => {
     const bubbles = [
-      'I can help you compare packages, discover better timings, and make trip planning feel much easier.',
+      'I can help you compare destinations, dates, comfort level, and trip style in a few quick taps.',
     ];
 
     if (hasSubmitted) {
@@ -882,8 +934,8 @@ export function LeadChatbot() {
   const desktopTeaserWidth = isDesktop ? 'max-w-[320px]' : 'max-w-[280px]';
   const categoryGridClassName = isDesktop ? 'grid grid-cols-2 gap-3' : 'grid grid-cols-2 gap-3 lg:grid-cols-3';
   const categoryCardClassName = isDesktop
-    ? 'group min-h-[132px] rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10'
-    : 'rounded-2xl border border-slate-200 bg-slate-50 px-3 py-3 text-left transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-slate-800/80 dark:hover:border-sky-500 dark:hover:bg-sky-500/10';
+    ? 'group min-h-[132px] rounded-2xl border border-slate-200 bg-[linear-gradient(145deg,#ffffff,#f8fbff)] px-4 py-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-sky-300 hover:bg-sky-50 hover:shadow-[0_14px_32px_rgba(14,165,233,0.12)] dark:border-slate-700 dark:bg-[linear-gradient(145deg,#0f172a,#111827)] dark:hover:border-sky-500 dark:hover:bg-sky-500/10'
+    : 'rounded-2xl border border-slate-200 bg-[linear-gradient(145deg,#ffffff,#f8fbff)] px-3 py-3 text-left shadow-sm transition hover:border-sky-300 hover:bg-sky-50 dark:border-slate-700 dark:bg-[linear-gradient(145deg,#0f172a,#111827)] dark:hover:border-sky-500 dark:hover:bg-sky-500/10';
   const desktopChatboxClassName = isDesktop
     ? '!inset-x-auto !left-auto !right-6 !bottom-0 !top-auto h-[560px] w-[380px] rounded-t-2xl border border-b-0 border-slate-200/80 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_22%,#f8fafc_100%)] px-0 pb-0 pt-0 text-slate-950 shadow-[0_24px_60px_rgba(15,23,42,0.18)] dark:border-slate-700/80 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_28%,#111827_100%)] dark:text-slate-50'
     : 'h-[88dvh] rounded-t-[1.75rem] border-0 bg-[linear-gradient(180deg,#f8fbff_0%,#ffffff_22%,#f8fafc_100%)] px-0 pb-0 pt-0 text-slate-950 shadow-[0_30px_80px_rgba(15,23,42,0.24)] dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_28%,#111827_100%)] dark:text-slate-50 sm:h-full sm:max-w-[450px] sm:rounded-none';
@@ -891,6 +943,71 @@ export function LeadChatbot() {
   return (
     <>
       <div className={`fixed z-40 flex max-w-[calc(100vw-2rem)] flex-col items-end gap-3 ${desktopLauncherPosition}`}>
+        {whatsAppChatOpen && (
+          <div className={`animate-in fade-in-0 slide-in-from-bottom-3 overflow-hidden rounded-[1.6rem] border border-emerald-200/80 bg-white text-left text-sm text-slate-700 shadow-[0_24px_60px_rgba(15,23,42,0.18)] transition dark:border-emerald-900/50 dark:bg-slate-950 dark:text-slate-200 ${desktopTeaserWidth}`}>
+            <div className="relative bg-[linear-gradient(135deg,#075e54_0%,#128c7e_48%,#25d366_100%)] px-4 py-4 text-white">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.3),transparent_34%)]" />
+              <div className="relative flex items-start justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <span className="relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-[#128c4a] shadow-[0_12px_28px_rgba(0,0,0,0.18)]">
+                    <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full border-2 border-white bg-emerald-300" />
+                    <FaWhatsapp className="h-7 w-7" aria-hidden="true" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="font-semibold text-white">WhatsApp Travel Desk</p>
+                      <span className="rounded-full bg-white/18 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/90">
+                        Fast reply
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs leading-5 text-white/82">
+                      Send your saved brief directly to our team.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setWhatsAppChatOpen(false)}
+                  className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-white/12 text-white/80 transition hover:bg-white/20 hover:text-white"
+                  aria-label="Close WhatsApp chat preview"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+
+            <div className="p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="mt-3 space-y-2">
+                  <div className="max-w-[92%] rounded-2xl rounded-bl-md bg-[#e8f5e9] px-3 py-2 text-xs leading-5 text-[#1f3d2b] shadow-sm dark:bg-emerald-500/12 dark:text-emerald-100">
+                    I prepared your travel brief so you do not need to type everything again.
+                  </div>
+                  <div className="ml-auto max-w-[92%] rounded-2xl rounded-br-md bg-[#dcf8c6] px-3 py-2 text-xs leading-5 text-[#1f3d2b] shadow-sm dark:bg-emerald-400/18 dark:text-emerald-50">
+                    Send it to WhatsApp and our expert can continue from there.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <Textarea
+              value={whatsAppMessage}
+              onChange={(event) => setWhatsAppMessage(event.target.value)}
+              className="mt-4 min-h-[130px] rounded-2xl border-emerald-200 bg-emerald-50/55 text-xs leading-5 focus-visible:ring-emerald-500/30 dark:border-emerald-900/50 dark:bg-emerald-950/20"
+              aria-label="WhatsApp message"
+            />
+            <Button
+              type="button"
+              onClick={continueToWhatsApp}
+              className="mt-3 w-full justify-between rounded-2xl bg-[linear-gradient(135deg,#128c7e,#25d366)] text-white shadow-[0_12px_28px_rgba(37,211,102,0.28)] hover:opacity-95"
+            >
+              Continue on WhatsApp
+              <FaWhatsapp className="h-4 w-4" aria-hidden="true" />
+            </Button>
+            </div>
+          </div>
+        )}
+
         {teaserVisible && !open && (
           <div
             className={`animate-in fade-in-0 slide-in-from-bottom-3 rounded-2xl border border-sky-200 bg-white px-4 py-3 text-left text-sm text-slate-700 shadow-[0_18px_40px_rgba(15,23,42,0.16)] transition dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 ${desktopTeaserWidth}`}
@@ -924,30 +1041,50 @@ export function LeadChatbot() {
           </div>
         )}
 
-        <Button
-          type="button"
-          size="icon"
-          onClick={() => setOpen(true)}
-          className={`group relative h-16 w-16 rounded-full border border-white/20 bg-[linear-gradient(135deg,#0f172a,#2563eb)] p-0 text-white shadow-[0_20px_45px_rgba(37,99,235,0.35)] hover:opacity-95 dark:border-slate-800 dark:bg-[linear-gradient(135deg,#020617,#1d4ed8)] ${hasUnreadMessage && !open ? 'animate-bounce' : ''}`}
-        >
-          <span className="absolute inset-0 rounded-full bg-sky-400/25 opacity-0 blur-xl transition-opacity group-hover:opacity-100" />
-          <span className="absolute inset-0 rounded-full border border-white/20 animate-pulse" />
-          {hasUnreadMessage && !open && (
-            <>
-              <span className="absolute -right-0.5 -top-0.5 z-20 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-white bg-rose-500 px-1 text-[10px] font-bold text-white shadow-lg dark:border-slate-950">
-                1
-              </span>
-              <span className="absolute -right-0.5 -top-0.5 z-10 h-6 w-6 animate-ping rounded-full bg-rose-400/70" />
-              <span className="absolute -left-28 top-1/2 hidden -translate-y-1/2 rounded-full bg-rose-500 px-3 py-1 text-[11px] font-semibold text-white shadow-lg sm:block">
-                1 new message
-              </span>
-            </>
-          )}
-          <div className="relative flex h-full w-full items-center justify-center rounded-full">
-            <BuddyAvatar size="md" className="scale-[0.92]" />
-          </div>
-          <span className="sr-only">Open TFB Buddy</span>
-        </Button>
+        <div className="flex items-center gap-3">
+          <Button
+            type="button"
+            onClick={openWhatsAppLauncher}
+            className="group relative h-16 rounded-full border border-white/25 bg-[linear-gradient(135deg,#075e54_0%,#128c7e_50%,#25d366_100%)] px-3 pr-4 text-white shadow-[0_20px_45px_rgba(18,140,126,0.34)] hover:scale-[1.03] hover:opacity-100 dark:border-slate-800"
+            aria-label="Continue this chat on WhatsApp"
+          >
+            <span className="absolute inset-0 rounded-full bg-emerald-300/25 opacity-0 blur-xl transition-opacity group-hover:opacity-100" />
+            <span className="absolute inset-0 rounded-full border border-white/20" />
+            <span className="absolute -right-0.5 -top-0.5 h-4 w-4 rounded-full border-2 border-white bg-emerald-300 shadow-[0_0_0_4px_rgba(37,211,102,0.18)]" />
+            <span className="relative inline-flex h-11 w-11 items-center justify-center rounded-full bg-white text-[#128c4a] shadow-inner">
+              <FaWhatsapp className="h-7 w-7" aria-hidden="true" />
+            </span>
+            <span className="relative ml-2 hidden text-left leading-tight sm:block">
+              <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-white/70">WhatsApp</span>
+              <span className="block text-sm font-bold">Quick chat</span>
+            </span>
+          </Button>
+
+          <Button
+            type="button"
+            size="icon"
+            onClick={() => setOpen(true)}
+            className={`group relative h-16 w-16 rounded-full border border-white/20 bg-[linear-gradient(135deg,#0f172a,#2563eb)] p-0 text-white shadow-[0_20px_45px_rgba(37,99,235,0.35)] hover:opacity-95 dark:border-slate-800 dark:bg-[linear-gradient(135deg,#020617,#1d4ed8)] ${hasUnreadMessage && !open ? 'animate-bounce' : ''}`}
+          >
+            <span className="absolute inset-0 rounded-full bg-sky-400/25 opacity-0 blur-xl transition-opacity group-hover:opacity-100" />
+            <span className="absolute inset-0 rounded-full border border-white/20 animate-pulse" />
+            {hasUnreadMessage && !open && (
+              <>
+                <span className="absolute -right-0.5 -top-0.5 z-20 flex h-6 min-w-6 items-center justify-center rounded-full border-2 border-white bg-rose-500 px-1 text-[10px] font-bold text-white shadow-lg dark:border-slate-950">
+                  1
+                </span>
+                <span className="absolute -right-0.5 -top-0.5 z-10 h-6 w-6 animate-ping rounded-full bg-rose-400/70" />
+                <span className="absolute -left-28 top-1/2 hidden -translate-y-1/2 rounded-full bg-rose-500 px-3 py-1 text-[11px] font-semibold text-white shadow-lg sm:block">
+                  1 new message
+                </span>
+              </>
+            )}
+            <div className="relative flex h-full w-full items-center justify-center rounded-full">
+              <BuddyAvatar size="md" className="scale-[0.92]" />
+            </div>
+            <span className="sr-only">Open TFB Buddy</span>
+          </Button>
+        </div>
       </div>
 
       <Sheet open={open} onOpenChange={handleOpenChange}>
@@ -971,6 +1108,16 @@ export function LeadChatbot() {
                     <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                       Your smart trip planning companion
                     </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                        <Sparkles className="h-3.5 w-3.5 text-sky-600 dark:text-sky-300" />
+                        Smart shortlist
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                        <Clock3 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-300" />
+                        60-sec scan
+                      </span>
+                    </div>
                   </div>
                 </div>
 
@@ -992,7 +1139,7 @@ export function LeadChatbot() {
             <div className="space-y-3">
               {assistantBubbles.map((bubble, index) => (
                 <div key={`${bubble}-${index}`} className="flex justify-start">
-                  <div className="max-w-[88%] rounded-[1.4rem] rounded-bl-md bg-slate-950 px-4 py-3 text-sm leading-6 text-slate-100 shadow-sm dark:bg-slate-900">
+                  <div className="max-w-[88%] rounded-[1.4rem] rounded-bl-md bg-[linear-gradient(135deg,#0f172a,#1e3a8a)] px-4 py-3 text-sm leading-6 text-slate-100 shadow-sm dark:bg-[linear-gradient(135deg,#020617,#172554)]">
                     {bubble}
                   </div>
                 </div>
@@ -1026,7 +1173,7 @@ export function LeadChatbot() {
             <div className="rounded-[1.5rem] border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/80">
               <div className="mb-4 flex items-center justify-between gap-3">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                  TFB Buddy
+                  Trip Finder
                 </p>
                 <span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                   {progressLabel}
@@ -1037,8 +1184,8 @@ export function LeadChatbot() {
                 <div className="space-y-4">
                   <div className="rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-700 dark:bg-slate-800/80 dark:text-slate-200">
                     {hasSubmitted
-                      ? `I remembered your last details${lead.destination ? ` for ${lead.destination}` : ''}. Want me to help you push this further before you leave?`
-                      : 'Start with a few quick taps and I will make the follow-up feel more tailored than a generic enquiry.'}
+                      ? `I remembered your last details${lead.destination ? ` for ${lead.destination}` : ''}. Want me to find a stronger match or refresh your callback request?`
+                      : 'Pick a travel style and I will shape the next questions around your route, timing, comfort level, and group type.'}
                   </div>
 
                   {hasSubmitted ? (
@@ -1058,10 +1205,21 @@ export function LeadChatbot() {
                     </div>
                   ) : (
                     <div className="grid gap-3">
-                      <Button className="justify-between rounded-2xl" onClick={beginConversation}>
-                        Start smart chat
+                      <Button className="justify-between rounded-2xl bg-[linear-gradient(135deg,#0f172a,#2563eb)] shadow-[0_12px_28px_rgba(37,99,235,0.22)] hover:opacity-95" onClick={beginConversation}>
+                        <span className="inline-flex items-center gap-2">
+                          <MessageCircle className="h-4 w-4" />
+                          Start smart trip scan
+                        </span>
                         <ArrowRight className="h-4 w-4" />
                       </Button>
+                      <div className="grid grid-cols-3 gap-2">
+                        {['Destination', 'Timing', 'Traveller'].map((item, index) => (
+                          <div key={item} className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-center text-[11px] font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                            <span className="mb-1 block text-sm font-bold text-sky-700 dark:text-sky-300">0{index + 1}</span>
+                            {item}
+                          </div>
+                        ))}
+                      </div>
                       <div className={categoryGridClassName}>
                         {intentOptions.map((option) => {
                           const Icon = categoryIcons[option.value];

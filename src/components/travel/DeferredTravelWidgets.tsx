@@ -13,6 +13,11 @@ const LeadChatbot = dynamic(
   { ssr: false }
 );
 
+const ScrollToTopButton = dynamic(
+  () => import('@/components/travel/ScrollToTopButton').then((mod) => mod.ScrollToTopButton),
+  { ssr: false }
+);
+
 export function DeferredTravelWidgets() {
   const [isReady, setIsReady] = useState(false);
 
@@ -34,6 +39,7 @@ export function DeferredTravelWidgets() {
     <>
       <PromoPopup />
       <LeadChatbot />
+      <ScrollToTopButton />
     </>
   );
 }
