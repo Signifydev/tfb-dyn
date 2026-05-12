@@ -10,61 +10,54 @@ import { Card } from '@/components/ui/card';
 import { fetchAllProducts } from '@/lib/api/products-client';
 import type { Product } from '@/lib/products';
 
-const SPITI_VALLEY_IMAGE =
-  'https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Key%2C_Spiti_Valley.jpg/1280px-Key%2C_Spiti_Valley.jpg';
-
-const FEATURED_DESTINATION_IMAGE_OVERRIDES: Record<string, string> = {
-  Himachal: SPITI_VALLEY_IMAGE,
-};
-
-const FEATURED_DESTINATIONS = [
+const INTERNATIONAL_DESTINATIONS = [
   {
-    title: 'Himachal',
-    href: '/search?q=Himachal',
-    fallbackImage: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200',
-    badge: 'Mountain Retreats',
+    title: 'Vietnam',
+    href: '/search?q=Vietnam',
+    fallbackImage: 'https://images.unsplash.com/photo-1528127269322-539801943592?w=1200',
+    badge: 'Culture Trails',
     badgeClassName: 'border-emerald-300/70 bg-emerald-500/80 text-white shadow-[0_10px_25px_rgba(16,185,129,0.28)]',
-    matchTerms: ['himachal', 'manali', 'shimla', 'dharamshala', 'spiti'],
+    matchTerms: ['vietnam', 'hanoi', 'ho chi minh', 'halong', 'da nang', 'hoi an'],
   },
   {
-    title: 'Kashmir',
-    href: '/search?q=Kashmir',
-    fallbackImage: 'https://images.unsplash.com/photo-1595815771614-ade9d652a65d?w=1200',
-    badge: 'Valley Escapes',
-    badgeClassName: 'border-sky-300/70 bg-sky-500/80 text-white shadow-[0_10px_25px_rgba(14,165,233,0.28)]',
-    matchTerms: ['kashmir', 'srinagar', 'gulmarg', 'pahalgam', 'sonamarg'],
+    title: 'Bali',
+    href: '/search?q=Bali',
+    fallbackImage: 'https://images.unsplash.com/photo-1537996194471-e657df975ab4?w=1200',
+    badge: 'Island Escapes',
+    badgeClassName: 'border-cyan-300/70 bg-cyan-500/80 text-white shadow-[0_10px_25px_rgba(6,182,212,0.28)]',
+    matchTerms: ['bali', 'ubud', 'kuta', 'seminyak', 'indonesia'],
   },
   {
-    title: 'Sikkim',
-    href: '/search?q=Sikkim',
-    fallbackImage: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=1200',
-    badge: 'Spiritual Trails',
+    title: 'Thailand',
+    href: '/search?q=Thailand',
+    fallbackImage: 'https://images.unsplash.com/photo-1508009603885-50cf7c579365?w=1200',
+    badge: 'Beach Holidays',
     badgeClassName: 'border-amber-300/70 bg-amber-500/80 text-white shadow-[0_10px_25px_rgba(245,158,11,0.28)]',
-    matchTerms: ['sikkim', 'gangtok', 'lachung', 'pelling', 'tsomgo', 'goechala'],
+    matchTerms: ['thailand', 'bangkok', 'phuket', 'krabi', 'pattaya', 'phi phi'],
   },
   {
-    title: 'Ladakh',
-    href: '/search?q=Ladakh',
-    fallbackImage: 'https://images.unsplash.com/photo-1581793746485-04698e79a4e8?w=1200',
-    badge: 'High Passes',
+    title: 'Nepal',
+    href: '/search?q=Nepal',
+    fallbackImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?w=1200',
+    badge: 'Himalayan Views',
     badgeClassName: 'border-indigo-300/70 bg-indigo-500/80 text-white shadow-[0_10px_25px_rgba(99,102,241,0.28)]',
-    matchTerms: ['ladakh', 'leh', 'pangong', 'nubra', 'khardung', 'zanskar'],
+    matchTerms: ['nepal', 'kathmandu', 'pokhara', 'annapurna', 'everest'],
   },
   {
-    title: 'Meghalaya',
-    href: '/search?q=Meghalaya',
-    fallbackImage: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=1200',
-    badge: 'Hidden Gems',
-    badgeClassName: 'border-teal-300/70 bg-teal-500/80 text-white shadow-[0_10px_25px_rgba(20,184,166,0.28)]',
-    matchTerms: ['meghalaya', 'shillong', 'cherrapunji', 'mawlynnong', 'dawki', 'root bridge'],
+    title: 'Europe',
+    href: '/search?q=Europe',
+    fallbackImage: 'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200',
+    badge: 'Grand Tours',
+    badgeClassName: 'border-rose-300/70 bg-rose-500/80 text-white shadow-[0_10px_25px_rgba(244,63,94,0.28)]',
+    matchTerms: ['europe', 'paris', 'switzerland', 'italy', 'france', 'amsterdam'],
   },
   {
-    title: 'Rishikesh',
-    href: '/search?q=Rishikesh',
-    fallbackImage: 'https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=1200',
-    badge: 'River Retreats',
+    title: 'Sri Lanka',
+    href: '/search?q=Sri%20Lanka',
+    fallbackImage: 'https://images.unsplash.com/photo-1588255005005-8b0f46f5ebd3?w=1200',
+    badge: 'Tropical Getaways',
     badgeClassName: 'border-lime-300/70 bg-lime-600/80 text-white shadow-[0_10px_25px_rgba(101,163,13,0.28)]',
-    matchTerms: ['rishikesh', 'rafting', 'ganga', 'yoga', 'laxman jhula', 'camp'],
+    matchTerms: ['sri lanka', 'srilanka', 'colombo', 'kandy', 'galle', 'bentota'],
   },
 ] as const;
 
@@ -84,7 +77,26 @@ function getVisibleCardCount() {
   return 1;
 }
 
-export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: Product[] }) {
+function getSearchableProductText(product: Product) {
+  return [
+    product.title,
+    product.location,
+    product.description,
+    product.subcategory,
+    ...product.highlights,
+    ...(product.destinations ?? []).flatMap((destination) => [
+      destination.country,
+      destination.state,
+      destination.city,
+      destination.display_label,
+    ]),
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase();
+}
+
+export function InternationalDestinations({ initialProducts = [] }: { initialProducts?: Product[] }) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [visibleCardCount, setVisibleCardCount] = useState(3);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -114,35 +126,28 @@ export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: P
     return () => window.removeEventListener('resize', updateVisibleCardCount);
   }, []);
 
-  const featuredDestinations = useMemo(
+  const destinations = useMemo(
     () =>
-      FEATURED_DESTINATIONS.map((item) => {
+      INTERNATIONAL_DESTINATIONS.map((item) => {
         const matchingProduct = products.find((product) => {
-          const searchable = [
-            product.title,
-            product.location,
-            product.description,
-            ...product.highlights,
-          ]
-            .join(' ')
-            .toLowerCase();
+          const searchable = getSearchableProductText(product);
 
           return item.matchTerms.some((term) => searchable.includes(term));
         });
 
         return {
           ...item,
-          image: FEATURED_DESTINATION_IMAGE_OVERRIDES[item.title] ?? matchingProduct?.heroImage ?? item.fallbackImage,
+          image: matchingProduct?.heroImage ?? item.fallbackImage,
         };
       }),
     [products]
   );
 
-  const maxIndex = Math.max(0, featuredDestinations.length - visibleCardCount);
+  const maxIndex = Math.max(0, destinations.length - visibleCardCount);
   const slideGap = 24;
   const slideWidth = `calc((100% - ${(visibleCardCount - 1) * slideGap}px) / ${visibleCardCount})`;
 
-  const goToPrevious = () => {
+  const scrollByCard = (direction: -1 | 1) => {
     const carousel = scrollRef.current;
 
     if (!carousel) {
@@ -150,19 +155,7 @@ export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: P
     }
 
     const card = carousel.querySelector<HTMLElement>('[data-carousel-card]');
-    const distance = (card?.offsetWidth ?? 0) + slideGap;
-    carousel.scrollBy({ left: -distance, behavior: 'smooth' });
-  };
-
-  const goToNext = () => {
-    const carousel = scrollRef.current;
-
-    if (!carousel) {
-      return;
-    }
-
-    const card = carousel.querySelector<HTMLElement>('[data-carousel-card]');
-    const distance = (card?.offsetWidth ?? 0) + slideGap;
+    const distance = ((card?.offsetWidth ?? 0) + slideGap) * direction;
     carousel.scrollBy({ left: distance, behavior: 'smooth' });
   };
 
@@ -170,8 +163,6 @@ export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: P
     if (event.button !== 0) {
       return;
     }
-
-    dragStateRef.current.hasDragged = false;
 
     const carousel = scrollRef.current;
 
@@ -206,8 +197,7 @@ export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: P
   };
 
   const stopDragging = () => {
-    const dragState = dragStateRef.current;
-    dragState.isDragging = false;
+    dragStateRef.current.isDragging = false;
   };
 
   return (
@@ -216,10 +206,10 @@ export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: P
         <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-4xl">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 md:text-4xl">
-              Your Next Favourite Destination Starts Here
+              International Places You Will Love
             </h2>
             <p className="mt-3 text-base leading-7 text-slate-600 dark:text-slate-300 md:text-lg">
-              Explore India's top trending travel experiences across Himachal, Kashmir, Sikkim, Ladakh, Meghalaya, and Rishikesh.
+              Discover handpicked overseas experiences across Vietnam, Bali, Thailand, Nepal, Europe, and Sri Lanka.
             </p>
           </div>
 
@@ -228,8 +218,8 @@ export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: P
               type="button"
               variant="outline"
               size="icon"
-              onClick={goToPrevious}
-              aria-label="Previous package"
+              onClick={() => scrollByCard(-1)}
+              aria-label="Previous international destination"
               className="h-10 w-10 rounded-full"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -238,8 +228,8 @@ export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: P
               type="button"
               variant="outline"
               size="icon"
-              onClick={goToNext}
-              aria-label="Next package"
+              onClick={() => scrollByCard(1)}
+              aria-label="Next international destination"
               className="h-10 w-10 rounded-full"
             >
               <ArrowRight className="h-4 w-4" />
@@ -255,10 +245,8 @@ export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: P
           onMouseLeave={stopDragging}
           className="no-scrollbar cursor-grab overflow-x-auto scroll-smooth active:cursor-grabbing"
         >
-          <div
-            className="flex snap-x snap-mandatory gap-6"
-          >
-            {featuredDestinations.map((item) => (
+          <div className="flex snap-x snap-mandatory gap-6">
+            {destinations.map((item) => (
               <Link
                 key={item.title}
                 href={item.href}
@@ -303,7 +291,7 @@ export function FeaturedPackages({ initialProducts = [] }: { initialProducts?: P
           </div>
         </div>
 
-        <div className="mt-6 flex justify-center gap-2" aria-label="Package carousel position">
+        <div className="mt-6 flex justify-center gap-2" aria-label="International carousel position">
           {Array.from({ length: maxIndex + 1 }).map((_, index) => (
             <span key={index} className="h-2.5 w-2.5 rounded-full bg-slate-300 dark:bg-slate-700" />
           ))}

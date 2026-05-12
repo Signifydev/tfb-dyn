@@ -5,7 +5,8 @@ import { type CtaBanner as CtaBannerData, getHomepageCta } from '@/lib/api/cta';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
-const CHAR_DHAM_CTA_IMAGE = 'https://upload.wikimedia.org/wikipedia/commons/3/30/Kedarnath_Temple.jpg';
+const CHAR_DHAM_CTA_IMAGE =
+  'https://upload.wikimedia.org/wikipedia/commons/9/99/Shri_Kedarnath_Jyotirlinga_Temple_01.jpg';
 
 function CtaBannerSection({ cta }: { cta: CtaBannerData }) {
   const isCharDhamCta = cta.slug.includes('char-dham') || cta.buttonHref.includes('char-dham');
@@ -20,10 +21,24 @@ function CtaBannerSection({ cta }: { cta: CtaBannerData }) {
               src={imageUrl}
               alt={cta.title}
               fill
-              className={`object-cover opacity-70 ${isCharDhamCta ? 'object-bottom' : 'object-center'}`}
+              className={`object-cover ${
+                isCharDhamCta ? 'object-center opacity-90 saturate-125' : 'object-center opacity-70'
+              }`}
             />
-            <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(2,6,23,0.88)_0%,rgba(15,23,42,0.72)_42%,rgba(15,23,42,0.22)_72%,rgba(15,23,42,0.08)_100%)]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent" />
+            <div
+              className={
+                isCharDhamCta
+                  ? 'absolute inset-0 bg-[linear-gradient(105deg,rgba(74,28,0,0.78)_0%,rgba(146,64,14,0.54)_38%,rgba(245,158,11,0.18)_68%,rgba(255,247,237,0.06)_100%)]'
+                  : 'absolute inset-0 bg-[linear-gradient(105deg,rgba(2,6,23,0.88)_0%,rgba(15,23,42,0.72)_42%,rgba(15,23,42,0.22)_72%,rgba(15,23,42,0.08)_100%)]'
+              }
+            />
+            <div
+              className={
+                isCharDhamCta
+                  ? 'absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(251,191,36,0.32),transparent_32%),linear-gradient(0deg,rgba(69,26,3,0.34),transparent_55%)]'
+                  : 'absolute inset-0 bg-gradient-to-t from-slate-950/35 via-transparent to-transparent'
+              }
+            />
           </div>
 
           <div className="relative grid min-h-[28rem] gap-8 px-6 py-8 md:min-h-[25rem] md:px-10 md:py-10 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
@@ -57,7 +72,14 @@ function CtaBannerSection({ cta }: { cta: CtaBannerData }) {
                   </div>
                 )}
                 <Link href={cta.buttonHref}>
-                  <Button size="lg" className="rounded-xl bg-blue-600 hover:bg-blue-700">
+                  <Button
+                    size="lg"
+                    className={
+                      isCharDhamCta
+                        ? 'rounded-xl bg-amber-400 text-slate-950 shadow-[0_14px_34px_rgba(245,158,11,0.34)] hover:bg-amber-300'
+                        : 'rounded-xl bg-blue-600 hover:bg-blue-700'
+                    }
+                  >
                     {cta.buttonLabel}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
