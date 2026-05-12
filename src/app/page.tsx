@@ -2,7 +2,6 @@ import { HeroSection } from "@/components/travel/HeroSection";
 import CategoryTabs from "@/components/travel/CategoryTabs";
 import { CtaBanner, CustomTourCtaBanner } from "@/components/travel/CtaBanner";
 import { FeaturedPackages } from "@/components/travel/FeaturedPackages";
-import { InternationalDestinations } from "@/components/travel/InternationalDestinations";
 import { HomepagePackageShowcase } from "@/components/travel/HomepagePackageShowcase";
 import { DestinationGrid } from "@/components/travel/DestinationGrid";
 import { FaqSection } from "@/components/travel/FaqSection";
@@ -47,7 +46,6 @@ export default async function HomePage() {
       <HeroSection initialProducts={products} />
       <FeaturedPackages initialProducts={products} />
       <HomepagePackageShowcase initialProducts={products} categorySection={<CategoryTabs />} />
-      <InternationalDestinations initialProducts={products} />
       <CtaBanner />
       <DestinationGrid initialProducts={products} />
       <CustomTourCtaBanner />

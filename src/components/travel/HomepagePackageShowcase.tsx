@@ -7,6 +7,7 @@ import { ArrowRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { InternationalDestinations } from '@/components/travel/InternationalDestinations';
 import { fetchAllProducts } from '@/lib/api/products-client';
 import type { Product } from '@/lib/products';
 import { isInternationalTourPackage, sortTourPackageProducts } from '@/lib/tour-packages';
@@ -137,40 +138,11 @@ export function HomepagePackageShowcase({
   return (
     <section className="overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f8fbff_45%,#eef6ff_100%)] py-12 dark:bg-[linear-gradient(180deg,#020617_0%,#0f172a_100%)] md:py-16">
       <div className="container mx-auto px-4">
-        <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-          <div className="max-w-3xl">
-            <h2 className="text-3xl font-bold tracking-tight text-slate-950 dark:text-slate-50 md:text-4xl">
-              Find Your Perfect Trip - India & Beyond
-            </h2>
-            <p className="mt-3 text-base leading-7 text-slate-600 dark:text-slate-300">
-              Browse the best domestic and international tour packages crafted for every traveler - whether
-              you seek adventure, relaxation, spirituality, or exploration, your next unforgettable journey
-              starts here.
-            </p>
-          </div>
-          <Button asChild variant="outline" className="rounded-xl">
-            <Link href="/categories/tour-packages">View Tour Packages</Link>
-          </Button>
-        </div>
-
-        <div className="grid gap-5 lg:grid-cols-2">
-          <TourScopeCard
-            title="Domestic Tour Packages"
-            href="/categories/tour-packages?scope=domestic"
-            image={DOMESTIC_TOUR_PACKAGES_IMAGE}
-            count={domesticTourPackages.length}
-            description="India journeys, state-wise circuits, heritage routes, beaches, hills, and spiritual escapes."
-            accentClassName="bg-[linear-gradient(135deg,#0f766e_0%,#0f172a_58%,#082f49_100%)]"
-          />
-          <TourScopeCard
-            title="International Tour Packages"
-            href="/categories/tour-packages?scope=international"
-            image={internationalTourPackages[0]?.heroImage ?? ''}
-            count={internationalTourPackages.length}
-            description="Overseas holiday collections kept separate for easier discovery and planning."
-            accentClassName="bg-[linear-gradient(135deg,#1d4ed8_0%,#312e81_60%,#0f172a_100%)]"
-          />
-        </div>
+        <InternationalDestinations
+          initialProducts={products}
+          sectionClassName="py-0"
+          containerClassName="px-0"
+        />
 
         {categorySection ? <div className="mt-14">{categorySection}</div> : null}
 
@@ -216,6 +188,41 @@ export function HomepagePackageShowcase({
               </Card>
             </Link>
           ))}
+        </div>
+
+        <div className="mt-14 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-3xl">
+            <h2 className="text-3xl font-bold tracking-tight text-slate-950 dark:text-slate-50 md:text-4xl">
+              Find Your Perfect Trip - India & Beyond
+            </h2>
+            <p className="mt-3 text-base leading-7 text-slate-600 dark:text-slate-300">
+              Browse the best domestic and international tour packages crafted for every traveler - whether
+              you seek adventure, relaxation, spirituality, or exploration, your next unforgettable journey
+              starts here.
+            </p>
+          </div>
+          <Button asChild variant="outline" className="rounded-xl">
+            <Link href="/categories/tour-packages">View Tour Packages</Link>
+          </Button>
+        </div>
+
+        <div className="mt-8 grid gap-5 lg:grid-cols-2">
+          <TourScopeCard
+            title="Domestic Tour Packages"
+            href="/categories/tour-packages?scope=domestic"
+            image={DOMESTIC_TOUR_PACKAGES_IMAGE}
+            count={domesticTourPackages.length}
+            description="India journeys, state-wise circuits, heritage routes, beaches, hills, and spiritual escapes."
+            accentClassName="bg-[linear-gradient(135deg,#0f766e_0%,#0f172a_58%,#082f49_100%)]"
+          />
+          <TourScopeCard
+            title="International Tour Packages"
+            href="/categories/tour-packages?scope=international"
+            image={internationalTourPackages[0]?.heroImage ?? ''}
+            count={internationalTourPackages.length}
+            description="Overseas holiday collections kept separate for easier discovery and planning."
+            accentClassName="bg-[linear-gradient(135deg,#1d4ed8_0%,#312e81_60%,#0f172a_100%)]"
+          />
         </div>
       </div>
     </section>

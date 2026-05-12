@@ -96,7 +96,15 @@ function getSearchableProductText(product: Product) {
     .toLowerCase();
 }
 
-export function InternationalDestinations({ initialProducts = [] }: { initialProducts?: Product[] }) {
+export function InternationalDestinations({
+  initialProducts = [],
+  sectionClassName = 'py-12 md:py-16',
+  containerClassName = 'container mx-auto px-4',
+}: {
+  initialProducts?: Product[];
+  sectionClassName?: string;
+  containerClassName?: string;
+}) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [visibleCardCount, setVisibleCardCount] = useState(3);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -201,8 +209,8 @@ export function InternationalDestinations({ initialProducts = [] }: { initialPro
   };
 
   return (
-    <section className="py-12 md:py-16">
-      <div className="container mx-auto px-4">
+    <section className={sectionClassName}>
+      <div className={containerClassName}>
         <div className="mb-8 flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
           <div className="max-w-4xl">
             <h2 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-100 md:text-4xl">
