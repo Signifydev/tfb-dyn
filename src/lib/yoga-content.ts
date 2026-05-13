@@ -21,7 +21,7 @@ import {
 
 export const YOGA_EXPERT_PHONE = '+91-6398522735';
 export const YOGA_EXPERT_PHONE_HREF = 'tel:+916398522735';
-export const YOGA_EMAIL = 'info@travelforbenefit.com';
+export const YOGA_EMAIL = 'info@travelforbenefits.com';
 export const YOGA_WEBSITE = 'travelforbenefit.com';
 
 export const YOGA_META = {

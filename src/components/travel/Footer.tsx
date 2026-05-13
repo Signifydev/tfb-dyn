@@ -81,7 +81,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="h-5 w-5 flex-shrink-0 text-blue-400" />
-                <span className="text-sm">info@travelforbenefit.com</span>
+                <span className="text-sm">info@travelforbenefits.com</span>
               </li>
               <li className="flex items-center gap-3">
                 <Clock className="h-5 w-5 flex-shrink-0 text-blue-400" />

@@ -55,6 +55,9 @@ const nextConfig: NextConfig = {
         hostname: "upload.wikimedia.org",
       },
       {
+        hostname: "commons.wikimedia.org",
+      },
+      {
         hostname: "chat2db-cdn.oss-us-west-1.aliyuncs.com",
       },
       {
