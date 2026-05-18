@@ -54,7 +54,7 @@ export function Footer() {
               {[
                 { label: 'Help Center', href: '#' },
                 { label: 'Cancellation Policy', href: '#' },
-                { label: 'Travel Insurance', href: '#' },
+                { label: 'Contact Us', href: '/contact' },
                 { label: 'FAQs', href: '#' },
                 { label: 'Terms & Conditions', href: '#' },
                 { label: 'Privacy Policy', href: '#' },
