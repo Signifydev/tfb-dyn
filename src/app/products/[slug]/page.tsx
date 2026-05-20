@@ -34,6 +34,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import { getAllProducts, getProductBySlug } from '@/lib/api/products';
+import { hasTrekkingGstNote } from '@/lib/pricing';
 
 import ProductGallery from '@/components/travel/ProductGallery';
 import ProductStickyNav from '@/components/travel/ProductStickyNav';
@@ -77,6 +78,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
   const allImages = [product.heroImage, ...(product.gallery || [])].filter(Boolean);
   const savings = Math.max(product.originalPrice - product.price, 0);
+  const showTrekkingGstNote = hasTrekkingGstNote(product);
   const itineraryCount = product.itinerary.length;
   const itineraryLabel =
     itineraryCount > 0
@@ -539,6 +541,9 @@ export default async function ProductDetailPage({ params }: PageProps) {
                       <p className="mt-0.5 text-2xl font-semibold text-white">
                         Rs.{product.price.toLocaleString()}
                       </p>
+                      {showTrekkingGstNote && (
+                        <p className="mt-1 text-xs font-medium text-sky-100">+5% GST</p>
+                      )}
                     </div>
                     <div className="text-right">
                       <p className="text-[11px] text-slate-200">You save</p>

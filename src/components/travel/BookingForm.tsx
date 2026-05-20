@@ -32,6 +32,7 @@ import {
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import type { Product } from '@/lib/products';
+import { hasTrekkingGstNote } from '@/lib/pricing';
 
 interface BookingFormProps {
   product: Product;
@@ -66,6 +67,7 @@ export function BookingForm({ product }: BookingFormProps) {
   const totalPrice = product.price * travellers;
   const formattedPrice = `INR ${product.price.toLocaleString('en-IN')}`;
   const formattedTotalPrice = `INR ${totalPrice.toLocaleString('en-IN')}`;
+  const showTrekkingGstNote = hasTrekkingGstNote(product);
   const checkoutHref = useMemo(() => {
     const params = new URLSearchParams({
       product: product.slug,
@@ -278,7 +280,12 @@ export function BookingForm({ product }: BookingFormProps) {
           <div className="space-y-2 rounded-xl bg-slate-50 p-4 dark:bg-slate-800/70">
             <div className="flex justify-between text-sm">
               <span className="text-slate-600 dark:text-slate-300">Price per person</span>
-              <span className="font-medium">{formattedPrice}</span>
+              <span className="text-right font-medium">
+                {formattedPrice}
+                {showTrekkingGstNote && (
+                  <span className="block text-xs font-medium text-slate-500 dark:text-slate-400">+5% GST</span>
+                )}
+              </span>
             </div>
             <div className="flex justify-between text-sm">
               <span className="text-slate-600 dark:text-slate-300">Travellers</span>
@@ -286,7 +293,12 @@ export function BookingForm({ product }: BookingFormProps) {
             </div>
             <div className="flex justify-between border-t border-slate-200 pt-2 font-semibold dark:border-slate-700">
               <span>Total Price</span>
-              <span className="text-blue-600">{formattedTotalPrice}</span>
+              <span className="text-right text-blue-600">
+                {formattedTotalPrice}
+                {showTrekkingGstNote && (
+                  <span className="block text-xs font-medium text-slate-500 dark:text-slate-400">+5% GST</span>
+                )}
+              </span>
             </div>
           </div>
         </div>
